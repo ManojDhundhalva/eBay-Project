@@ -1,7 +1,7 @@
 const express = require("express");
-// const loginRoutes = require("./routes/login");
-// const registerRoutes = require("./routes/register");
-// const profileRoutes = require("./routes/profile");
+const loginRoutes = require("./routes/login");
+const registerRoutes = require("./routes/register");
+const profileRoutes = require("./routes/profile");
 // const productRoutes = require("./routes/product");
 // const cartRoutes = require("./routes/cart");
 // const orderRoutes = require("./routes/order");
@@ -21,9 +21,9 @@ app.use(express.json());
 //   resp.send("hello");
 // });
 
-// app.use("/api/v1/login", loginRoutes);
-// app.use("/api/v1/register", registerRoutes);
-// app.use("/api/v1/profile", profileRoutes);
+app.use("/api/v1/login", loginRoutes);
+app.use("/api/v1/register", registerRoutes);
+app.use("/api/v1/profile", profileRoutes);
 // app.use("/api/v1/product", productRoutes);
 // app.use("/api/v1/cart", cartRoutes);
 // app.use("/api/v1/order", orderRoutes);

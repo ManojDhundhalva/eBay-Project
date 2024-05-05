@@ -11,7 +11,7 @@ import { useAuth } from "../context/auth";
 import { useNavigate } from "react-router-dom";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
-// import config from "../config.js";
+import { toast } from "react-hot-toast";
 
 function Navbar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -77,7 +77,11 @@ function Navbar() {
               <Link
                 className="nav-link active"
                 to="/"
-                style={{ fontFamily: "Quicksand", transition: "all 0.5s ease" }}
+                style={{
+                  fontFamily: "Quicksand",
+                  transition: "all 0.5s ease",
+                  fontWeight: "bold",
+                }}
               >
                 Home
               </Link>
@@ -96,7 +100,7 @@ function Navbar() {
               <Link
                 className="nav-link active"
                 to="/aboutus"
-                style={{ fontFamily: "Quicksand" }}
+                style={{ fontFamily: "Quicksand", fontWeight: "bold" }}
               >
                 AboutUS
               </Link>
@@ -117,7 +121,7 @@ function Navbar() {
                   <Link
                     className="nav-link active"
                     to="/queue"
-                    style={{ fontFamily: "Quicksand" }}
+                    style={{ fontFamily: "Quicksand", fontWeight: "bold" }}
                   >
                     Queue
                   </Link>
@@ -136,7 +140,7 @@ function Navbar() {
                   <Link
                     className="nav-link active"
                     to="/received-product"
-                    style={{ fontFamily: "Quicksand" }}
+                    style={{ fontFamily: "Quicksand", fontWeight: "bold" }}
                   >
                     Revied Product
                   </Link>
@@ -159,7 +163,7 @@ function Navbar() {
                   <Link
                     className="nav-link active"
                     to="/history-product"
-                    style={{ fontFamily: "Quicksand" }}
+                    style={{ fontFamily: "Quicksand", fontWeight: "bold" }}
                   >
                     List Product
                   </Link>
@@ -201,6 +205,7 @@ function Navbar() {
                   />
                 </IconButton>
                 <Menu
+                  style={{ fontFamily: "Quicksand" }}
                   id="menu-appbar"
                   anchorEl={anchorEl}
                   anchorOrigin={{
@@ -215,15 +220,20 @@ function Navbar() {
                   open={Boolean(anchorEl)}
                   onClose={handleClose}
                 >
-                  <MenuItem onClick={handleClose}>
+                  <MenuItem
+                    onClick={handleClose}
+                    style={{ fontFamily: "Quicksand", fontWeight: "bold" }}
+                  >
                     <Link className="nav-link" to="/profile">
                       Profile
                     </Link>
                   </MenuItem>
                   <MenuItem
+                    style={{ fontFamily: "Quicksand", fontWeight: "bold" }}
                     onClick={() => {
                       handleClose();
                       LogOut();
+                      toast.success("Logout successful!");
                     }}
                   >
                     Logout

@@ -12,19 +12,12 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth";
-// import Form from 'react-bootstrap/Form';
-
-// import BackgroundVideo from '../Context/backgroundVideo';
-
 import Alert from "@mui/material/Alert";
 import axios from "axios";
-// import Alert from 'react-bootstrap/Alert';
-// import '../CSS/Login.css';
-
+import { toast } from "react-hot-toast";
 import { Select, MenuItem } from "@mui/material";
 
 const defaultTheme = createTheme();
@@ -33,7 +26,6 @@ export default function Register() {
   const [loading, setloading] = useState(false);
   const [justVerify, setJustVerify] = useState(false);
   const [validPassword, setValidPassword] = useState(false);
-  const [isAlert, setIsAlert] = useState(false);
 
   const handlePasswordofLogin = (e) => {
     const input = e.target.value;
@@ -45,45 +37,70 @@ export default function Register() {
       setValidPassword(true);
     }
   };
-
+  const [firstname, SetFirstname] = useState("");
+  const [lastname, SetLastname] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   const navigate = useNavigate();
   const { validateUser } = useAuth();
+
+  const handlePhoneNumber = (e) => {
+    const input = e.target.value;
+    if (/^\d*$/.test(input)) {
+      setPhoneNumber(input);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setJustVerify(true);
 
     if (
+      firstname === "" ||
+      lastname === "" ||
       username === "" ||
       email === "" ||
       !validPassword ||
       role === "" ||
+      firstname.length >= 255 ||
+      lastname.length >= 255 ||
       username.length >= 255 ||
       email.length >= 255 ||
-      password.length >= 255
+      password.length >= 255 ||
+      phoneNumber.length !== 10
     ) {
       return;
     }
 
     setloading(true);
+
     try {
-      const results = await axios.post(
-        "http://localhost:8000/api/v1/register",
-        {
+      await toast.promise(
+        axios.post("http://localhost:8000/api/v1/register", {
+          firstname,
+          lastname,
           username,
           emailid: email,
           password,
           role,
+          phone_number: phoneNumber,
+        }),
+        {
+          loading: "Registering...", // Message shown during loading
+          success: () => {
+            navigate("/login");
+            return <b>Registration successful!</b>; // Success message
+          },
+          error: () => {
+            return <b>Registration failed.</b>; // Error message
+          },
         }
       );
-      navigate("/login");
     } catch (err) {
-      setIsAlert(true);
       console.log("Error -> ", err);
     }
     setloading(false);
@@ -135,6 +152,62 @@ export default function Register() {
               noValidate
               sx={{ mt: 1, width: "100%" }}
             >
+              <TextField
+                id="standard-basic-1"
+                variant="standard"
+                margin="normal"
+                required
+                fullWidth
+                label="Firstname"
+                name="firstname"
+                autoFocus
+                onChange={(e) => {
+                  SetFirstname(e.target.value);
+                }}
+                value={firstname}
+                InputProps={{
+                  style: {
+                    fontFamily: "Quicksand",
+                    fontWeight: "bold",
+                  },
+                }}
+                error={
+                  justVerify && (firstname === "" || firstname.length >= 255)
+                }
+                helperText={
+                  justVerify &&
+                  (firstname === "" ? "This field cannot be empty." : "")
+                }
+                autoComplete="off"
+              />
+              <TextField
+                id="standard-basic-1"
+                variant="standard"
+                margin="normal"
+                required
+                fullWidth
+                label="Lastname"
+                name="lastname"
+                autoFocus
+                onChange={(e) => {
+                  SetLastname(e.target.value);
+                }}
+                value={lastname}
+                InputProps={{
+                  style: {
+                    fontFamily: "Quicksand",
+                    fontWeight: "bold",
+                  },
+                }}
+                error={
+                  justVerify && (lastname === "" || lastname.length >= 255)
+                }
+                helperText={
+                  justVerify &&
+                  (lastname === "" ? "This field cannot be empty." : "")
+                }
+                autoComplete="off"
+              />
               <TextField
                 id="standard-basic-1"
                 variant="standard"
@@ -222,11 +295,23 @@ export default function Register() {
                 }
                 autoComplete="off"
               />
+              <Grid
+                item
+                xs={10}
+                style={{ marginTop: "0.4em", fontFamily: "Quicksand" }}
+                sx={{
+                  fontWeight: "bold",
+                }}
+                id="searchBoxContainer"
+              >
+                Role *
+              </Grid>
               <Select
                 value={role}
                 onChange={(e) => {
                   setRole(e.target.value);
                 }}
+                style={{ fontWeight: "bold", fontFamily: "Quicksand" }}
                 displayEmpty
                 inputProps={{ "aria-label": "Without label" }}
                 fullWidth
@@ -251,6 +336,37 @@ export default function Register() {
                   Shipper
                 </MenuItem>
               </Select>
+              <TextField
+                id="standard-basic-2"
+                variant="standard"
+                margin="normal"
+                required
+                fullWidth
+                label="Phone Number"
+                name="phoneNumber"
+                autoFocus
+                onChange={handlePhoneNumber}
+                value={phoneNumber}
+                InputProps={{
+                  style: {
+                    fontFamily: "Quicksand",
+                    fontWeight: "bold",
+                  },
+                }}
+                error={
+                  justVerify &&
+                  (phoneNumber === "" || phoneNumber.length !== 10)
+                }
+                helperText={
+                  justVerify &&
+                  (phoneNumber === ""
+                    ? "This field cannot be empty."
+                    : phoneNumber.length !== 10
+                    ? "Phone number must be exactly 10 digits."
+                    : "")
+                }
+                autoComplete="off"
+              />
 
               <Button
                 type="submit"
@@ -266,17 +382,6 @@ export default function Register() {
                 {!loading ? "Sign Up" : "Signing Up...."}
               </Button>
               <Grid container>
-                <Grid item xs={12}>
-                  {isAlert && (
-                    <Alert
-                      variant="filled"
-                      severity="error"
-                      style={{ fontFamily: "Quicksand", fontWeight: "600" }}
-                    >
-                      User Already Exist !!
-                    </Alert>
-                  )}
-                </Grid>
                 <Grid item xs={12}>
                   <Button
                     color="secondary"

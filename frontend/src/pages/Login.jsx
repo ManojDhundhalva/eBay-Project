@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import Alert from "@mui/material/Alert";
 import { useAuth } from "../context/auth";
 import axios from "axios";
+import { toast } from "react-hot-toast";
 
 const defaultTheme = createTheme();
 
@@ -23,7 +24,6 @@ export default function Login() {
   const [validPassword, setValidPassword] = useState(false);
   const { setIsLoggedIn, validateUser } = useAuth();
 
-  const [isAlert, setIsAlert] = useState(false);
 
   const handlePasswordofLogin = (e) => {
     const input = e.target.value;
@@ -56,19 +56,28 @@ export default function Login() {
     setloading(true);
 
     try {
-      const results = await axios.post("http://localhost:8000/api/v1/login", {
-        username: emailUsername,
-        password,
-      });
+      await toast.promise(
+        axios.post("http://localhost:8000/api/v1/login", {
+          username: emailUsername,
+          password,
+        }),
+        {
+          loading: "Logging in...", // Message shown during loading
+          success: (results) => {
+            window.localStorage.setItem("token", results.data.token);
+            window.localStorage.setItem("username", results.data.username);
+            window.localStorage.setItem("role", results.data.role);
 
-      window.localStorage.setItem("token", results.data.token);
-      window.localStorage.setItem("username", results.data.username);
-      window.localStorage.setItem("role", results.data.role);
-
-      setIsLoggedIn(true);
-      navigate("/");
+            setIsLoggedIn(true);
+            navigate("/");
+            return <b>Login successful!</b>; // Success message
+          },
+          error: () => {
+            return <b>Invalid Credentials</b>; // Error message
+          },
+        }
+      );
     } catch (err) {
-      setIsAlert(true);
       console.log("error -> ", err);
     }
     setloading(false);
@@ -195,17 +204,6 @@ export default function Login() {
                 {!loading ? "Sign In" : "Signing In...."}
               </Button>
               <Grid container>
-                <Grid item xs={12}>
-                  {window.localStorage.getItem("token") === null && isAlert && (
-                    <Alert
-                      variant="filled"
-                      severity="error"
-                      style={{ fontFamily: "Quicksand", fontWeight: "600" }}
-                    >
-                      Invalid Email and/or Password
-                    </Alert>
-                  )}
-                </Grid>
                 <Grid item xs={12}>
                   <Button
                     color="secondary"
