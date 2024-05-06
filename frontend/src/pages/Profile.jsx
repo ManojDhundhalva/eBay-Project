@@ -13,6 +13,16 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 
 import { useAuth } from "../context/auth";
+import getLPTheme from "../getLPTheme";
+import FormLabel from "@mui/material/FormLabel";
+import { styled } from "@mui/system";
+import { alpha } from "@mui/material";
+import Box from "@mui/material/Box";
+
+const FormGrid = styled(Grid)(() => ({
+  display: "flex",
+  flexDirection: "column",
+}));
 
 const Profile = () => {
   const imageURL =
@@ -39,14 +49,7 @@ const Profile = () => {
     },
   };
 
-  const theme = createTheme({
-    typography: {
-      fontFamily: "Quicksand",
-      body1: {
-        fontWeight: "600",
-      },
-    },
-  });
+  const LPtheme = createTheme(getLPTheme());
 
   const handlePhoneNumber = (e) => {
     const input = e.target.value;
@@ -147,18 +150,33 @@ const Profile = () => {
   return (
     <>
       <div
+        className="mt-4"
         data-aos="fade-up"
         style={{ margin: "2em", fontFamily: "Quicksand", fontWeight: "600" }}
       >
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={LPtheme}>
           <Grid container spacing={3} justifyContent="center">
             <Grid item xs={12} sm={6} md={6} lg={4} xl={4}>
-              <Card
-                sx={{
-                  maxWidth: "100%",
-                  justifyContent: "center",
-                  textAlign: "center",
-                }}
+              <Box
+                id="image"
+                sx={(theme) => ({
+                  mt: { xs: 8, sm: 10 },
+                  alignSelf: "center",
+                  height: { xs: 200, sm: 700 },
+                  width: "100%",
+                  backgroundSize: "cover",
+                  borderRadius: "10px",
+                  outline: "1px solid",
+                  outlineColor:
+                    theme.palette.mode === "light"
+                      ? alpha("#BFCCD9", 0.5)
+                      : alpha("#9CCCFC", 0.1),
+                  boxShadow:
+                    theme.palette.mode === "light"
+                      ? `0 0 12px 8px ${alpha("#9CCCFC", 0.2)}`
+                      : `0 0 24px 12px ${alpha("#033363", 0.2)}`,
+                  color: theme.palette.mode !== "light" ? "black" : "white",
+                })}
               >
                 <CardMedia
                   component="img"
@@ -197,10 +215,33 @@ const Profile = () => {
                     +91 {phoneNumber}
                   </Typography>
                 </CardContent>
-              </Card>
+              </Box>
             </Grid>
             <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
-              <Card>
+              <Box
+                id="image"
+                sx={(theme) => ({
+                  mt: { xs: 8, sm: 10 },
+                  alignSelf: "center",
+                  height: { xs: 200, sm: 700 },
+                  width: "100%",
+                  backgroundImage:
+                    theme.palette.mode === "light"
+                      ? 'url("/static/images/templates/templates-images/hero-light.png")'
+                      : 'url("/static/images/templates/templates-images/hero-dark.png")',
+                  backgroundSize: "cover",
+                  borderRadius: "10px",
+                  outline: "1px solid",
+                  outlineColor:
+                    theme.palette.mode === "light"
+                      ? alpha("#BFCCD9", 0.5)
+                      : alpha("#9CCCFC", 0.1),
+                  boxShadow:
+                    theme.palette.mode === "light"
+                      ? `0 0 12px 8px ${alpha("#9CCCFC", 0.2)}`
+                      : `0 0 24px 12px ${alpha("#033363", 0.2)}`,
+                })}
+              >
                 <CardContent>
                   <Grid container spacing={2} style={{ marginLeft: "0.1em" }}>
                     <Grid item xs={10} style={{ marginTop: "1em" }}>
@@ -212,153 +253,175 @@ const Profile = () => {
                         Profile
                       </Typography>
                     </Grid>
-                    <Grid item xs={10} style={{ marginTop: "1em" }}>
-                      <TextField
-                        InputProps={{
-                          style: {
-                            fontFamily: "Quicksand",
-                            fontWeight: "bold",
-                          },
-                        }}
-                        required
-                        id="standard-helperText-1"
-                        label="First Name"
-                        value={firstName}
-                        onChange={(e) => {
-                          setFirstName(e.target.value);
-                        }}
-                        fullWidth
-                        autoComplete="off"
-                        error={
-                          justVerify &&
-                          (firstName === "" || firstName.length >= 255)
-                        }
-                        helperText={
-                          firstName === "" &&
-                          (justVerify ? "This field cannot be empty" : "")
-                        }
-                      />
-                    </Grid>
-                    <Grid item xs={10} style={{ marginTop: "1em" }}>
-                      <TextField
-                        InputProps={{
-                          style: {
-                            fontFamily: "Quicksand",
-                            fontWeight: "bold",
-                          },
-                        }}
-                        required
-                        id="standard-helperText-1"
-                        label="Last Name"
-                        value={lastName}
-                        onChange={(e) => {
-                          setLastName(e.target.value);
-                        }}
-                        fullWidth
-                        autoComplete="off"
-                        error={
-                          justVerify &&
-                          (lastName === "" || lastName.length >= 255)
-                        }
-                        helperText={
-                          lastName === "" &&
-                          (justVerify ? "This field cannot be empty" : "")
-                        }
-                      />
-                    </Grid>
-                    <Grid item xs={10} style={{ marginTop: "0.4em" }}>
-                      <TextField
-                        id="standard-helperText-4"
-                        label="Username"
-                        value={userName}
-                        InputProps={{
-                          readOnly: true,
-                          style: {
-                            fontFamily: "Quicksand",
-                            fontWeight: "bold",
-                          },
-                        }}
-                        fullWidth
-                        autoComplete="off"
-                      />
+                    <Grid item xs={10}>
+                      <FormGrid item className="mt-3">
+                        <FormLabel htmlFor="first-name" required>
+                          First Name
+                        </FormLabel>
+                        <TextField
+                          InputProps={{
+                            style: {
+                              fontFamily: "Quicksand",
+                              fontWeight: "bold",
+                            },
+                          }}
+                          required
+                          id="standard-helperText-1"
+                          name="first-name"
+                          value={firstName}
+                          onChange={(e) => {
+                            setFirstName(e.target.value);
+                          }}
+                          fullWidth
+                          autoComplete="off"
+                          error={
+                            justVerify &&
+                            (firstName === "" || firstName.length >= 255)
+                          }
+                          helperText={
+                            firstName === "" &&
+                            (justVerify ? "This field cannot be empty" : "")
+                          }
+                        />
+                      </FormGrid>
                     </Grid>
                     <Grid item xs={10}>
-                      <TextField
-                        id="standard-helperText-4"
-                        label="Email"
-                        value={email}
-                        InputProps={{
-                          readOnly: true,
-                          style: {
-                            fontFamily: "Quicksand",
-                            fontWeight: "bold",
-                          },
-                        }}
-                        fullWidth
-                        autoComplete="off"
-                      />
+                      <FormGrid item className="mt-2">
+                        <FormLabel htmlFor="last-name" required>
+                          Last Name
+                        </FormLabel>
+                        <TextField
+                          InputProps={{
+                            style: {
+                              fontFamily: "Quicksand",
+                              fontWeight: "bold",
+                            },
+                          }}
+                          required
+                          id="standard-helperText-1"
+                          name="last-name"
+                          value={lastName}
+                          onChange={(e) => {
+                            setLastName(e.target.value);
+                          }}
+                          fullWidth
+                          autoComplete="off"
+                          error={
+                            justVerify &&
+                            (lastName === "" || lastName.length >= 255)
+                          }
+                          helperText={
+                            lastName === "" &&
+                            (justVerify ? "This field cannot be empty" : "")
+                          }
+                        />
+                      </FormGrid>
                     </Grid>
-                    <Grid item xs={10} style={{ marginTop: "0.4em" }}>
-                      <TextField
-                        id="standard-helperText-4"
-                        label="Role"
-                        value={role}
-                        InputProps={{
-                          readOnly: true,
-                          style: {
-                            fontFamily: "Quicksand",
-                            fontWeight: "bold",
-                          },
-                        }}
-                        fullWidth
-                        autoComplete="off"
-                      />
+                    <Grid item xs={10}>
+                      <FormGrid item className="mt-2">
+                        <FormLabel htmlFor="username">Username</FormLabel>
+                        <TextField
+                          id="standard-helperText-4"
+                          name="username"
+                          value={userName}
+                          InputProps={{
+                            readOnly: true,
+                            style: {
+                              fontFamily: "Quicksand",
+                              fontWeight: "bold",
+                            },
+                          }}
+                          fullWidth
+                          autoComplete="off"
+                        />
+                      </FormGrid>
                     </Grid>
-                    <Grid item xs={10} style={{ marginTop: "0.4em" }}>
-                      <TextField
-                        id="standard-basic-2"
-                        required
-                        fullWidth
-                        label="Phone Number"
-                        name="phoneNumber"
-                        autoFocus
-                        onChange={handlePhoneNumber}
-                        value={phoneNumber}
-                        InputProps={{
-                          style: {
-                            fontFamily: "Quicksand",
-                            fontWeight: "bold",
-                          },
-                        }}
-                        error={
-                          justVerify &&
-                          (phoneNumber === "" || phoneNumber.length !== 10)
-                        }
-                        helperText={
-                          justVerify &&
-                          (phoneNumber === ""
-                            ? "This field cannot be empty."
-                            : phoneNumber.length !== 10
-                            ? "Phone number must be exactly 10 digits."
-                            : "")
-                        }
-                        autoComplete="off"
-                      />
+                    <Grid item xs={10}>
+                      <FormGrid item className="mt-2">
+                        <FormLabel htmlFor="email">Email</FormLabel>
+                        <TextField
+                          id="standard-helperText-4"
+                          name="email"
+                          value={email}
+                          InputProps={{
+                            readOnly: true,
+                            style: {
+                              fontFamily: "Quicksand",
+                              fontWeight: "bold",
+                            },
+                          }}
+                          fullWidth
+                          autoComplete="off"
+                        />
+                      </FormGrid>
+                    </Grid>
+                    <Grid item xs={10}>
+                      <FormGrid item className="mt-2">
+                        <FormLabel htmlFor="role">Role</FormLabel>
+                        <TextField
+                          id="standard-helperText-4"
+                          name="role"
+                          value={role}
+                          InputProps={{
+                            readOnly: true,
+                            style: {
+                              fontFamily: "Quicksand",
+                              fontWeight: "bold",
+                            },
+                          }}
+                          fullWidth
+                          autoComplete="off"
+                        />
+                      </FormGrid>
+                    </Grid>
+                    <Grid item xs={10}>
+                      <FormGrid item className="mt-2">
+                        <FormLabel htmlFor="phone-number">
+                          Phone Number
+                        </FormLabel>
+                        <TextField
+                          id="standard-basic-2"
+                          required
+                          fullWidth
+                          name="phone-number"
+                          autoFocus
+                          onChange={handlePhoneNumber}
+                          value={phoneNumber}
+                          InputProps={{
+                            style: {
+                              fontFamily: "Quicksand",
+                              fontWeight: "bold",
+                            },
+                          }}
+                          error={
+                            justVerify &&
+                            (phoneNumber === "" || phoneNumber.length !== 10)
+                          }
+                          helperText={
+                            justVerify &&
+                            (phoneNumber === ""
+                              ? "This field cannot be empty."
+                              : phoneNumber.length !== 10
+                              ? "Phone number must be exactly 10 digits."
+                              : "")
+                          }
+                          autoComplete="off"
+                        />
+                      </FormGrid>
                     </Grid>
                   </Grid>
                   <div style={{ textAlign: "center", marginTop: "1em" }}>
                     <Button
+                      className="mt-4"
                       variant="contained"
-                      color="success"
                       onClick={UpdateProfile}
-                      style={{ marginTop: "1em", backgroundColor: "#2A386B" }}
                       sx={{ fontFamily: "Quicksand", fontWeight: "bold" }}
                     >
                       {!loading ? "UPDATE" : "Updating..."}
                     </Button>
                   </div>
                 </CardContent>
-              </Card>
+              </Box>
             </Grid>
           </Grid>
           <Grid
@@ -378,13 +441,22 @@ const Profile = () => {
             >
               <Button
                 variant="contained"
-                color="error"
                 onClick={() => {
                   LogOut();
                   toast.success("Logout successful!");
                 }}
                 style={{ marginTop: "1em" }}
-                sx={{ fontFamily: "Quicksand", fontWeight: "bold" }}
+                sx={{
+                  backgroundImage:
+                    "linear-gradient(to bottom right, #dc2f02, #d00000)",
+                  color: "white", // Text color
+                  fontWeight: "bold",
+                  fontFamily: "Quicksand",
+                  "&:hover": {
+                    backgroundImage:
+                      "linear-gradient(to bottom right, #c9184a, #d00000)",
+                  },
+                }}
               >
                 Logout &nbsp;
                 <LogoutIcon />

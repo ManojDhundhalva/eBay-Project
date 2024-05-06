@@ -15,15 +15,20 @@ import Alert from "@mui/material/Alert";
 import { useAuth } from "../context/auth";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import getLPTheme from "../getLPTheme";
+import FormLabel from "@mui/material/FormLabel";
+import { styled } from "@mui/system";
 
-const defaultTheme = createTheme();
+const FormGrid = styled(Grid)(() => ({
+  display: "flex",
+  flexDirection: "column",
+}));
 
 export default function Login() {
-  const [loading, setloading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [justVerify, setJustVerify] = useState(false);
   const [validPassword, setValidPassword] = useState(false);
   const { setIsLoggedIn, validateUser } = useAuth();
-
 
   const handlePasswordofLogin = (e) => {
     const input = e.target.value;
@@ -39,6 +44,8 @@ export default function Login() {
   const [emailUsername, setEmailUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { mode } = useAuth();
+  const LPtheme = createTheme(getLPTheme(mode));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,7 +60,7 @@ export default function Login() {
     ) {
       return;
     }
-    setloading(true);
+    setLoading(true);
 
     try {
       await toast.promise(
@@ -80,7 +87,7 @@ export default function Login() {
     } catch (err) {
       console.log("error -> ", err);
     }
-    setloading(false);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -89,7 +96,7 @@ export default function Login() {
 
   return (
     <div className="my-glass-effect">
-      <ThemeProvider theme={defaultTheme}>
+      <ThemeProvider theme={LPtheme}>
         <Container
           component="main"
           maxWidth="sm"
@@ -98,27 +105,33 @@ export default function Login() {
           <CssBaseline />
           <Box
             style={{
-              backgroundColor: "#caf0f8",
-              boxShadow: "0px 4px 8px #caf0f8",
+              backgroundColor: LPtheme.palette.background.paper,
+              boxShadow: LPtheme.shadows[4],
             }}
             sx={{
               marginTop: 12,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              backgroundColor: "rgba(255, 255, 255, 0.4)",
-              borderRadius: "2em",
+              backgroundColor: LPtheme.palette.background.paper,
+              borderRadius: LPtheme.shape.borderRadius * 2,
               padding: "3em",
               height: "auto",
             }}
           >
-            <Avatar sx={{ m: 1 }} style={{ backgroundColor: "#25396F" }}>
+            <Avatar
+              sx={{ m: 1 }}
+              style={{ backgroundColor: LPtheme.palette.secondary.main }}
+            >
               <LockOutlinedIcon />
             </Avatar>
             <Typography
               component="h1"
               variant="h5"
-              sx={{ fontFamily: "Quicksand", fontWeight: "bold" }}
+              sx={{
+                fontFamily: LPtheme.typography.fontFamily,
+                fontWeight: "bold",
+              }}
             >
               Sign in
             </Typography>
@@ -128,77 +141,84 @@ export default function Login() {
               noValidate
               sx={{ mt: 1, width: "100%" }}
             >
-              <TextField
-                id="standard-basic-1"
-                variant="standard"
-                margin="normal"
-                required
-                fullWidth
-                label="Username"
-                name="email"
-                autoFocus
-                value={emailUsername}
-                onChange={(e) => {
-                  setEmailUsername(e.target.value);
-                }}
-                InputProps={{
-                  style: {
-                    fontFamily: "Quicksand",
-                    fontWeight: "bold",
-                    color: "#25396F",
-                  },
-                }}
-                error={
-                  justVerify &&
-                  (emailUsername === "" || emailUsername.length >= 255)
-                }
-                helperText={
-                  justVerify &&
-                  (emailUsername == "" ? "This field cannot be empty." : "")
-                }
-                autoComplete="off"
-              />
-              <TextField
-                id="standard-basic-2"
-                variant="standard"
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                onChange={handlePasswordofLogin}
-                value={password}
-                InputProps={{
-                  style: {
-                    fontFamily: "Quicksand",
-                    fontWeight: "bold",
-                    color: !validPassword ? "#f44336" : "#25396F",
-                  },
-                }}
-                error={
-                  justVerify &&
-                  (!validPassword || password === "" || password.length >= 255)
-                }
-                helperText={
-                  justVerify &&
-                  (password === ""
-                    ? "This field cannot be empty."
-                    : !validPassword
-                    ? "The password must contain at least 8 digits."
-                    : "")
-                }
-                autoComplete="off"
-              />
+              <FormGrid item xs={12} md={6} className="mt-2">
+                <FormLabel htmlFor="username" required>
+                  Username
+                </FormLabel>
+                <TextField
+                  id="standard-basic-1"
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="username"
+                  autoFocus
+                  value={emailUsername}
+                  onChange={(e) => {
+                    setEmailUsername(e.target.value);
+                  }}
+                  InputProps={{
+                    style: {
+                      fontFamily: LPtheme.typography.fontFamily,
+                      fontWeight: "bold",
+                      color: LPtheme.palette.text.primary,
+                    },
+                  }}
+                  error={
+                    justVerify &&
+                    (emailUsername === "" || emailUsername.length >= 255)
+                  }
+                  helperText={
+                    justVerify &&
+                    (emailUsername == "" ? "This field cannot be empty." : "")
+                  }
+                  autoComplete="off"
+                />
+              </FormGrid>
+              <FormGrid item xs={12} md={6} className="mt-2">
+                <FormLabel htmlFor="password" required>
+                  Password
+                </FormLabel>
+                <TextField
+                  id="standard-basic-2"
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="password"
+                  type="password"
+                  onChange={handlePasswordofLogin}
+                  value={password}
+                  InputProps={{
+                    style: {
+                      fontFamily: LPtheme.typography.fontFamily,
+                      fontWeight: "bold",
+                    },
+                  }}
+                  error={
+                    justVerify &&
+                    (!validPassword ||
+                      password === "" ||
+                      password.length >= 255)
+                  }
+                  helperText={
+                    justVerify &&
+                    (password === ""
+                      ? "This field cannot be empty."
+                      : !validPassword
+                      ? "The password must contain at least 8 digits."
+                      : "")
+                  }
+                  autoComplete="off"
+                />
+              </FormGrid>
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
                 style={{
-                  fontFamily: "Quicksand",
+                  fontFamily: LPtheme.typography.fontFamily,
                   fontWeight: "bold",
-                  backgroundColor: "#25396F",
+                  backgroundColor: LPtheme.palette.primary.main,
                 }}
               >
                 {!loading ? "Sign In" : "Signing In...."}
@@ -212,9 +232,9 @@ export default function Login() {
                     }}
                     variant="text"
                     style={{
-                      fontFamily: "Quicksand",
+                      fontFamily: LPtheme.typography.fontFamily,
                       fontWeight: "bold",
-                      color: "#03045e",
+                      color: LPtheme.palette.text.secondary,
                       textDecoration: "underline",
                     }}
                   >

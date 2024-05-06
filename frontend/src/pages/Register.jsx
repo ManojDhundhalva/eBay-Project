@@ -19,8 +19,14 @@ import Alert from "@mui/material/Alert";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { Select, MenuItem } from "@mui/material";
+import FormLabel from "@mui/material/FormLabel";
+import { styled } from "@mui/system";
+import getLPTheme from "../getLPTheme";
 
-const defaultTheme = createTheme();
+const FormGrid = styled(Grid)(() => ({
+  display: "flex",
+  flexDirection: "column",
+}));
 
 export default function Register() {
   const [loading, setloading] = useState(false);
@@ -46,12 +52,15 @@ export default function Register() {
   const [phoneNumber, setPhoneNumber] = useState("");
 
   const navigate = useNavigate();
-  const { validateUser } = useAuth();
+  const { mode, validateUser } = useAuth();
+  const LPtheme = createTheme(getLPTheme(mode));
 
   const handlePhoneNumber = (e) => {
     const input = e.target.value;
     if (/^\d*$/.test(input)) {
-      setPhoneNumber(input);
+      if (input.length <= 10) {
+        setPhoneNumber(input);
+      }
     }
   };
 
@@ -112,7 +121,7 @@ export default function Register() {
 
   return (
     <div className="my-glass-effect">
-      <ThemeProvider theme={defaultTheme}>
+      <ThemeProvider theme={LPtheme}>
         <Container
           component="main"
           maxWidth="sm"
@@ -121,8 +130,8 @@ export default function Register() {
           <CssBaseline />
           <Box
             style={{
-              backgroundColor: "#caf0f8",
-              boxShadow: "0px 4px 8px #caf0f8",
+              backgroundColor: LPtheme.palette.background.paper,
+              boxShadow: LPtheme.shadows[4],
             }}
             sx={{
               marginTop: 12,
@@ -152,222 +161,234 @@ export default function Register() {
               noValidate
               sx={{ mt: 1, width: "100%" }}
             >
-              <TextField
-                id="standard-basic-1"
-                variant="standard"
-                margin="normal"
-                required
-                fullWidth
-                label="Firstname"
-                name="firstname"
-                autoFocus
-                onChange={(e) => {
-                  SetFirstname(e.target.value);
-                }}
-                value={firstname}
-                InputProps={{
-                  style: {
-                    fontFamily: "Quicksand",
-                    fontWeight: "bold",
-                  },
-                }}
-                error={
-                  justVerify && (firstname === "" || firstname.length >= 255)
-                }
-                helperText={
-                  justVerify &&
-                  (firstname === "" ? "This field cannot be empty." : "")
-                }
-                autoComplete="off"
-              />
-              <TextField
-                id="standard-basic-1"
-                variant="standard"
-                margin="normal"
-                required
-                fullWidth
-                label="Lastname"
-                name="lastname"
-                autoFocus
-                onChange={(e) => {
-                  SetLastname(e.target.value);
-                }}
-                value={lastname}
-                InputProps={{
-                  style: {
-                    fontFamily: "Quicksand",
-                    fontWeight: "bold",
-                  },
-                }}
-                error={
-                  justVerify && (lastname === "" || lastname.length >= 255)
-                }
-                helperText={
-                  justVerify &&
-                  (lastname === "" ? "This field cannot be empty." : "")
-                }
-                autoComplete="off"
-              />
-              <TextField
-                id="standard-basic-1"
-                variant="standard"
-                margin="normal"
-                required
-                fullWidth
-                label="Username"
-                name="username"
-                autoFocus
-                onChange={(e) => {
-                  setUsername(e.target.value);
-                }}
-                value={username}
-                InputProps={{
-                  style: {
-                    fontFamily: "Quicksand",
-                    fontWeight: "bold",
-                  },
-                }}
-                error={
-                  justVerify && (username === "" || username.length >= 255)
-                }
-                helperText={
-                  justVerify &&
-                  (username === "" ? "This field cannot be empty." : "")
-                }
-                autoComplete="off"
-              />
-              <TextField
-                id="standard-basic-3"
-                variant="standard"
-                margin="normal"
-                required
-                fullWidth
-                label="Email Address"
-                name="email"
-                autoFocus
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
-                value={email}
-                InputProps={{
-                  style: {
-                    fontFamily: "Quicksand",
-                    fontWeight: "bold",
-                  },
-                }}
-                error={justVerify && (email === "" || email.length >= 255)}
-                helperText={
-                  justVerify &&
-                  (email === "" ? "This field cannot be empty." : "")
-                }
-                autoComplete="off"
-              />
-
-              <TextField
-                id="standard-basic-4"
-                variant="standard"
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                onChange={handlePasswordofLogin}
-                value={password}
-                InputProps={{
-                  style: {
-                    fontFamily: "Quicksand",
-                    fontWeight: "bold",
-                    color: !validPassword ? "#f44336" : "#25396F",
-                  },
-                }}
-                error={
-                  justVerify &&
-                  (!validPassword || password === "" || password.length >= 255)
-                }
-                helperText={
-                  justVerify &&
-                  (password === ""
-                    ? "This field cannot be empty."
-                    : !validPassword
-                    ? "The password must contain at least 8 digits."
-                    : "")
-                }
-                autoComplete="off"
-              />
-              <Grid
-                item
-                xs={10}
-                style={{ marginTop: "0.4em", fontFamily: "Quicksand" }}
-                sx={{
-                  fontWeight: "bold",
-                }}
-                id="searchBoxContainer"
-              >
-                Role *
-              </Grid>
-              <Select
-                value={role}
-                onChange={(e) => {
-                  setRole(e.target.value);
-                }}
-                style={{ fontWeight: "bold", fontFamily: "Quicksand" }}
-                displayEmpty
-                inputProps={{ "aria-label": "Without label" }}
-                fullWidth
-                error={justVerify && role === ""}
-              >
-                <MenuItem
-                  style={{ fontFamily: "Quicksand", fontWeight: "bold" }}
-                  value="user"
+              <FormGrid item xs={12} md={6} className="mt-2">
+                <FormLabel htmlFor="Firstname" required>
+                  Firstname
+                </FormLabel>
+                <TextField
+                  className="mt-2"
+                  id="standard-basic-1"
+                  required
+                  fullWidth
+                  name="firstname"
+                  autoFocus
+                  onChange={(e) => {
+                    SetFirstname(e.target.value);
+                  }}
+                  value={firstname}
+                  InputProps={{
+                    style: {
+                      fontFamily: "Quicksand",
+                      fontWeight: "bold",
+                    },
+                  }}
+                  error={
+                    justVerify && (firstname === "" || firstname.length >= 255)
+                  }
+                  helperText={
+                    justVerify &&
+                    (firstname === "" ? "This field cannot be empty." : "")
+                  }
+                  autoComplete="off"
+                />
+              </FormGrid>
+              <FormGrid item xs={12} md={6} className="mt-3">
+                <FormLabel htmlFor="lastname" required>
+                  Lastname
+                </FormLabel>
+                <TextField
+                  className="mt-1"
+                  id="standard-basic-1"
+                  required
+                  fullWidth
+                  name="lastname"
+                  autoFocus
+                  onChange={(e) => {
+                    SetLastname(e.target.value);
+                  }}
+                  value={lastname}
+                  InputProps={{
+                    style: {
+                      fontFamily: "Quicksand",
+                      fontWeight: "bold",
+                    },
+                  }}
+                  error={
+                    justVerify && (lastname === "" || lastname.length >= 255)
+                  }
+                  helperText={
+                    justVerify &&
+                    (lastname === "" ? "This field cannot be empty." : "")
+                  }
+                  autoComplete="off"
+                />
+              </FormGrid>
+              <FormGrid item xs={12} md={6} className="mt-3">
+                <FormLabel htmlFor="username" required>
+                  Username
+                </FormLabel>
+                <TextField
+                  className="mt-1"
+                  id="standard-basic-1"
+                  required
+                  fullWidth
+                  name="username"
+                  autoFocus
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                  }}
+                  value={username}
+                  InputProps={{
+                    style: {
+                      fontFamily: "Quicksand",
+                      fontWeight: "bold",
+                    },
+                  }}
+                  error={
+                    justVerify && (username === "" || username.length >= 255)
+                  }
+                  helperText={
+                    justVerify &&
+                    (username === "" ? "This field cannot be empty." : "")
+                  }
+                  autoComplete="off"
+                />
+              </FormGrid>
+              <FormGrid item xs={12} md={6} className="mt-3">
+                <FormLabel htmlFor="email" required>
+                  Email Address
+                </FormLabel>
+                <TextField
+                  className="mt-1"
+                  id="standard-basic-3"
+                  required
+                  fullWidth
+                  name="email"
+                  autoFocus
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
+                  value={email}
+                  InputProps={{
+                    style: {
+                      fontFamily: "Quicksand",
+                      fontWeight: "bold",
+                    },
+                  }}
+                  error={justVerify && (email === "" || email.length >= 255)}
+                  helperText={
+                    justVerify &&
+                    (email === "" ? "This field cannot be empty." : "")
+                  }
+                  autoComplete="off"
+                />
+              </FormGrid>
+              <FormGrid item xs={12} md={6} className="mt-3">
+                <FormLabel htmlFor="password" required>
+                  Password
+                </FormLabel>
+                <TextField
+                  className="mt-1"
+                  id="standard-basic-4"
+                  required
+                  fullWidth
+                  name="password"
+                  type="password"
+                  onChange={handlePasswordofLogin}
+                  value={password}
+                  InputProps={{
+                    style: {
+                      fontFamily: "Quicksand",
+                      fontWeight: "bold",
+                    },
+                  }}
+                  error={
+                    justVerify &&
+                    (!validPassword ||
+                      password === "" ||
+                      password.length >= 255)
+                  }
+                  helperText={
+                    justVerify &&
+                    (password === ""
+                      ? "This field cannot be empty."
+                      : !validPassword
+                      ? "The password must contain at least 8 digits."
+                      : "")
+                  }
+                  autoComplete="off"
+                />
+              </FormGrid>
+              <FormGrid item xs={12} md={6} className="mt-3">
+                <FormLabel htmlFor="role" required>
+                  Role
+                </FormLabel>
+                <Select
+                  className="mt-1"
+                  value={role}
+                  onChange={(e) => {
+                    setRole(e.target.value);
+                  }}
+                  style={{ fontWeight: "bold", fontFamily: "Quicksand" }}
+                  displayEmpty
+                  inputProps={{ "aria-label": "Without label" }}
+                  fullWidth
+                  error={justVerify && role === ""}
                 >
-                  User
-                </MenuItem>
-                <MenuItem
-                  style={{ fontFamily: "Quicksand", fontWeight: "bold" }}
-                  value="manager"
-                >
-                  Manager
-                </MenuItem>
-                <MenuItem
-                  style={{ fontFamily: "Quicksand", fontWeight: "bold" }}
-                  value="shipper"
-                >
-                  Shipper
-                </MenuItem>
-              </Select>
-              <TextField
-                id="standard-basic-2"
-                variant="standard"
-                margin="normal"
-                required
-                fullWidth
-                label="Phone Number"
-                name="phoneNumber"
-                autoFocus
-                onChange={handlePhoneNumber}
-                value={phoneNumber}
-                InputProps={{
-                  style: {
-                    fontFamily: "Quicksand",
-                    fontWeight: "bold",
-                  },
-                }}
-                error={
-                  justVerify &&
-                  (phoneNumber === "" || phoneNumber.length !== 10)
-                }
-                helperText={
-                  justVerify &&
-                  (phoneNumber === ""
-                    ? "This field cannot be empty."
-                    : phoneNumber.length !== 10
-                    ? "Phone number must be exactly 10 digits."
-                    : "")
-                }
-                autoComplete="off"
-              />
-
+                  <MenuItem
+                    style={{ fontFamily: "Quicksand", fontWeight: "bold" }}
+                    value="user"
+                  >
+                    User
+                  </MenuItem>
+                  <MenuItem
+                    style={{ fontFamily: "Quicksand", fontWeight: "bold" }}
+                    value="manager"
+                  >
+                    Manager
+                  </MenuItem>
+                  <MenuItem
+                    style={{ fontFamily: "Quicksand", fontWeight: "bold" }}
+                    value="shipper"
+                  >
+                    Shipper
+                  </MenuItem>
+                </Select>
+              </FormGrid>
+              <FormGrid item xs={12} md={6} className="mt-3">
+                <FormLabel htmlFor="phoneNumber" required>
+                  Phone Number
+                </FormLabel>
+                <TextField
+                  className="mt-1"
+                  id="standard-basic-2"
+                  required
+                  fullWidth
+                  name="phoneNumber"
+                  autoFocus
+                  onChange={handlePhoneNumber}
+                  value={phoneNumber}
+                  InputProps={{
+                    style: {
+                      fontFamily: "Quicksand",
+                      fontWeight: "bold",
+                    },
+                  }}
+                  error={
+                    justVerify &&
+                    (phoneNumber === "" || phoneNumber.length !== 10)
+                  }
+                  helperText={
+                    justVerify &&
+                    (phoneNumber === ""
+                      ? "This field cannot be empty."
+                      : phoneNumber.length !== 10
+                      ? "Phone number must be exactly 10 digits."
+                      : "")
+                  }
+                  autoComplete="off"
+                />
+              </FormGrid>
               <Button
                 type="submit"
                 fullWidth

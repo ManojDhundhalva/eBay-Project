@@ -4,12 +4,12 @@ import { useNavigate } from "react-router-dom";
 const authContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [theme, setTheme] = useState("light");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
+  const [mode, setMode] = React.useState("light");
 
-  const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+  const toggleColorMode = () => {
+    setMode((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
   const LogOut = () => {
@@ -40,8 +40,9 @@ export const AuthProvider = ({ children }) => {
   return (
     <authContext.Provider
       value={{
-        theme,
-        toggleTheme,
+        mode,
+        setMode,
+        toggleColorMode,
         isLoggedIn,
         setIsLoggedIn,
         LogOut,
