@@ -117,6 +117,26 @@ function AppAppBar({ mode, toggleColorMode }) {
               />
               <Box sx={{ display: { xs: "none", md: "flex" } }}>
                 <MenuItem
+                  onClick={() => {
+                    navigate("/");
+                  }}
+                  sx={{ py: "6px", px: "12px" }}
+                >
+                  <Typography variant="body2" color="text.primary">
+                    Home
+                  </Typography>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    navigate("/list-product");
+                  }}
+                  sx={{ py: "6px", px: "12px" }}
+                >
+                  <Typography variant="body2" color="text.primary">
+                    List Product
+                  </Typography>
+                </MenuItem>
+                <MenuItem
                   onClick={() => scrollToSection("features")}
                   sx={{ py: "6px", px: "12px" }}
                 >

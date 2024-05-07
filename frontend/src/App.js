@@ -15,6 +15,8 @@ import { useAuth } from "./context/auth";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import getLPTheme from "./getLPTheme";
 import CssBaseline from "@mui/material/CssBaseline";
+import ListProduct from "./pages/ListProduct";
+import ProductDetails from "./pages/ProductDetails";
 
 function App() {
   const { mode, setMode, toggleColorMode } = useAuth();
@@ -41,6 +43,8 @@ function App() {
           <Route exact path="/aboutus" element={<AboutUS />} />
           <Route exact path="/profile" element={<Profile />} />
           <Route exact path="/account" element={<Account />} />
+          <Route exact path="/list-product" element={<ListProduct />} />
+          <Route exact path="/product-details" element={<ProductDetails />} />
           {/* <Route exact path="/cart" element={<Cart />} /> */}
         </Routes>
       </ThemeProvider>

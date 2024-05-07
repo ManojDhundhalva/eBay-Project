@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const controller = require("../controllers/bankDetails");
 const {
-    verifyTokenAndAuthorizationUser,
+  verifyTokenAndAuthorizationUser,
 } = require("../middlewares/verifyUser");
 
 const router = Router();

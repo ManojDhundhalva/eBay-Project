@@ -34,6 +34,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import InputAdornment from "@mui/material/InputAdornment";
 import axios from "axios";
+import { toast } from "react-hot-toast";
 
 const FormGrid = styled(Grid)(() => ({
   display: "flex",
@@ -106,12 +107,24 @@ export default function AccountDetails() {
   const [pincode, setPincode] = React.useState("");
 
   const [editOn, setEditOn] = React.useState(false);
+  const [isAccount, setIsAccount] = React.useState(false);
   const { LogOut } = useAuth();
 
-  function isValidPin(pin) {
-    const pinRegex = /^\d{6}$/;
-    return pinRegex.test(pin);
-  }
+  const handleAccountNumber = (e) => {
+    const input = e.target.value;
+    if (/^\d*$/.test(input)) {
+      setAccountNumber(input);
+    }
+  };
+
+  const handlePincode = (e) => {
+    const input = e.target.value;
+    if (/^\d*$/.test(input)) {
+      if (input.length <= 6) {
+        setPincode(input);
+      }
+    }
+  };
 
   // Event handler for TextField change
   const handleInputChange = (event) => {
@@ -157,7 +170,66 @@ export default function AccountDetails() {
     setEditOn(!editOn);
   };
 
-  const updateAccount = () => {};
+  const updateAccount = async () => {
+    if (
+      accountNumber === "" ||
+      accountHolderFirstName === "" ||
+      accountHolderLastName === "" ||
+      accountIFSCcode === "" ||
+      accountBranch === "" ||
+      accountBranchAddress === "" ||
+      city === "" ||
+      state === "" ||
+      country === "" ||
+      pincode === "" ||
+      accountNumber.length >= 255 ||
+      accountHolderFirstName.length >= 255 ||
+      accountHolderLastName.length >= 255 ||
+      accountIFSCcode.length >= 16 ||
+      accountBranch.length >= 255 ||
+      accountBranchAddress.length >= 65536
+    ) {
+      return;
+    }
+
+    const headers = {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${window.localStorage.getItem("token")}`,
+    };
+
+    try {
+      await toast.promise(
+        axios.post(
+          `http://localhost:8000/api/v1/bank-details?username=${window.localStorage.getItem(
+            "username"
+          )}&role=${window.localStorage.getItem("role")}`,
+          {
+            account_number: accountNumber,
+            account_holder_first_name: accountHolderFirstName,
+            account_holder_last_name: accountHolderLastName,
+            account_IFSC_code: accountIFSCcode,
+            account_branch: accountBranch,
+            account_branch_address: accountBranchAddress,
+            city,
+            state,
+            country,
+            pincode,
+          },
+          { headers }
+        ),
+        {
+          loading: "Updating Account...", // Message shown during loading
+          success: <b>Account updated successfully!</b>, // Success message
+          error: <b>Failed to update account.</b>, // Error message
+        }
+      );
+      setIsAccount(true);
+    } catch (err) {
+      // LogOut();
+      console.error("Error updating profile:", err);
+    }
+  };
+
   const getAccount = async () => {
     const headers = {
       "Content-Type": "application/json",
@@ -172,17 +244,21 @@ export default function AccountDetails() {
           headers,
         }
       );
-      setAccountBalance(results.data.account_balance);
-      setAccountNumber(results.data.account_number);
-      setAccountHolderFirstName(results.data.account_holder_first_name);
-      setAccountHolderLastName(results.data.account_holder_last_name);
-      setAccountIFSCcode(results.data.account_IFSC_code);
-      setAccountBranch(results.data.account_branch);
-      setAccountBranchAddress(results.data.account_branch_address);
-      setCity(results.data.city);
-      setState(results.data.state);
-      setPincode(results.data.pincode);
-      setCountry(results.data.country);
+      if (results.status === 201) {
+        setAccountBalance("00.00");
+      } else {
+        setAccountBalance(results.data.account_balance);
+        setAccountNumber(results.data.account_number);
+        setAccountHolderFirstName(results.data.account_holder_first_name);
+        setAccountHolderLastName(results.data.account_holder_last_name);
+        setAccountIFSCcode(results.data.account_ifsc_code);
+        setAccountBranch(results.data.account_branch);
+        setAccountBranchAddress(results.data.account_branch_address);
+        setCity(results.data.seller_city);
+        setState(results.data.seller_state);
+        setPincode(results.data.seller_pincode);
+        setCountry(results.data.seller_country);
+      }
     } catch (err) {
       // LogOut();
       console.error("Error fetching profile:", err);
@@ -232,6 +308,11 @@ export default function AccountDetails() {
       >
         <React.Fragment>
           <Grid container spacing={3}>
+            <FormGrid item xs={12}>
+              <FormLabel htmlFor="bank" style={{ fontWeight: "bold" }}>
+                Bank Details
+              </FormLabel>
+            </FormGrid>
             <FormGrid item xs={12} md={6}>
               <FormLabel htmlFor="first-name" required>
                 Account Holder First Name
@@ -240,14 +321,23 @@ export default function AccountDetails() {
                 value={accountHolderFirstName}
                 id="first-name"
                 name="first-name"
-                type="name"
+                type="text"
                 placeholder="John"
-                autoComplete="first name"
+                autoComplete="given-name"
                 required
                 InputProps={{
                   readOnly: !editOn,
                 }}
                 onChange={handleInputChange}
+                error={
+                  accountHolderFirstName === "" ||
+                  accountHolderFirstName.length >= 255
+                }
+                helperText={
+                  accountHolderFirstName === ""
+                    ? "This field cannot be empty"
+                    : ""
+                }
               />
             </FormGrid>
             <FormGrid item xs={12} md={6}>
@@ -258,7 +348,7 @@ export default function AccountDetails() {
                 value={accountHolderLastName}
                 id="last-name"
                 name="last-name"
-                type="last-name"
+                type="text"
                 placeholder="Snow"
                 autoComplete="last name"
                 required
@@ -266,6 +356,15 @@ export default function AccountDetails() {
                   readOnly: !editOn,
                 }}
                 onChange={handleInputChange}
+                error={
+                  accountHolderLastName === "" ||
+                  accountHolderLastName.length >= 255
+                }
+                helperText={
+                  accountHolderLastName === ""
+                    ? "This field cannot be empty"
+                    : ""
+                }
               />
             </FormGrid>
             <FormGrid item xs={12} md={6}>
@@ -283,7 +382,13 @@ export default function AccountDetails() {
                 InputProps={{
                   readOnly: !editOn,
                 }}
-                onChange={handleInputChange}
+                onChange={(e) => {
+                  handleAccountNumber(e);
+                }}
+                error={accountNumber === "" || accountNumber.length >= 255}
+                helperText={
+                  accountNumber === "" ? "This field cannot be empty" : ""
+                }
               />
             </FormGrid>
             <FormGrid item xs={12} md={6}>
@@ -302,6 +407,11 @@ export default function AccountDetails() {
                   readOnly: !editOn,
                 }}
                 onChange={handleInputChange}
+                error={accountIFSCcode === ""}
+                //  || accountIFSCcode.length >= 16}
+                helperText={
+                  accountIFSCcode === "" ? "This field cannot be empty" : ""
+                }
               />
             </FormGrid>
             <FormGrid item xs={12} md={6}>
@@ -317,9 +427,13 @@ export default function AccountDetails() {
                 autoComplete="branch name"
                 required
                 InputProps={{
-                  readOnly: !editOn,
+                  readOnly: !editOn && isAccount,
                 }}
                 onChange={handleInputChange}
+                error={accountBranch === "" || accountBranch.length >= 255}
+                helperText={
+                  accountBranch === "" ? "This field cannot be empty" : ""
+                }
               />
             </FormGrid>
             <FormGrid item xs={12}>
@@ -338,9 +452,22 @@ export default function AccountDetails() {
                   readOnly: !editOn,
                 }}
                 onChange={handleInputChange}
+                error={
+                  accountBranchAddress === ""
+                  // ||accountBranchAddress.length >= 65536
+                }
+                helperText={
+                  accountBranchAddress === ""
+                    ? "This field cannot be empty"
+                    : ""
+                }
               />
             </FormGrid>
-
+            <FormGrid item xs={12}>
+              <FormLabel htmlFor="seller" style={{ fontWeight: "bold" }}>
+                Seller Details
+              </FormLabel>
+            </FormGrid>
             <FormGrid item xs={6}>
               <FormLabel htmlFor="city" required>
                 City
@@ -357,6 +484,8 @@ export default function AccountDetails() {
                   readOnly: !editOn,
                 }}
                 onChange={handleInputChange}
+                error={city === ""}
+                helperText={city === "" ? "Please, Select City" : ""}
               />
             </FormGrid>
             <FormGrid item xs={6}>
@@ -367,7 +496,7 @@ export default function AccountDetails() {
                 value={state}
                 id="state"
                 name="state"
-                type="state"
+                type="text"
                 placeholder="NY"
                 autoComplete="State"
                 required
@@ -375,6 +504,8 @@ export default function AccountDetails() {
                   readOnly: !editOn,
                 }}
                 onChange={handleInputChange}
+                error={state === ""}
+                helperText={state === "" ? "Please, Select State" : ""}
               />
             </FormGrid>
             <FormGrid item xs={6}>
@@ -392,7 +523,9 @@ export default function AccountDetails() {
                 InputProps={{
                   readOnly: !editOn,
                 }}
-                onChange={handleInputChange}
+                onChange={handlePincode}
+                error={pincode === ""}
+                helperText={pincode === "" ? "This field cannot be empty" : ""}
               />
             </FormGrid>
             <FormGrid item xs={6}>
@@ -411,6 +544,8 @@ export default function AccountDetails() {
                   readOnly: !editOn,
                 }}
                 onChange={handleInputChange}
+                error={country === ""}
+                helperText={country === "" ? "Please, Select country" : ""}
               />
             </FormGrid>
             <FormGrid item xs={6}>
