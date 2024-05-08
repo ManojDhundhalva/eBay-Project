@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { alpha } from "@mui/material/styles";
@@ -8,8 +8,13 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Rating from "@mui/material/Rating";
 import { useNavigate } from "react-router-dom";
 import { useProduct } from "../context/product";
+import axios from "axios";
+import { useAuth } from "../context/auth";
 
 function ProductCard({ product }) {
+  const { wishList, addToWishList, deleteFromWishList } = useProduct();
+  const [isAddedToWishList, setIsAddedToWishList] = useState(false);
+
   const {
     product_id,
     product_title,
@@ -18,20 +23,43 @@ function ProductCard({ product }) {
     product_images,
   } = product;
 
-  const [isFavorite, setIsFavorite] = useState(false);
   const navigate = useNavigate();
-  const { setProductId } = useProduct();
+  const { LogOut } = useAuth();
+
+  const checkIsAddedToWishList = () => {
+    for (let i = 0; i < wishList.length; i++) {
+      if (String(wishList[i].product_id) === String(product_id)) {
+        setIsAddedToWishList(true);
+        break;
+      }
+    }
+  };
 
   const handleFavoriteToggle = () => {
-    setIsFavorite(!isFavorite);
+    if (isAddedToWishList) {
+      deleteFromWishList(product_id);
+      setIsAddedToWishList(false); // Update state accordingly
+    } else {
+      addToWishList(product_id);
+      setIsAddedToWishList(true); // Update state accordingly
+    }
+  };
+
+  const addWatchCount = async () => {
+    // Your existing code for adding watch count
   };
 
   // Convert product_avg_rating to a number
   const avgRating = parseFloat(product_avg_rating);
 
+  useEffect(() => {
+    checkIsAddedToWishList();
+  }, []);
+
   return (
     <Box
       onClick={() => {
+        addWatchCount();
         window.localStorage.setItem("product-id", product_id);
         navigate("/product-details");
       }}
@@ -78,13 +106,19 @@ function ProductCard({ product }) {
             top: 0,
             right: 0,
             zIndex: 1, // Ensure it's above the image
-            color: isFavorite ? "red" : "inherit", // Change color if favorite
+            color: isAddedToWishList ? "red" : "black", // Use correct state variable
             backgroundColor: "white", // Make background transparent
             borderRadius: "50%", // Make it circular
+            "&:hover": {
+              color: isAddedToWishList ? "red" : "white", // Change color to red on hover
+            },
           }}
-          onClick={handleFavoriteToggle}
+          onClick={(event) => {
+            event.stopPropagation();
+            handleFavoriteToggle();
+          }}
         >
-          {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+          {isAddedToWishList ? <FavoriteIcon /> : <FavoriteBorderIcon />}
         </IconButton>
         <Box
           p={2}

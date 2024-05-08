@@ -50,13 +50,17 @@ LIMIT 10;
 const getProductsDetails = `
 SELECT 
     c.*, 
+	s.seller_city, 
+    s.seller_state, 
+    s.seller_country, 
+    s.seller_pincode, 
     ARRAY_AGG(json_build_object('key', pd.key, 'value', pd.value)) AS product_description 
 FROM 
     (SELECT 
-        p.*, 
+        p.*,
         ARRAY_AGG(pi.product_image) AS product_images 
     FROM 
-        product AS p 
+        product AS p
     JOIN 
         product_image AS pi ON p.product_id = pi.product_id 
     WHERE 
@@ -65,6 +69,8 @@ FROM
         p.product_id) AS c
 JOIN 
     product_description AS pd ON c.product_id = pd.product_id 
+JOIN 
+    seller AS s ON c.product_seller_id = s.seller_user_id
 GROUP BY 
 	c.*,
 	c.product_seller_id,
@@ -76,7 +82,30 @@ GROUP BY
 	c.product_seller_mobile_number,
 	c.product_timestamp,
 	c.product_images,
-    c.product_id;
+    c.product_id,
+	s.seller_city, 
+    s.seller_state, 
+    s.seller_country, 
+	s.seller_pincode;
+`;
+
+const checkIfAlredyWatched = `
+SELECT * 
+FROM 
+    watches 
+WHERE 
+    product_id = $1 AND user_id = $2;
+`;
+
+const watchProduct = `
+INSERT INTO watches (product_id, user_id)
+VALUES ($1, $2);
+`;
+
+const incrementWatchCount = `
+UPDATE product 
+SET product_watch_count = product_watch_count + 1 
+WHERE product_id = $1;
 `;
 
 module.exports = {
@@ -85,4 +114,7 @@ module.exports = {
   addDescription,
   getAllProducts,
   getProductsDetails,
+  checkIfAlredyWatched,
+  watchProduct,
+  incrementWatchCount,
 };

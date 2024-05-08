@@ -17,6 +17,8 @@ import getLPTheme from "./getLPTheme";
 import CssBaseline from "@mui/material/CssBaseline";
 import ListProduct from "./pages/ListProduct";
 import ProductDetails from "./pages/ProductDetails";
+import Cart from "./pages/Cart";
+import WishList from "./pages/WishList";
 
 function App() {
   const { mode, setMode, toggleColorMode } = useAuth();
@@ -45,7 +47,8 @@ function App() {
           <Route exact path="/account" element={<Account />} />
           <Route exact path="/list-product" element={<ListProduct />} />
           <Route exact path="/product-details" element={<ProductDetails />} />
-          {/* <Route exact path="/cart" element={<Cart />} /> */}
+          <Route exact path="/cart" element={<Cart />} />
+          <Route exact path="/wish-list" element={<WishList />} />
         </Routes>
       </ThemeProvider>
       {/* {!isHiddenPath && <Footer />} */}

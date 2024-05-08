@@ -65,8 +65,71 @@ const getProductsDetails = async (req, resp) => {
   }
 };
 
+const rateTheProduct = async (req, resp) => {
+  const { product_id, product_review_rating } = req.body;
+  try {
+    const results = await pool.query(queries.ifProductExist, [product_id]);
+    if (results.rows.length) {
+      const results1 = await pool.query(queries.ifProductRatingOfUserExist, [
+        product_id,
+        req.user.id,
+      ]);
+
+      if (results1.rows.length) {
+        const results2 = await pool.query(queries.updateRating, [
+          product_id,
+          req.user.id,
+          product_review_rating,
+        ]);
+      } else {
+        const results2 = await pool.query(queries.createRating, [
+          product_id,
+          req.user.id,
+          product_review_rating,
+        ]);
+      }
+      return resp.status(200).json({ message: "Rated successfully!" });
+    } else {
+      return resp.status(404).json({ message: "Product not found!" });
+    }
+  } catch (err) {
+    console.log("Error rating product: ", err);
+    return resp.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const watchProduct = async (req, resp) => {
+  const { product_id } = req.body;
+  try {
+    const results = await pool.query(queries.checkIfAlredyWatched, [
+      product_id,
+      req.user.id,
+    ]);
+
+    if (results.rows.length === 0) {
+      const results1 = await pool.query(queries.watchProduct, [
+        product_id,
+        req.user.id,
+      ]);
+
+      const results2 = await pool.query(queries.incrementWatchCount, [
+        product_id,
+      ]);
+
+      resp.status(200).json({ message: "Product watched succussefully!" });
+    } else {
+      resp.status(200).json({ message: "Already, product watched" });
+    }
+  } catch (err) {
+    console.log("Error -> ", err);
+    resp.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   listProduct,
   getAllProducts,
   getProductsDetails,
+  rateTheProduct,
+  watchProduct,
 };
