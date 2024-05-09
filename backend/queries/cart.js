@@ -4,10 +4,13 @@ SELECT
     p.product_title, 
     p.product_price, 
     p.product_available_quantity,
+	s.seller_city,
     ARRAY_AGG(pi.product_image) AS product_images 
 FROM 
     product AS p 
-LEFT JOIN 
+JOIN 
+    seller AS s ON p.product_seller_id = s.seller_user_id 
+JOIN 
     product_image AS pi ON p.product_id = pi.product_id 
 JOIN 
     cart AS c ON c.product_id = p.product_id 
@@ -17,7 +20,8 @@ GROUP BY
     p.product_id, 
     p.product_title, 
     p.product_price,
-    p.product_available_quantity;
+    p.product_available_quantity,
+	s.seller_city;
 `;
 
 const addToCartByUserId = `

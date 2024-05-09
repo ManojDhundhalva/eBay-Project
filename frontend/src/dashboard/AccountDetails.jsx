@@ -35,6 +35,12 @@ import SaveIcon from "@mui/icons-material/Save";
 import InputAdornment from "@mui/material/InputAdornment";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { useState, useEffect } from "react";
+import { Country, State, City } from "country-state-city";
+import MenuItem from "@mui/material/MenuItem";
+import FormHelperText from "@mui/material/FormHelperText";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 
 const FormGrid = styled(Grid)(() => ({
   display: "flex",
@@ -126,6 +132,26 @@ export default function AccountDetails() {
     }
   };
 
+  const LPtheme = createTheme(getLPTheme());
+  const [countryList, setCountryList] = useState([]);
+  const [stateList, setStateList] = useState([]);
+  const [cityList, setCityList] = useState([]);
+
+  useEffect(() => {
+    setCountryList(Country.getAllCountries());
+  }, []);
+
+  useEffect(() => {
+    setState("");
+    setCity("");
+    setStateList(State.getStatesOfCountry(country.isoCode));
+  }, [country]);
+
+  useEffect(() => {
+    setCity("");
+    setCityList(City.getCitiesOfState(state.countryCode, state.isoCode));
+  }, [state]);
+
   // Event handler for TextField change
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -149,17 +175,8 @@ export default function AccountDetails() {
       case "address":
         setAccountBranchAddress(value);
         break;
-      case "city":
-        setCity(value);
-        break;
-      case "state":
-        setState(value);
-        break;
       case "zip":
         setPincode(value);
-        break;
-      case "country":
-        setCountry(value);
         break;
       default:
         break;
@@ -211,8 +228,8 @@ export default function AccountDetails() {
             account_branch: accountBranch,
             account_branch_address: accountBranchAddress,
             city,
-            state,
-            country,
+            state: state.name,
+            country: country.name,
             pincode,
           },
           { headers }
@@ -244,6 +261,7 @@ export default function AccountDetails() {
           headers,
         }
       );
+      console.log(results);
       if (results.status === 201) {
         setAccountBalance("00.00");
       } else {
@@ -254,13 +272,13 @@ export default function AccountDetails() {
         setAccountIFSCcode(results.data.account_ifsc_code);
         setAccountBranch(results.data.account_branch);
         setAccountBranchAddress(results.data.account_branch_address);
-        setCity(results.data.seller_city);
-        setState(results.data.seller_state);
         setPincode(results.data.seller_pincode);
         setCountry(results.data.seller_country);
+        setState(results.data.seller_state);
+        setCity(results.data.seller_city);
       }
     } catch (err) {
-      // LogOut();
+      LogOut();
       console.error("Error fetching profile:", err);
     }
   };
@@ -271,289 +289,311 @@ export default function AccountDetails() {
 
   return (
     <>
-      <CssBaseline />
-      <h1>{accountBalance}Rs</h1>
-      {editOn ? (
-        <Button
-          variant="contained"
-          onClick={() => {
-            updateAccount();
-            handleEdit();
+      <ThemeProvider theme={LPtheme}>
+        <CssBaseline />
+        <h1>{accountBalance}Rs</h1>
+        {editOn ? (
+          <Button
+            variant="contained"
+            onClick={() => {
+              updateAccount();
+              handleEdit();
+            }}
+          >
+            Save <SaveIcon />
+          </Button>
+        ) : (
+          <Button variant="contained" onClick={handleEdit}>
+            Edit Bank Details <EditIcon />
+          </Button>
+        )}
+        <hr></hr>
+        <Grid
+          item
+          sm={12}
+          md={7}
+          lg={8}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            maxWidth: "100%",
+            width: "100%",
+            backgroundColor: { xs: "transparent", sm: "background.default" },
+            alignItems: "start",
+            pt: { xs: 2, sm: 4 },
+            px: { xs: 2, sm: 10 },
+            gap: { xs: 4, md: 8 },
           }}
         >
-          Save <SaveIcon />
-        </Button>
-      ) : (
-        <Button variant="contained" onClick={handleEdit}>
-          Edit Bank Details <EditIcon />
-        </Button>
-      )}
-      <hr></hr>
-      <Grid
-        item
-        sm={12}
-        md={7}
-        lg={8}
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          maxWidth: "100%",
-          width: "100%",
-          backgroundColor: { xs: "transparent", sm: "background.default" },
-          alignItems: "start",
-          pt: { xs: 2, sm: 4 },
-          px: { xs: 2, sm: 10 },
-          gap: { xs: 4, md: 8 },
-        }}
-      >
-        <React.Fragment>
-          <Grid container spacing={3}>
-            <FormGrid item xs={12}>
-              <FormLabel htmlFor="bank" style={{ fontWeight: "bold" }}>
-                Bank Details
-              </FormLabel>
-            </FormGrid>
-            <FormGrid item xs={12} md={6}>
-              <FormLabel htmlFor="first-name" required>
-                Account Holder First Name
-              </FormLabel>
-              <TextField
-                value={accountHolderFirstName}
-                id="first-name"
-                name="first-name"
-                type="text"
-                placeholder="John"
-                autoComplete="given-name"
-                required
-                InputProps={{
-                  readOnly: !editOn,
-                }}
-                onChange={handleInputChange}
-                error={
-                  accountHolderFirstName === "" ||
-                  accountHolderFirstName.length >= 255
-                }
-                helperText={
-                  accountHolderFirstName === ""
-                    ? "This field cannot be empty"
-                    : ""
-                }
-              />
-            </FormGrid>
-            <FormGrid item xs={12} md={6}>
-              <FormLabel htmlFor="last-name" required>
-                Account Holder Last name
-              </FormLabel>
-              <TextField
-                value={accountHolderLastName}
-                id="last-name"
-                name="last-name"
-                type="text"
-                placeholder="Snow"
-                autoComplete="last name"
-                required
-                InputProps={{
-                  readOnly: !editOn,
-                }}
-                onChange={handleInputChange}
-                error={
-                  accountHolderLastName === "" ||
-                  accountHolderLastName.length >= 255
-                }
-                helperText={
-                  accountHolderLastName === ""
-                    ? "This field cannot be empty"
-                    : ""
-                }
-              />
-            </FormGrid>
-            <FormGrid item xs={12} md={6}>
-              <FormLabel htmlFor="account-number" required>
-                Account Number
-              </FormLabel>
-              <TextField
-                value={accountNumber}
-                id="account-number"
-                name="account-number"
-                type="account-number"
-                placeholder="83413112414"
-                autoComplete="account-number"
-                required
-                InputProps={{
-                  readOnly: !editOn,
-                }}
-                onChange={(e) => {
-                  handleAccountNumber(e);
-                }}
-                error={accountNumber === "" || accountNumber.length >= 255}
-                helperText={
-                  accountNumber === "" ? "This field cannot be empty" : ""
-                }
-              />
-            </FormGrid>
-            <FormGrid item xs={12} md={6}>
-              <FormLabel htmlFor="IFSC-code" required>
-                IFSC Code
-              </FormLabel>
-              <TextField
-                value={accountIFSCcode}
-                id="IFSC-code"
-                name="IFSC-code"
-                type="IFSC-code"
-                placeholder="ISCRH343"
-                autoComplete="IFSC-code"
-                required
-                InputProps={{
-                  readOnly: !editOn,
-                }}
-                onChange={handleInputChange}
-                error={accountIFSCcode === ""}
-                //  || accountIFSCcode.length >= 16}
-                helperText={
-                  accountIFSCcode === "" ? "This field cannot be empty" : ""
-                }
-              />
-            </FormGrid>
-            <FormGrid item xs={12} md={6}>
-              <FormLabel htmlFor="branch-name" required>
-                Branch Name
-              </FormLabel>
-              <TextField
-                value={accountBranch}
-                id="branch-name"
-                name="branch-name"
-                type="branch-name"
-                placeholder="Bharuch"
-                autoComplete="branch name"
-                required
-                InputProps={{
-                  readOnly: !editOn && isAccount,
-                }}
-                onChange={handleInputChange}
-                error={accountBranch === "" || accountBranch.length >= 255}
-                helperText={
-                  accountBranch === "" ? "This field cannot be empty" : ""
-                }
-              />
-            </FormGrid>
-            <FormGrid item xs={12}>
-              <FormLabel htmlFor="address" required>
-                Branch Address
-              </FormLabel>
-              <TextField
-                value={accountBranchAddress}
-                id="address"
-                name="address"
-                type="address"
-                placeholder="Street name and number"
-                autoComplete="shipping address-line"
-                required
-                InputProps={{
-                  readOnly: !editOn,
-                }}
-                onChange={handleInputChange}
-                error={
-                  accountBranchAddress === ""
-                  // ||accountBranchAddress.length >= 65536
-                }
-                helperText={
-                  accountBranchAddress === ""
-                    ? "This field cannot be empty"
-                    : ""
-                }
-              />
-            </FormGrid>
-            <FormGrid item xs={12}>
-              <FormLabel htmlFor="seller" style={{ fontWeight: "bold" }}>
-                Seller Details
-              </FormLabel>
-            </FormGrid>
-            <FormGrid item xs={6}>
-              <FormLabel htmlFor="city" required>
-                City
-              </FormLabel>
-              <TextField
-                value={city}
-                id="city"
-                name="city"
-                type="city"
-                placeholder="New York"
-                autoComplete="City"
-                required
-                InputProps={{
-                  readOnly: !editOn,
-                }}
-                onChange={handleInputChange}
-                error={city === ""}
-                helperText={city === "" ? "Please, Select City" : ""}
-              />
-            </FormGrid>
-            <FormGrid item xs={6}>
-              <FormLabel htmlFor="state" required>
-                State
-              </FormLabel>
-              <TextField
-                value={state}
-                id="state"
-                name="state"
-                type="text"
-                placeholder="NY"
-                autoComplete="State"
-                required
-                InputProps={{
-                  readOnly: !editOn,
-                }}
-                onChange={handleInputChange}
-                error={state === ""}
-                helperText={state === "" ? "Please, Select State" : ""}
-              />
-            </FormGrid>
-            <FormGrid item xs={6}>
-              <FormLabel htmlFor="zip" required>
-                Zip / Postal code
-              </FormLabel>
-              <TextField
-                value={pincode}
-                id="zip"
-                name="zip"
-                type="zip"
-                placeholder="12345"
-                autoComplete="shipping postal-code"
-                required
-                InputProps={{
-                  readOnly: !editOn,
-                }}
-                onChange={handlePincode}
-                error={pincode === ""}
-                helperText={pincode === "" ? "This field cannot be empty" : ""}
-              />
-            </FormGrid>
-            <FormGrid item xs={6}>
-              <FormLabel htmlFor="country" required>
-                Country
-              </FormLabel>
-              <TextField
-                value={country}
-                id="country"
-                name="country"
-                type="country"
-                placeholder="United States"
-                autoComplete="shipping country"
-                required
-                InputProps={{
-                  readOnly: !editOn,
-                }}
-                onChange={handleInputChange}
-                error={country === ""}
-                helperText={country === "" ? "Please, Select country" : ""}
-              />
-            </FormGrid>
-            <FormGrid item xs={6}>
-              <FormLabel>&nbsp;</FormLabel>
-            </FormGrid>
-          </Grid>
-        </React.Fragment>
-      </Grid>
+          <React.Fragment>
+            <Grid container spacing={3}>
+              <FormGrid item xs={12}>
+                <FormLabel htmlFor="bank" style={{ fontWeight: "bold" }}>
+                  Bank Details
+                </FormLabel>
+              </FormGrid>
+              <FormGrid item xs={12} md={6}>
+                <FormLabel htmlFor="first-name" required>
+                  Account Holder First Name
+                </FormLabel>
+                <TextField
+                  value={accountHolderFirstName}
+                  id="first-name"
+                  name="first-name"
+                  type="text"
+                  placeholder="John"
+                  autoComplete="given-name"
+                  required
+                  InputProps={{
+                    readOnly: !editOn,
+                  }}
+                  onChange={handleInputChange}
+                  error={
+                    accountHolderFirstName === "" ||
+                    accountHolderFirstName.length >= 255
+                  }
+                  helperText={
+                    accountHolderFirstName === ""
+                      ? "This field cannot be empty"
+                      : ""
+                  }
+                />
+              </FormGrid>
+              <FormGrid item xs={12} md={6}>
+                <FormLabel htmlFor="last-name" required>
+                  Account Holder Last name
+                </FormLabel>
+                <TextField
+                  value={accountHolderLastName}
+                  id="last-name"
+                  name="last-name"
+                  type="text"
+                  placeholder="Snow"
+                  autoComplete="last name"
+                  required
+                  InputProps={{
+                    readOnly: !editOn,
+                  }}
+                  onChange={handleInputChange}
+                  error={
+                    accountHolderLastName === "" ||
+                    accountHolderLastName.length >= 255
+                  }
+                  helperText={
+                    accountHolderLastName === ""
+                      ? "This field cannot be empty"
+                      : ""
+                  }
+                />
+              </FormGrid>
+              <FormGrid item xs={12} md={6}>
+                <FormLabel htmlFor="account-number" required>
+                  Account Number
+                </FormLabel>
+                <TextField
+                  value={accountNumber}
+                  id="account-number"
+                  name="account-number"
+                  type="account-number"
+                  placeholder="83413112414"
+                  autoComplete="account-number"
+                  required
+                  InputProps={{
+                    readOnly: !editOn,
+                  }}
+                  onChange={(e) => {
+                    handleAccountNumber(e);
+                  }}
+                  error={accountNumber === "" || accountNumber.length >= 255}
+                  helperText={
+                    accountNumber === "" ? "This field cannot be empty" : ""
+                  }
+                />
+              </FormGrid>
+              <FormGrid item xs={12} md={6}>
+                <FormLabel htmlFor="IFSC-code" required>
+                  IFSC Code
+                </FormLabel>
+                <TextField
+                  value={accountIFSCcode}
+                  id="IFSC-code"
+                  name="IFSC-code"
+                  type="IFSC-code"
+                  placeholder="ISCRH343"
+                  autoComplete="IFSC-code"
+                  required
+                  InputProps={{
+                    readOnly: !editOn,
+                  }}
+                  onChange={handleInputChange}
+                  error={accountIFSCcode === ""}
+                  //  || accountIFSCcode.length >= 16}
+                  helperText={
+                    accountIFSCcode === "" ? "This field cannot be empty" : ""
+                  }
+                />
+              </FormGrid>
+              <FormGrid item xs={12} md={6}>
+                <FormLabel htmlFor="branch-name" required>
+                  Branch Name
+                </FormLabel>
+                <TextField
+                  value={accountBranch}
+                  id="branch-name"
+                  name="branch-name"
+                  type="branch-name"
+                  placeholder="Bharuch"
+                  autoComplete="branch name"
+                  required
+                  InputProps={{
+                    readOnly: !editOn && isAccount,
+                  }}
+                  onChange={handleInputChange}
+                  error={accountBranch === "" || accountBranch.length >= 255}
+                  helperText={
+                    accountBranch === "" ? "This field cannot be empty" : ""
+                  }
+                />
+              </FormGrid>
+              <FormGrid item xs={12}>
+                <FormLabel htmlFor="address" required>
+                  Branch Address
+                </FormLabel>
+                <TextField
+                  value={accountBranchAddress}
+                  id="address"
+                  name="address"
+                  type="address"
+                  placeholder="Street name and number"
+                  autoComplete="shipping address-line"
+                  required
+                  InputProps={{
+                    readOnly: !editOn,
+                  }}
+                  onChange={handleInputChange}
+                  error={
+                    accountBranchAddress === ""
+                    // ||accountBranchAddress.length >= 65536
+                  }
+                  helperText={
+                    accountBranchAddress === ""
+                      ? "This field cannot be empty"
+                      : ""
+                  }
+                />
+              </FormGrid>
+              <FormGrid item xs={12}>
+                <FormLabel htmlFor="seller" style={{ fontWeight: "bold" }}>
+                  Seller Details
+                </FormLabel>
+              </FormGrid>
+              <FormGrid item xs={6}>
+                <FormLabel htmlFor="zip" required>
+                  Zip / Postal code
+                </FormLabel>
+                <TextField
+                  value={pincode}
+                  id="zip"
+                  name="zip"
+                  type="zip"
+                  placeholder="12345"
+                  autoComplete="shipping postal-code"
+                  required
+                  InputProps={{
+                    readOnly: !editOn,
+                  }}
+                  onChange={handlePincode}
+                  error={pincode === ""}
+                  helperText={
+                    pincode === "" ? "This field cannot be empty" : ""
+                  }
+                />
+              </FormGrid>
+              <FormGrid item xs={6}>
+                <FormLabel htmlFor="country" required>
+                  Country
+                </FormLabel>
+                <Select
+                  id="country"
+                  name="country"
+                  value={country}
+                  onChange={(e) => {
+                    setCountry(e.target.value);
+                  }}
+                  displayEmpty
+                  disabled={!editOn}
+                  error={country === ""}
+                >
+                  <MenuItem value="">Select Country</MenuItem>
+                  {countryList.map((item, index) => (
+                    <MenuItem key={index} value={item}>
+                      {item.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <FormHelperText style={{ color: "red" }}>
+                  {country === "" ? "Please, Select country" : ""}
+                </FormHelperText>
+              </FormGrid>
+              <FormGrid item xs={6}>
+                <FormLabel htmlFor="state" required>
+                  State
+                </FormLabel>
+                <Select
+                  id="state"
+                  name="state"
+                  value={state}
+                  onChange={(e) => {
+                    setState(e.target.value);
+                  }}
+                  displayEmpty
+                  disabled={!editOn}
+                  error={state === ""}
+                >
+                  <MenuItem value="">Select State</MenuItem>
+                  {stateList.map((item, index) => (
+                    <MenuItem key={index} value={item}>
+                      {item.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <FormHelperText style={{ color: "red" }}>
+                  {state === "" ? "Please, Select State" : ""}
+                </FormHelperText>
+              </FormGrid>
+              <FormGrid item xs={6}>
+                <FormLabel htmlFor="city" required>
+                  City
+                </FormLabel>
+                <Select
+                  id="city"
+                  name="city"
+                  value={city}
+                  onChange={(e) => {
+                    setCity(e.target.value);
+                  }}
+                  displayEmpty
+                  disabled={!editOn}
+                  error={city === ""}
+                >
+                  <MenuItem value="">Select City</MenuItem>
+                  {cityList.map((item, index) => (
+                    <MenuItem key={index} value={item.name}>
+                      {item.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <FormHelperText style={{ color: "red" }}>
+                  {city === "" ? "Please, Select City" : ""}
+                </FormHelperText>
+              </FormGrid>
+              <FormGrid item xs={6}>
+                <FormLabel>&nbsp;</FormLabel>
+              </FormGrid>
+            </Grid>
+          </React.Fragment>
+        </Grid>
+      </ThemeProvider>
     </>
   );
 }

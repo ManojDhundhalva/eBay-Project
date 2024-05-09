@@ -6,7 +6,7 @@ const getBankAccount = async (req, resp) => {
     const results = await pool.query(queries.ifExistAccount, [req.user.id]);
 
     if (results.rows.length !== 1) {
-      return resp.status(404).json({ message: "Account not found" });
+      return resp.status(201).json({ message: "Account not found" });
     }
 
     const results1 = await pool.query(queries.getBankAccountByUserId, [
