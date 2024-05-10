@@ -1,11 +1,11 @@
 const ifExistAccount = `
-SELECT * FROM seller WHERE seller_user_id = $1
+SELECT seller_user_id FROM seller WHERE seller_user_id = $1
 `;
 
 const getBankAccountByUserId = `
 SELECT *
 FROM seller AS s
-JOIN bank_details AS b ON account_number = seller_account_number
+JOIN bank_details AS b ON b.account_number = s.seller_account_number
 WHERE seller_user_id = $1;
 `;
 
@@ -25,11 +25,13 @@ WHERE account_number = $6;
 
 const updateSellerBySellerUserId = `
 UPDATE seller
-SET seller_city = $1,
-    seller_state = $2, 
-    seller_country = $3,
-    seller_pincode = $4
-WHERE seller_user_id = $5;
+SET seller_coordinates = POINT($1, $2),
+    seller_location = $3,
+    seller_city = $4,
+    seller_state = $5, 
+    seller_country = $6,
+    seller_pincode = $7
+WHERE seller_user_id = $8;
 `;
 
 const ifExistGivenAccount = `
@@ -51,11 +53,13 @@ const createSellerByAccountNumber = `
 INSERT INTO seller (
   seller_user_id, 
   seller_account_number,
+  seller_coordinates,
+  seller_location,
   seller_city,
   seller_state, 
   seller_country,
   seller_pincode
-) VALUES ($1, $2, $3, $4, $5, $6);
+) VALUES ($1, $2, POINT($3, $4), $5, $6, $7, $8, $9);
 `;
 
 module.exports = {

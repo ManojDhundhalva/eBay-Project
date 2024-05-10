@@ -28,10 +28,13 @@ const updateBankAccount = async (req, resp) => {
     account_IFSC_code,
     account_branch,
     account_branch_address,
-    city,
-    state,
-    country,
-    pincode,
+    seller_latitude,
+    seller_longitude,
+    seller_location,
+    seller_city,
+    seller_state,
+    seller_country,
+    seller_pincode,
   } = req.body;
 
   try {
@@ -49,10 +52,13 @@ const updateBankAccount = async (req, resp) => {
         account_number,
       ]);
       await pool.query(queries.updateSellerBySellerUserId, [
-        city,
-        state,
-        country,
-        pincode,
+        seller_latitude,
+        seller_longitude,
+        seller_location,
+        seller_city,
+        seller_state,
+        seller_country,
+        seller_pincode,
         req.user.id,
       ]);
       return resp.status(200).json({ message: "Account Updated Successfully" });
@@ -77,10 +83,13 @@ const updateBankAccount = async (req, resp) => {
       await pool.query(queries.createSellerByAccountNumber, [
         req.user.id,
         account_number,
-        city,
-        state,
-        country,
-        pincode,
+        seller_latitude,
+        seller_longitude,
+        seller_location,
+        seller_city,
+        seller_state,
+        seller_country,
+        seller_pincode,
       ]);
 
       return resp.status(200).json({ message: "Account Created Successfully" });

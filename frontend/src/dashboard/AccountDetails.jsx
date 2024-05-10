@@ -42,6 +42,7 @@ import FormHelperText from "@mui/material/FormHelperText";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
+import SearchIcon from "@mui/icons-material/Search";
 
 const FormGrid = styled(Grid)(() => ({
   display: "flex",
@@ -142,6 +143,10 @@ export default function AccountDetails() {
   const [stateList, setStateList] = useState([]);
   const [cityList, setCityList] = useState([]);
 
+  const [sellerCity, setSellerCity] = useState("");
+  const [sellerState, setSellerState] = useState("");
+  const [sellerCountry, setSellerCountry] = useState("");
+
   useEffect(() => {
     setCountryList(Country.getAllCountries());
   }, []);
@@ -212,6 +217,7 @@ export default function AccountDetails() {
       //   "," +
       //   String(data.data.result.position.lng);
       // setLocation(newLocation);
+      setLocation(data.data.text);
       if (
         data.data.result.position?.lat !== undefined &&
         data.data.result.position?.lng !== undefined
@@ -270,6 +276,8 @@ export default function AccountDetails() {
       accountIFSCcode === "" ||
       accountBranch === "" ||
       accountBranchAddress === "" ||
+      latitude === "" ||
+      longitude === "" ||
       city === "" ||
       state === "" ||
       country === "" ||
@@ -290,35 +298,39 @@ export default function AccountDetails() {
     };
 
     try {
-      await toast.promise(
-        axios.post(
-          `http://localhost:8000/api/v1/bank-details?username=${window.localStorage.getItem(
-            "username"
-          )}&role=${window.localStorage.getItem("role")}`,
-          {
-            account_number: accountNumber,
-            account_holder_first_name: accountHolderFirstName,
-            account_holder_last_name: accountHolderLastName,
-            account_IFSC_code: accountIFSCcode,
-            account_branch: accountBranch,
-            account_branch_address: accountBranchAddress,
-            city,
-            state: state.name,
-            country: country.name,
-            pincode,
-          },
-          { headers }
-        ),
+      const response = await axios.post(
+        `http://localhost:8000/api/v1/bank-details?username=${window.localStorage.getItem(
+          "username"
+        )}&role=${window.localStorage.getItem("role")}`,
         {
-          loading: "Updating Account...", // Message shown during loading
-          success: <b>Account updated successfully!</b>, // Success message
-          error: <b>Failed to update account.</b>, // Error message
-        }
+          account_number: accountNumber,
+          account_holder_first_name: accountHolderFirstName,
+          account_holder_last_name: accountHolderLastName,
+          account_IFSC_code: accountIFSCcode,
+          account_branch: accountBranch,
+          account_branch_address: accountBranchAddress,
+          seller_latitude: latitude,
+          seller_longitude: longitude,
+          seller_location: location,
+          seller_city: city,
+          seller_state: state.name,
+          seller_country: country.name,
+          seller_pincode: pincode,
+        },
+        { headers }
       );
-      setIsAccount(true);
+
+      if (response.status === 201) {
+        // Account already exists
+        toast.error(<b>Account already exists</b>);
+        setEditOn(true);
+      } else {
+        toast.success(<b>Account updated successfully!</b>);
+      }
     } catch (err) {
       // LogOut();
-      console.error("Error updating profile:", err);
+      console.log("Error updating profile:", err);
+      toast.error(<b>Failed to update account. Please try again later.</b>);
     }
   };
 
@@ -327,6 +339,7 @@ export default function AccountDetails() {
       "Content-Type": "application/json",
       authorization: `Bearer ${window.localStorage.getItem("token")}`,
     };
+
     try {
       const results = await axios.get(
         `http://localhost:8000/api/v1/bank-details?username=${window.localStorage.getItem(
@@ -336,21 +349,56 @@ export default function AccountDetails() {
           headers,
         }
       );
-      console.log(results);
-      if (results.status === 201) {
-        setAccountBalance("00.00");
+
+      if (results.status === 200) {
+        const data = results.data;
+
+        setAccountBalance(data.account_balance);
+        setAccountNumber(data.account_number);
+        setAccountHolderFirstName(data.account_holder_first_name);
+        setAccountHolderLastName(data.account_holder_last_name);
+        setAccountIFSCcode(data.account_ifsc_code);
+        setAccountBranch(data.account_branch);
+        setAccountBranchAddress(data.account_branch_address);
+        setLatitude(data.seller_coordinates.x);
+        setLongitude(data.seller_coordinates.y);
+        setLocation(data.seller_location);
+        setPincode(data.seller_pincode);
+        setSellerCity(data.seller_city);
+        setSellerState(data.seller_state);
+        setSellerCountry(data.seller_country);
+
+        // // Find corresponding country, state, and city objects
+        // const foundCountry = countryList.find(
+        //   (country) => country.name === data.seller_country
+        // );
+        // if (foundCountry) {
+        //   setCountry(foundCountry);
+        //   setStateList(State.getStatesOfCountry(foundCountry.isoCode));
+        // }
+
+        // const foundState = stateList.find(
+        //   (state) => state.name === data.seller_state
+        // );
+        // if (foundState) {
+        //   setState(foundState);
+        //   setCityList(
+        //     City.getCitiesOfState(foundState.countryCode, foundState.isoCode)
+        //   );
+        // }
+
+        // const foundCity = cityList.find(
+        //   (city) => city.name === data.seller_city
+        // );
+        // if (foundCity) {
+        //   setCity(foundCity);
+        // }
+
+        // console.log(country);
+        // console.log(state);
+        // console.log(city);
       } else {
-        setAccountBalance(results.data.account_balance);
-        setAccountNumber(results.data.account_number);
-        setAccountHolderFirstName(results.data.account_holder_first_name);
-        setAccountHolderLastName(results.data.account_holder_last_name);
-        setAccountIFSCcode(results.data.account_ifsc_code);
-        setAccountBranch(results.data.account_branch);
-        setAccountBranchAddress(results.data.account_branch_address);
-        setPincode(results.data.seller_pincode);
-        setCountry(results.data.seller_country);
-        setState(results.data.seller_state);
-        setCity(results.data.seller_city);
+        console.error("Failed to fetch account details");
       }
     } catch (err) {
       LogOut();
@@ -359,7 +407,7 @@ export default function AccountDetails() {
   };
 
   React.useEffect(() => {
-    // getAccount();
+    getAccount();
   }, []);
 
   return (
@@ -371,8 +419,8 @@ export default function AccountDetails() {
           <Button
             variant="contained"
             onClick={() => {
-              updateAccount();
               handleEdit();
+              updateAccount();
             }}
           >
             Save <SaveIcon />
@@ -400,40 +448,234 @@ export default function AccountDetails() {
             gap: { xs: 4, md: 8 },
           }}
         >
-          <Grid
-            item
-            xs={10}
-            style={{ marginTop: "0.4em", width: "20em" }}
-            // id="searchBoxContainer"
-          >
-            <PlaceOutlinedIcon /> Location
-          </Grid>
-          <Grid
-            item
-            xs={10}
-            style={{ marginTop: "0.4em", width: "20em" }}
-            id="searchBoxContainer"
-          ></Grid>
-          <div>
-            {latitude} , {longitude}
-          </div>
-          <Grid item xs={10} style={{ marginTop: "0.4em" }}>
-            <TextField
-              id="location"
-              label="Location"
-              value={location}
-              onChange={(e) => {
-                setLocation(e.target.value);
-              }}
-              error={location === ""}
-              helperText={location === "" ? "Please select your location" : ""}
-              fullWidth
-            />
-          </Grid>
-
-          <Grid></Grid>
           <React.Fragment>
             <Grid container spacing={3}>
+              <FormGrid item xs={12}>
+                <FormLabel htmlFor="seller" style={{ fontWeight: "bold" }}>
+                  Seller Details
+                </FormLabel>
+              </FormGrid>
+              <FormGrid item xs={6}>
+                <FormLabel htmlFor="location" required>
+                  <PlaceOutlinedIcon /> Location
+                </FormLabel>
+                <div>{location}</div>
+                <Grid
+                  style={{
+                    marginTop: "0.4em",
+                    width: "20em",
+                    display: editOn ? "block" : "none",
+                  }}
+                  id="searchBoxContainer"
+                ></Grid>
+                <TextField
+                  value={location}
+                  id="search"
+                  variant="outlined"
+                  style={{
+                    marginTop: "0.4em",
+                    width: "20em",
+                    display: !editOn ? "block" : "none",
+                  }}
+                  InputProps={{
+                    readOnly: true,
+                    startAdornment: <SearchIcon style={{ color: "gray" }} />,
+                  }}
+                />
+              </FormGrid>
+              <FormGrid item xs={6}>
+                <FormLabel htmlFor="zip" required>
+                  Zip / Postal code
+                </FormLabel>
+                <TextField
+                  value={pincode}
+                  id="zip"
+                  name="zip"
+                  type="zip"
+                  placeholder="12345"
+                  autoComplete="shipping postal-code"
+                  required
+                  InputProps={{
+                    readOnly: !editOn,
+                  }}
+                  onChange={handlePincode}
+                  error={pincode === ""}
+                  helperText={
+                    pincode === "" ? "This field cannot be empty" : ""
+                  }
+                />
+              </FormGrid>
+              <FormGrid item xs={3}>
+                <FormLabel htmlFor="latitude">Latitude</FormLabel>
+                <TextField
+                  value={latitude}
+                  id="latitude"
+                  name="latitude"
+                  type="latitude"
+                  placeholder="23.532"
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+              </FormGrid>
+              <FormGrid item xs={3}>
+                <FormLabel htmlFor="longitude">Longitude</FormLabel>
+                <TextField
+                  value={longitude}
+                  id="longitude"
+                  name="longitude"
+                  type="longitude"
+                  placeholder="23.532"
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+              </FormGrid>
+
+              <FormGrid item xs={6}>
+                <FormLabel htmlFor="country" required>
+                  Country
+                </FormLabel>
+                {!editOn ? (
+                  <TextField
+                    value={sellerCountry}
+                    id="search"
+                    variant="outlined"
+                    style={{
+                      marginTop: "0.4em",
+                      width: "20em",
+                    }}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                ) : (
+                  <Select
+                    id="country"
+                    name="country"
+                    value={country}
+                    defaultValue={sellerCountry}
+                    onChange={(e) => {
+                      setCountry(e.target.value);
+                    }}
+                    displayEmpty
+                    disabled={!editOn}
+                    error={country === ""}
+                  >
+                    <MenuItem value="">Select Country</MenuItem>
+                    {countryList.map((item, index) => (
+                      <MenuItem
+                        key={index}
+                        value={item}
+                        selected={item.name === country.name}
+                      >
+                        {item.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+                {editOn && (
+                  <FormHelperText style={{ color: "red" }}>
+                    {country === "" ? "Please, Select country" : ""}
+                  </FormHelperText>
+                )}
+              </FormGrid>
+              <FormGrid item xs={6}>
+                <FormLabel htmlFor="state" required>
+                  State
+                </FormLabel>
+                {!editOn ? (
+                  <TextField
+                    value={sellerState}
+                    id="search"
+                    variant="outlined"
+                    style={{
+                      marginTop: "0.4em",
+                      width: "20em",
+                    }}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                ) : (
+                  <Select
+                    id="state"
+                    name="state"
+                    defaultValue={sellerState}
+                    value={state}
+                    onChange={(e) => {
+                      setState(e.target.value);
+                    }}
+                    displayEmpty
+                    disabled={!editOn}
+                    error={state === ""}
+                  >
+                    <MenuItem value="">Select State</MenuItem>
+                    {stateList.map((item, index) => (
+                      <MenuItem
+                        key={index}
+                        value={item}
+                        selected={item.name === state.name}
+                      >
+                        {item.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+                {editOn && (
+                  <FormHelperText style={{ color: "red" }}>
+                    {state === "" ? "Please, Select State" : ""}
+                  </FormHelperText>
+                )}
+              </FormGrid>
+              <FormGrid item xs={6}>
+                <FormLabel htmlFor="city" required>
+                  City
+                </FormLabel>
+                {!editOn ? (
+                  <TextField
+                    value={sellerCity}
+                    id="search"
+                    variant="outlined"
+                    style={{
+                      marginTop: "0.4em",
+                      width: "20em",
+                    }}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                ) : (
+                  <Select
+                    defaultValue={sellerCity}
+                    id="city"
+                    name="city"
+                    value={city}
+                    onChange={(e) => {
+                      setCity(e.target.value);
+                    }}
+                    displayEmpty
+                    disabled={!editOn}
+                    error={city === ""}
+                  >
+                    <MenuItem value="">Select City</MenuItem>
+                    {cityList.map((item, index) => (
+                      <MenuItem
+                        key={index}
+                        value={item.name}
+                        selected={item.name === city}
+                      >
+                        {item.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+                {editOn && (
+                  <FormHelperText style={{ color: "red" }}>
+                    {city === "" ? "Please, Select City" : ""}
+                  </FormHelperText>
+                )}
+              </FormGrid>
               <FormGrid item xs={12}>
                 <FormLabel htmlFor="bank" style={{ fontWeight: "bold" }}>
                   Bank Details
@@ -553,7 +795,7 @@ export default function AccountDetails() {
                   autoComplete="branch name"
                   required
                   InputProps={{
-                    readOnly: !editOn && isAccount,
+                    readOnly: !editOn,
                   }}
                   onChange={handleInputChange}
                   error={accountBranch === "" || accountBranch.length >= 255}
@@ -588,111 +830,6 @@ export default function AccountDetails() {
                       : ""
                   }
                 />
-              </FormGrid>
-              <FormGrid item xs={12}>
-                <FormLabel htmlFor="seller" style={{ fontWeight: "bold" }}>
-                  Seller Details
-                </FormLabel>
-              </FormGrid>
-              <FormGrid item xs={6}>
-                <FormLabel htmlFor="zip" required>
-                  Zip / Postal code
-                </FormLabel>
-                <TextField
-                  value={pincode}
-                  id="zip"
-                  name="zip"
-                  type="zip"
-                  placeholder="12345"
-                  autoComplete="shipping postal-code"
-                  required
-                  InputProps={{
-                    readOnly: !editOn,
-                  }}
-                  onChange={handlePincode}
-                  error={pincode === ""}
-                  helperText={
-                    pincode === "" ? "This field cannot be empty" : ""
-                  }
-                />
-              </FormGrid>
-              <FormGrid item xs={6}>
-                <FormLabel htmlFor="country" required>
-                  Country
-                </FormLabel>
-                <Select
-                  id="country"
-                  name="country"
-                  value={country}
-                  onChange={(e) => {
-                    setCountry(e.target.value);
-                  }}
-                  displayEmpty
-                  disabled={!editOn}
-                  error={country === ""}
-                >
-                  <MenuItem value="">Select Country</MenuItem>
-                  {countryList.map((item, index) => (
-                    <MenuItem key={index} value={item}>
-                      {item.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-                <FormHelperText style={{ color: "red" }}>
-                  {country === "" ? "Please, Select country" : ""}
-                </FormHelperText>
-              </FormGrid>
-              <FormGrid item xs={6}>
-                <FormLabel htmlFor="state" required>
-                  State
-                </FormLabel>
-                <Select
-                  id="state"
-                  name="state"
-                  value={state}
-                  onChange={(e) => {
-                    setState(e.target.value);
-                  }}
-                  displayEmpty
-                  disabled={!editOn}
-                  error={state === ""}
-                >
-                  <MenuItem value="">Select State</MenuItem>
-                  {stateList.map((item, index) => (
-                    <MenuItem key={index} value={item}>
-                      {item.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-                <FormHelperText style={{ color: "red" }}>
-                  {state === "" ? "Please, Select State" : ""}
-                </FormHelperText>
-              </FormGrid>
-              <FormGrid item xs={6}>
-                <FormLabel htmlFor="city" required>
-                  City
-                </FormLabel>
-                <Select
-                  id="city"
-                  name="city"
-                  value={city}
-                  onChange={(e) => {
-                    setCity(e.target.value);
-                  }}
-                  displayEmpty
-                  disabled={!editOn}
-                  error={city === ""}
-                >
-                  <MenuItem value="">Select City</MenuItem>
-                  {cityList.map((item, index) => (
-                    <MenuItem key={index} value={item.name}>
-                      {item.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-                <FormHelperText style={{ color: "red" }}>
-                  {city === "" ? "Please, Select City" : ""}
-                </FormHelperText>
               </FormGrid>
               <FormGrid item xs={6}>
                 <FormLabel>&nbsp;</FormLabel>
