@@ -110,8 +110,8 @@ export default function Checkout({
   const [buyerLastName, setBuyerLastName] = React.useState("");
   const [shippingAddressLine, setShippingAddressLine] = React.useState("");
   const [country, setCountry] = React.useState("");
-  const [state, setState] = React.useState({});
-  const [city, setCity] = React.useState({});
+  const [state, setState] = React.useState("");
+  const [city, setCity] = React.useState("");
   const [pincode, setPincode] = React.useState("");
   const [phoneNumber, setPhoneNumber] = React.useState("");
   const [paymentType, setPaymentType] = React.useState("creditCard"); //bankTransfer
@@ -150,6 +150,9 @@ export default function Checkout({
 
   useEffect(() => {
     async function fetchCityCoordinates() {
+      if (city === "") {
+        return;
+      }
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${city}`
       );
@@ -172,20 +175,20 @@ export default function Checkout({
   const [cityData, setCityData] = useState([]); // destination
   useEffect(() => {
     async function fetchCityCoordinates() {
-      const promises = uniqueCities.map(async (cityName) => {
+      const promises = uniqueCities.map(async (city) => {
         const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${cityName}`
+          `https://nominatim.openstreetmap.org/search?format=json&q=${city}`
         );
         const data = await response.json();
         if (data && data.length > 0) {
           return {
-            city: cityName,
+            city: city,
             latitude: parseFloat(data[0].lat),
             longitude: parseFloat(data[0].lon),
           };
         } else {
           return {
-            cityName: cityName,
+            city: city,
             latitude: null,
             longitude: null,
           };
@@ -196,7 +199,16 @@ export default function Checkout({
     }
 
     fetchCityCoordinates();
-  }, [uniqueCities]);
+  }, []);
+  useEffect(() => {
+    console.log(cityData);
+  }, [cityData]);
+  useEffect(() => {
+    console.log(city);
+  }, [city]);
+  useEffect(() => {
+    console.log(coordinatesData);
+  }, [coordinatesData]);
 
   const [distances, setDistances] = useState([]);
 
@@ -215,19 +227,22 @@ export default function Checkout({
     const { latitude: lat1, longitude: lon1 } = coordinatesData;
     const { latitude: lat2, longitude: lon2, city } = dest;
 
+    // Convert latitude and longitude from degrees to radians
     const dLat = (lat2 - lat1) * (Math.PI / 180);
     const dLon = (lon2 - lon1) * (Math.PI / 180);
 
+    // Haversine formula
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos((lat1 * Math.PI) / 180) *
-        Math.cos((lat2 * Math.PI) / 180) *
+      Math.cos(lat1 * (Math.PI / 180)) *
+        Math.cos(lat2 * (Math.PI / 180)) *
         Math.sin(dLon / 2) *
         Math.sin(dLon / 2);
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     const calculatedDistance = R * c;
+
     return {
       sourceCity: coordinatesData.city,
       destinationCity: city,
@@ -235,13 +250,18 @@ export default function Checkout({
     };
   };
 
-  // useEffect(() => {
-  //   const handleCalculateDistance = () => {
-  //     const distancesArray = cityData.map((dest) => calculateDistance(dest));
-  //     setDistances(distancesArray);
-  //   };
-  //   handleCalculateDistance();
-  // }, [uniqueCities, city]);
+  const handleCalculateDistance = () => {
+    const distancesArray = cityData.map((dest) => calculateDistance(dest));
+    setDistances(distancesArray);
+  };
+
+  useEffect(() => {
+    handleCalculateDistance();
+  }, [coordinatesData]);
+
+  useEffect(() => {
+    console.log("distances", distances);
+  }, [distances]);
 
   return (
     <ThemeProvider theme={showCustomTheme ? checkoutTheme : defaultTheme}>

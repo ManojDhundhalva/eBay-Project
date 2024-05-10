@@ -6,6 +6,7 @@ const bankDetailsRoutes = require("./routes/bankDetails");
 const productRoutes = require("./routes/product");
 const cartRoutes = require("./routes/cart");
 const wishListRoutes = require("./routes/wishList");
+const { verifyTokenAndAuthorizationUser } = require("./middlewares/verifyUser");
 // const orderRoutes = require("./routes/order");
 // const sellerRoutes = require("./routes/seller");
 // const inventoryRoutes = require("./routes/inventory");
@@ -33,6 +34,17 @@ app.use("/api/v1/wish-list", wishListRoutes);
 // app.use("/api/v1/order", orderRoutes);
 // app.use("/api/v1/seller", sellerRoutes);
 // app.use("/api/v1/inventory", inventoryRoutes);
+
+app.get(
+  "/api/v1/getTomTomApiKey",
+  verifyTokenAndAuthorizationUser,
+  (req, res) => {
+    return res.status(200).json({
+      message: "Api key sent successfully!",
+      apiKey: process.env.TOMTOM_API_KEY,
+    });
+  }
+);
 
 app.listen(port, () => {
   console.log(`app listening on port ${port}`);

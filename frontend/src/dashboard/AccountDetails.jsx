@@ -41,6 +41,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormHelperText from "@mui/material/FormHelperText";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 
 const FormGrid = styled(Grid)(() => ({
   display: "flex",
@@ -112,6 +113,10 @@ export default function AccountDetails() {
   const [country, setCountry] = React.useState("");
   const [pincode, setPincode] = React.useState("");
 
+  const [location, setLocation] = useState("");
+  const [latitude, setLatitude] = useState(0.0);
+  const [longitude, setLongitude] = useState(0.0);
+
   const [editOn, setEditOn] = React.useState(false);
   const [isAccount, setIsAccount] = React.useState(false);
   const { LogOut } = useAuth();
@@ -151,6 +156,76 @@ export default function AccountDetails() {
     setCity("");
     setCityList(City.getCitiesOfState(state.countryCode, state.isoCode));
   }, [state]);
+
+  const [apiKey, setApiKey] = useState("");
+  useEffect(() => {
+    const fetchApiKey = async () => {
+      try {
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+        };
+        const response = await axios.get(
+          `http://localhost:8000/api/v1/getTomTomApiKey?username=${window.localStorage.getItem(
+            "username"
+          )}&role=${window.localStorage.getItem("role")}`,
+          { headers }
+        );
+        setApiKey(response.data.apiKey);
+      } catch (error) {
+        console.error("Error fetching API key:", error);
+      }
+    };
+    fetchApiKey();
+  }, []);
+
+  useEffect(() => {
+    if (apiKey) {
+      initializeTomTomSearchBox(apiKey);
+    }
+  }, [apiKey]);
+
+  const initializeTomTomSearchBox = (apiKey) => {
+    var options = {
+      searchOptions: {
+        key: apiKey,
+        language: "en-GB",
+        limit: 5,
+        placeholder: "Search for Nearby Location",
+      },
+      autocompleteOptions: {
+        key: apiKey,
+        language: "en-GB",
+      },
+    };
+
+    options.container = "#searchBoxContainer";
+
+    var ttSearchBox = new window.tt.plugins.SearchBox(
+      window.tt.services,
+      options
+    );
+
+    ttSearchBox.on("tomtom.searchbox.resultselected", function (data) {
+      // const newLocation =
+      //   String(data.data.result.position.lat) +
+      //   "," +
+      //   String(data.data.result.position.lng);
+      // setLocation(newLocation);
+      if (
+        data.data.result.position?.lat !== undefined &&
+        data.data.result.position?.lng !== undefined
+      ) {
+        setLatitude(data.data.result.position.lat);
+        setLongitude(data.data.result.position.lng);
+      } else {
+        console.log("Position data is not available:", data);
+      }
+    });
+
+    var searchBoxHTML = ttSearchBox.getSearchBoxHTML();
+    document.getElementById("searchBoxContainer").appendChild(searchBoxHTML);
+  };
 
   // Event handler for TextField change
   const handleInputChange = (event) => {
@@ -284,7 +359,7 @@ export default function AccountDetails() {
   };
 
   React.useEffect(() => {
-    getAccount();
+    // getAccount();
   }, []);
 
   return (
@@ -325,6 +400,38 @@ export default function AccountDetails() {
             gap: { xs: 4, md: 8 },
           }}
         >
+          <Grid
+            item
+            xs={10}
+            style={{ marginTop: "0.4em", width: "20em" }}
+            // id="searchBoxContainer"
+          >
+            <PlaceOutlinedIcon /> Location
+          </Grid>
+          <Grid
+            item
+            xs={10}
+            style={{ marginTop: "0.4em", width: "20em" }}
+            id="searchBoxContainer"
+          ></Grid>
+          <div>
+            {latitude} , {longitude}
+          </div>
+          <Grid item xs={10} style={{ marginTop: "0.4em" }}>
+            <TextField
+              id="location"
+              label="Location"
+              value={location}
+              onChange={(e) => {
+                setLocation(e.target.value);
+              }}
+              error={location === ""}
+              helperText={location === "" ? "Please select your location" : ""}
+              fullWidth
+            />
+          </Grid>
+
+          <Grid></Grid>
           <React.Fragment>
             <Grid container spacing={3}>
               <FormGrid item xs={12}>
