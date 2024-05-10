@@ -34,6 +34,7 @@ import { useAuth } from "../../context/auth";
 import { useProduct } from "../../context/product";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 function ToggleCustomTheme({ showCustomTheme, toggleCustomTheme }) {
   return (
@@ -106,6 +107,7 @@ export default function Checkout({
   totalQuantities,
 }) {
   const { cartList } = useProduct();
+  const { LogOut } = useAuth();
 
   const [buyerFirstName, setBuyerFirstName] = React.useState("");
   const [buyerLastName, setBuyerLastName] = React.useState("");
@@ -134,8 +136,11 @@ export default function Checkout({
   const handleNext = () => {
     if (
       activeStep == 0 &&
-      (location === "" || phoneNumber.length !== 10 || pincode === "",
-      buyerFirstName === "" || buyerLastName === "")
+      (location === "" ||
+        phoneNumber.length !== 10 ||
+        pincode === "" ||
+        buyerFirstName === "" ||
+        buyerLastName === "")
     ) {
       toast("Please, Fill Your Details", {
         icon: "👏",
@@ -250,6 +255,83 @@ export default function Checkout({
     );
     setTotalDistanceKM(total);
   }, [distances]);
+
+  const handleOrderPayment = async () => {
+    const headers = {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${window.localStorage.getItem("token")}`,
+    };
+
+    try {
+      const results = await toast.promise(
+        axios.post(
+          `http://localhost:8000/api/v1/order/payment?username=${window.localStorage.getItem(
+            "username"
+          )}&role=${window.localStorage.getItem("role")}`,
+          {
+            payment_amount: Number(
+              Number(TotalAmount) +
+                Number(
+                  TotalAmount * (process.env.REACT_APP_EBAY_CHARGES / 100)
+                ) +
+                Number(
+                  totalDistanceKM *
+                    (process.env.REACT_APP_SHIPPING_CHARGES / 100)
+                )
+            ).toFixed(2),
+            payment_type: paymentType,
+          },
+          { headers }
+        ),
+        {
+          loading: "On Going Payment...", // Message shown during loading
+          success: <b>Payment successfully!</b>, // Success message
+          error: <b>Failed to Payment</b>, // Error message
+        }
+      );
+      // setPaymentTransactionId(results.data.payment_transaction_id);
+      try {
+        const results1 = await toast.promise(
+          axios.post(
+            `http://localhost:8000/api/v1/order?username=${window.localStorage.getItem(
+              "username"
+            )}&role=${window.localStorage.getItem("role")}`,
+            {
+              prdouctQuanties: selectedQuantities,
+              productList: cartList,
+              order_buyer_first_name: buyerFirstName,
+              order_buyer_Last_name: buyerLastName,
+              order_transaction_id: results.data.payment_transaction_id,
+              order_total_cost: Number(TotalAmount).toFixed(2),
+              order_shipping_cost: Number(
+                totalDistanceKM * (process.env.REACT_APP_SHIPPING_CHARGES / 100)
+              ).toFixed(2),
+              order_shipping_location: location,
+              latitude,
+              longitude,
+              order_shipping_address_country: country,
+              order_shipping_address_state: state,
+              order_shipping_address_city: city,
+              order_shipping_address_pincode: pincode,
+              order_shipping_address_mobile_number: phoneNumber,
+            },
+            { headers }
+          ),
+          {
+            loading: "Order placing...", // Message shown during loading
+            success: <b>Order placed successfully!</b>, // Success message
+            error: <b>Failed to order place.</b>, // Error message
+          }
+        );
+      } catch (err) {
+        LogOut();
+        console.error("Error in order placing:", err);
+      }
+    } catch (err) {
+      LogOut();
+      console.error("Error updating profile:", err);
+    }
+  };
 
   return (
     <ThemeProvider theme={showCustomTheme ? checkoutTheme : defaultTheme}>
@@ -514,6 +596,7 @@ export default function Checkout({
                   />
                 ) : activeStep === 1 ? (
                   <PaymentForm
+                    handleOrderPayment={handleOrderPayment}
                     paymentType={paymentType}
                     setPaymentType={setPaymentType}
                   />

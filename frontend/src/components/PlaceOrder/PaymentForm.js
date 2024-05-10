@@ -28,7 +28,11 @@ const FormGrid = styled("div")(() => ({
   flexDirection: "column",
 }));
 
-export default function PaymentForm({ paymentType, setPaymentType }) {
+export default function PaymentForm({
+  paymentType,
+  setPaymentType,
+  handleOrderPayment,
+}) {
   // const [paymentType, setPaymentType] = React.useState("creditCard");
   const [cardNumber, setCardNumber] = React.useState("");
   const [cvv, setCvv] = React.useState("");
@@ -272,7 +276,11 @@ export default function PaymentForm({ paymentType, setPaymentType }) {
           justifyContent: "center",
         }}
       >
-        <Button variant="contained" color="primary">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleOrderPayment}
+        >
           <PaymentIcon /> Pay
         </Button>
       </Stack>

@@ -7,7 +7,7 @@ const productRoutes = require("./routes/product");
 const cartRoutes = require("./routes/cart");
 const wishListRoutes = require("./routes/wishList");
 const { verifyTokenAndAuthorizationUser } = require("./middlewares/verifyUser");
-// const orderRoutes = require("./routes/order");
+const orderRoutes = require("./routes/order");
 // const sellerRoutes = require("./routes/seller");
 // const inventoryRoutes = require("./routes/inventory");
 const cors = require("cors");
@@ -31,7 +31,7 @@ app.use("/api/v1/bank-details", bankDetailsRoutes);
 app.use("/api/v1/product", productRoutes);
 app.use("/api/v1/cart", cartRoutes);
 app.use("/api/v1/wish-list", wishListRoutes);
-// app.use("/api/v1/order", orderRoutes);
+app.use("/api/v1/order", orderRoutes);
 // app.use("/api/v1/seller", sellerRoutes);
 // app.use("/api/v1/inventory", inventoryRoutes);
 
