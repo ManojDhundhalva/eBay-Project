@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -15,6 +15,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth";
+import { useProduct } from "../context/product";
 
 const FormGrid = styled(Grid)(() => ({
   display: "flex",
@@ -32,6 +33,8 @@ export default function ListProduct() {
   ]);
   const LPtheme = createTheme(getLPTheme());
   const navigate = useNavigate();
+
+  const { isAddedBankAccount } = useProduct();
   const { LogOut } = useAuth();
 
   const ImgUrl =
@@ -157,7 +160,18 @@ export default function ListProduct() {
     }
   };
 
-  // useEffect(() => {}, []);
+  const isFirstRun = useRef(true);
+  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      if (!isAddedBankAccount) {
+        toast("Please Create Account First!", {
+          icon: "😊",
+        });
+        navigate("/account");
+      }
+    }
+  }, [isAddedBankAccount]);
 
   return (
     <>

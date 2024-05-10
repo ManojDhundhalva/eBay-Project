@@ -102,7 +102,22 @@ const updateBankAccount = async (req, resp) => {
   }
 };
 
+const checkAccountExist = async (req, resp) => {
+  try {
+    const results = await pool.query(queries.ifExistAccount, [req.user.id]);
+
+    if (results.rows.length !== 1) {
+      return resp.status(200).json({ isAccount: false });
+    }
+    return resp.status(200).json({ isAccount: true });
+  } catch (err) {
+    console.log("Error in getBankAccount: ", err);
+    return resp.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   getBankAccount,
   updateBankAccount,
+  checkAccountExist,
 };

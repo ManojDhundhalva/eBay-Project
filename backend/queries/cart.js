@@ -5,6 +5,8 @@ SELECT
     p.product_price, 
     p.product_available_quantity,
 	s.seller_city,
+	s.seller_coordinates[0] AS latitude,
+	s.seller_coordinates[1] AS longitude,
     ARRAY_AGG(pi.product_image) AS product_images 
 FROM 
     product AS p 
@@ -21,7 +23,9 @@ GROUP BY
     p.product_title, 
     p.product_price,
     p.product_available_quantity,
-	s.seller_city;
+	s.seller_city,
+	s.seller_coordinates[0],
+	s.seller_coordinates[1];
 `;
 
 const addToCartByUserId = `

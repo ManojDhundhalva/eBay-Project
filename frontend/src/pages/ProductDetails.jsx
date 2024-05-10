@@ -22,6 +22,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
 function ProductDetails() {
+
   const navigate = useNavigate();
   const [product, setProduct] = useState({});
   const [selectedQuantity, setSelectedQuantity] = useState(1);
@@ -39,21 +40,6 @@ function ProductDetails() {
   const { LogOut } = useAuth();
   const ImgUrl =
     "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg";
-
-  // const availableQuantityOptions = [];
-  // for (let i = 1; i <= product.product_available_quantity; i++) {
-  //   availableQuantityOptions.push(
-  //     <MenuItem
-  //       onClick={() => {
-  //         setSelectedQuantity(i);
-  //       }}
-  //       key={i}
-  //       value={i}
-  //     >
-  //       {i}
-  //     </MenuItem>
-  //   );
-  // }
 
   const checkIsAddedToCart = () => {
     for (let i = 0; i < cartList.length; i++) {
@@ -139,7 +125,7 @@ function ProductDetails() {
 
   useEffect(() => {
     if (window.localStorage.getItem("product-id") === null) {
-      navigate("/");
+      navigate(-1);
     } else {
       getProductDetails();
       checkIsAddedToCart();
@@ -257,25 +243,7 @@ function ProductDetails() {
                     {product.product_available_quantity}
                   </Typography>
                 </Grid>
-                {/* <Grid
-                  item
-                  xs={10}
-                  style={{ marginTop: "1em", display: "flex" }}
-                >
-                  <Typography variant="h6" fontWeight="bold">
-                    Select Quantity:
-                  </Typography>
-                  <Select
-                    labelId="select-quantity-label"
-                    id="select-quantity"
-                    value={selectedQuantity}
-                    onChange={(event) =>
-                      setSelectedQuantity(event.target.value)
-                    }
-                  >
-                    {availableQuantityOptions}
-                  </Select>
-                </Grid> */}
+
                 <Grid item xs={10} style={{ marginTop: "1em" }}>
                   <Typography variant="h5" fontWeight="bold">
                     Product Average Rating: {product.product_avg_rating}

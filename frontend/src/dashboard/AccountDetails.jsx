@@ -369,34 +369,6 @@ export default function AccountDetails() {
         setSellerCountry(data.seller_country);
 
         // // Find corresponding country, state, and city objects
-        // const foundCountry = countryList.find(
-        //   (country) => country.name === data.seller_country
-        // );
-        // if (foundCountry) {
-        //   setCountry(foundCountry);
-        //   setStateList(State.getStatesOfCountry(foundCountry.isoCode));
-        // }
-
-        // const foundState = stateList.find(
-        //   (state) => state.name === data.seller_state
-        // );
-        // if (foundState) {
-        //   setState(foundState);
-        //   setCityList(
-        //     City.getCitiesOfState(foundState.countryCode, foundState.isoCode)
-        //   );
-        // }
-
-        // const foundCity = cityList.find(
-        //   (city) => city.name === data.seller_city
-        // );
-        // if (foundCity) {
-        //   setCity(foundCity);
-        // }
-
-        // console.log(country);
-        // console.log(state);
-        // console.log(city);
       } else {
         console.error("Failed to fetch account details");
       }
@@ -409,6 +381,33 @@ export default function AccountDetails() {
   React.useEffect(() => {
     getAccount();
   }, []);
+
+  useEffect(() => {
+    const foundCountry = countryList.find(
+      (country) => country.name === sellerCountry
+    );
+    if (foundCountry) {
+      setCountry(foundCountry);
+      setStateList(State.getStatesOfCountry(foundCountry.isoCode));
+    }
+  }, [sellerCountry]);
+
+  useEffect(() => {
+    const foundState = stateList.find((state) => state.name === sellerState);
+    if (foundState) {
+      setState(foundState);
+      setCityList(
+        City.getCitiesOfState(foundState.countryCode, foundState.isoCode)
+      );
+    }
+  }, [stateList]);
+
+  useEffect(() => {
+    const foundCity = cityList.find((city) => city.name === sellerCity);
+    if (foundCity) {
+      setCity(foundCity.name);
+    }
+  }, [cityList]);
 
   return (
     <>
@@ -536,44 +535,29 @@ export default function AccountDetails() {
                 <FormLabel htmlFor="country" required>
                   Country
                 </FormLabel>
-                {!editOn ? (
-                  <TextField
-                    value={sellerCountry}
-                    id="search"
-                    variant="outlined"
-                    style={{
-                      marginTop: "0.4em",
-                      width: "20em",
-                    }}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                ) : (
-                  <Select
-                    id="country"
-                    name="country"
-                    value={country}
-                    defaultValue={sellerCountry}
-                    onChange={(e) => {
-                      setCountry(e.target.value);
-                    }}
-                    displayEmpty
-                    disabled={!editOn}
-                    error={country === ""}
-                  >
-                    <MenuItem value="">Select Country</MenuItem>
-                    {countryList.map((item, index) => (
-                      <MenuItem
-                        key={index}
-                        value={item}
-                        selected={item.name === country.name}
-                      >
-                        {item.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                )}
+                <Select
+                  id="country"
+                  name="country"
+                  value={country}
+                  onChange={(e) => {
+                    setCountry(e.target.value);
+                  }}
+                  displayEmpty
+                  inputProps={{
+                    readOnly: !editOn,
+                  }}
+                  error={country === ""}
+                >
+                  <MenuItem value="">Select Country</MenuItem>
+                  {countryList.map((item, index) => (
+                    <MenuItem
+                      key={index}
+                      value={item}
+                    >
+                      {item.name}
+                    </MenuItem>
+                  ))}
+                </Select>
                 {editOn && (
                   <FormHelperText style={{ color: "red" }}>
                     {country === "" ? "Please, Select country" : ""}
@@ -584,44 +568,29 @@ export default function AccountDetails() {
                 <FormLabel htmlFor="state" required>
                   State
                 </FormLabel>
-                {!editOn ? (
-                  <TextField
-                    value={sellerState}
-                    id="search"
-                    variant="outlined"
-                    style={{
-                      marginTop: "0.4em",
-                      width: "20em",
-                    }}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                ) : (
-                  <Select
-                    id="state"
-                    name="state"
-                    defaultValue={sellerState}
-                    value={state}
-                    onChange={(e) => {
-                      setState(e.target.value);
-                    }}
-                    displayEmpty
-                    disabled={!editOn}
-                    error={state === ""}
-                  >
-                    <MenuItem value="">Select State</MenuItem>
-                    {stateList.map((item, index) => (
-                      <MenuItem
-                        key={index}
-                        value={item}
-                        selected={item.name === state.name}
-                      >
-                        {item.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                )}
+                <Select
+                  id="state"
+                  name="state"
+                  value={state}
+                  onChange={(e) => {
+                    setState(e.target.value);
+                  }}
+                  displayEmpty
+                  inputProps={{
+                    readOnly: !editOn,
+                  }}
+                  error={state === ""}
+                >
+                  <MenuItem value="">Select State</MenuItem>
+                  {stateList.map((item, index) => (
+                    <MenuItem
+                      key={index}
+                      value={item}
+                    >
+                      {item.name}
+                    </MenuItem>
+                  ))}
+                </Select>
                 {editOn && (
                   <FormHelperText style={{ color: "red" }}>
                     {state === "" ? "Please, Select State" : ""}
@@ -632,44 +601,29 @@ export default function AccountDetails() {
                 <FormLabel htmlFor="city" required>
                   City
                 </FormLabel>
-                {!editOn ? (
-                  <TextField
-                    value={sellerCity}
-                    id="search"
-                    variant="outlined"
-                    style={{
-                      marginTop: "0.4em",
-                      width: "20em",
-                    }}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                ) : (
-                  <Select
-                    defaultValue={sellerCity}
-                    id="city"
-                    name="city"
-                    value={city}
-                    onChange={(e) => {
-                      setCity(e.target.value);
-                    }}
-                    displayEmpty
-                    disabled={!editOn}
-                    error={city === ""}
-                  >
-                    <MenuItem value="">Select City</MenuItem>
-                    {cityList.map((item, index) => (
-                      <MenuItem
-                        key={index}
-                        value={item.name}
-                        selected={item.name === city}
-                      >
-                        {item.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                )}
+                <Select
+                  id="city"
+                  name="city"
+                  value={city}
+                  onChange={(e) => {
+                    setCity(e.target.value);
+                  }}
+                  displayEmpty
+                  inputProps={{
+                    readOnly: !editOn,
+                  }}
+                  error={city === ""}
+                >
+                  <MenuItem value="">Select City</MenuItem>
+                  {cityList.map((item, index) => (
+                    <MenuItem
+                      key={index}
+                      value={item.name}
+                    >
+                      {item.name}
+                    </MenuItem>
+                  ))}
+                </Select>
                 {editOn && (
                   <FormHelperText style={{ color: "red" }}>
                     {city === "" ? "Please, Select City" : ""}

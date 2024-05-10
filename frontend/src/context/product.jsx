@@ -9,8 +9,31 @@ const productContext = createContext();
 export const ProductProvider = ({ children }) => {
   const [cartList, setCartList] = useState([]);
   const [wishList, setWishList] = useState([]);
+  const [isAddedBankAccount, setIsAddedBankAccount] = useState(false);
+
   const { LogOut } = useAuth();
   const navigate = useNavigate();
+
+  const checkBankAccount = async () => {
+    const headers = {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${window.localStorage.getItem("token")}`,
+    };
+    try {
+      const results = await axios.get(
+        `http://localhost:8000/api/v1/bank-details/account-exist?username=${window.localStorage.getItem(
+          "username"
+        )}&role=${window.localStorage.getItem("role")}`,
+        {
+          headers,
+        }
+      );
+      setIsAddedBankAccount(results.data.isAccount);
+    } catch (err) {
+      // LogOut();
+      console.log("Error -> ", err);
+    }
+  };
 
   const getCart = async () => {
     const headers = {
@@ -173,6 +196,7 @@ export const ProductProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    checkBankAccount();
     getCart();
     getWishList();
   }, []);
@@ -188,6 +212,8 @@ export const ProductProvider = ({ children }) => {
         setWishList,
         addToWishList,
         deleteFromWishList,
+        isAddedBankAccount,
+        setIsAddedBankAccount,
       }}
     >
       {children}

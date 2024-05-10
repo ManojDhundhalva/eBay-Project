@@ -7,6 +7,7 @@ const {
 const router = Router();
 
 router.get("/", verifyTokenAndAuthorizationUser, controller.getBankAccount);
+router.get("/account-exist", verifyTokenAndAuthorizationUser, controller.checkAccountExist);
 router.post("/", verifyTokenAndAuthorizationUser, controller.updateBankAccount);
 
 module.exports = router;

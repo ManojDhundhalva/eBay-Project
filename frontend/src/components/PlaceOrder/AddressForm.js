@@ -12,6 +12,9 @@ import MenuItem from "@mui/material/MenuItem";
 import FormHelperText from "@mui/material/FormHelperText";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
+import axios from "axios";
+import TextField from "@mui/material/TextField";
 
 const FormGrid = styled(Grid)(() => ({
   display: "flex",
@@ -23,8 +26,6 @@ export default function AddressForm({
   setBuyerFirstName,
   buyerLastName,
   setBuyerLastName,
-  shippingAddressLine,
-  setShippingAddressLine,
   country,
   setCountry,
   state,
@@ -35,10 +36,14 @@ export default function AddressForm({
   setPincode,
   phoneNumber,
   setPhoneNumber,
+  location,
+  setLocation,
+  latitude,
+  setLatitude,
+  longitude,
+  setLongitude,
 }) {
-  const [countryList, setCountryList] = useState([]);
-  const [stateList, setStateList] = useState([]);
-  const [cityList, setCityList] = useState([]);
+  const [apiKey, setApiKey] = useState("");
 
   const handlePincode = (e) => {
     const input = e.target.value;
@@ -59,19 +64,90 @@ export default function AddressForm({
   };
 
   useEffect(() => {
-    setCountryList(Country.getAllCountries());
+    const fetchApiKey = async () => {
+      try {
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+        };
+        const response = await axios.get(
+          `http://localhost:8000/api/v1/getTomTomApiKey?username=${window.localStorage.getItem(
+            "username"
+          )}&role=${window.localStorage.getItem("role")}`,
+          { headers }
+        );
+        setApiKey(response.data.apiKey);
+      } catch (error) {
+        console.error("Error fetching API key:", error);
+      }
+    };
+    fetchApiKey();
   }, []);
 
   useEffect(() => {
-    setState("");
-    setCity("");
-    setStateList(State.getStatesOfCountry(country.isoCode));
-  }, [country]);
+    if (apiKey) {
+      initializeTomTomSearchBox(apiKey);
+    }
+  }, [apiKey]);
 
-  useEffect(() => {
-    setCity("");
-    setCityList(City.getCitiesOfState(state.countryCode, state.isoCode));
-  }, [state]);
+  const initializeTomTomSearchBox = (apiKey) => {
+    var options = {
+      searchOptions: {
+        key: apiKey,
+        language: "en-GB",
+        limit: 5,
+        placeholder: "Search for Nearby Location",
+      },
+      autocompleteOptions: {
+        key: apiKey,
+        language: "en-GB",
+      },
+    };
+
+    options.container = "#searchBoxContainer";
+
+    var ttSearchBox = new window.tt.plugins.SearchBox(
+      window.tt.services,
+      options
+    );
+
+    ttSearchBox.on("tomtom.searchbox.resultselected", function (data) {
+      if (data.data?.text !== undefined) {
+        // console.log(data.data.text);
+        setLocation(data.data.text);
+      }
+      if (data.data.result.address?.country !== undefined) {
+        // console.log(data.data.result.address.country);
+        setCountry(data.data.result.address.country);
+      }
+      if (data.data.result.address?.countrySubdivision !== undefined) {
+        // console.log(data.data.result.address.countrySubdivision);
+        setState(data.data.result.address.countrySubdivision);
+      }
+      if (data.data.result.address?.countrySecondarySubdivision !== undefined) {
+        // console.log(data.data.result.address.countrySecondarySubdivision);
+        setCity(data.data.result.address.countrySecondarySubdivision);
+      }
+      if (data.data.result.address?.postalCode !== undefined) {
+        // console.log(data.data.result.address.postalCode);
+        setPincode(data.data.result.address.postalCode);
+      } else {
+        setPincode("");
+      }
+      if (
+        data.data.result.position?.lat !== undefined &&
+        data.data.result.position?.lng !== undefined
+      ) {
+        setLatitude(data.data.result.position.lat);
+        setLongitude(data.data.result.position.lng);
+      } else {
+        console.log("Position data is not available:", data);
+      }
+    });
+
+    var searchBoxHTML = ttSearchBox.getSearchBoxHTML();
+    document.getElementById("searchBoxContainer").appendChild(searchBoxHTML);
+  };
 
   return (
     <Grid container spacing={3}>
@@ -110,36 +186,17 @@ export default function AddressForm({
         />
       </FormGrid>
       <FormGrid item xs={12}>
-        <FormLabel htmlFor="address1" required>
-          Address line
+        <FormLabel htmlFor="location" required>
+          <PlaceOutlinedIcon /> Location
         </FormLabel>
-        <OutlinedInput
-          value={shippingAddressLine}
-          id="address"
-          name="address"
-          type="address"
-          placeholder="Apartment, suite, unit"
-          autoComplete="shipping address-line"
-          required
-          onChange={(e) => {
-            setShippingAddressLine(e.target.value);
+        <div>{location}</div>
+        <Grid
+          style={{
+            marginTop: "0.4em",
+            width: "20em",
           }}
-        />
-      </FormGrid>
-      <FormGrid item xs={6}>
-        <FormLabel htmlFor="phone-number" required>
-          Phone Number
-        </FormLabel>
-        <OutlinedInput
-          value={phoneNumber}
-          id="phone-number"
-          name="phone-number"
-          type="phone-number"
-          placeholder="1234567890"
-          autoComplete="phoneNumber"
-          required
-          onChange={handlePhoneNumber}
-        />
+          id="searchBoxContainer"
+        ></Grid>
       </FormGrid>
       <FormGrid item xs={6}>
         <FormLabel htmlFor="zip" required>
@@ -157,70 +214,87 @@ export default function AddressForm({
         />
       </FormGrid>
       <FormGrid item xs={6}>
-        <FormLabel htmlFor="country" required>
-          Country
+        <FormLabel htmlFor="phone-number" required>
+          Phone Number
         </FormLabel>
-        <Select
-          id="country"
-          name="country"
-          value={country}
-          onChange={(e) => {
-            setCountry(e.target.value);
-          }}
-          displayEmpty
-        >
-          <MenuItem value="">Select Country</MenuItem>
-          {countryList.map((item, index) => (
-            <MenuItem key={index} value={item}>
-              {item.name}
-            </MenuItem>
-          ))}
-        </Select>
-        {/* <FormHelperText>Without label</FormHelperText> */}
+        <OutlinedInput
+          value={phoneNumber}
+          id="phone-number"
+          name="phone-number"
+          type="phone-number"
+          placeholder="1234567890"
+          autoComplete="phoneNumber"
+          required
+          onChange={handlePhoneNumber}
+        />
+      </FormGrid>
+      <FormGrid item xs={12}>
+        <hr />
       </FormGrid>
       <FormGrid item xs={6}>
-        <FormLabel htmlFor="state" required>
-          State
-        </FormLabel>
-        <Select
+        <FormLabel htmlFor="latitude">Latitude</FormLabel>
+        <TextField
+          value={latitude}
+          id="latitude"
+          name="latitude"
+          type="latitude"
+          placeholder="23.532"
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+      </FormGrid>
+      <FormGrid item xs={6}>
+        <FormLabel htmlFor="longitude">Longitude</FormLabel>
+        <TextField
+          value={longitude}
+          id="longitude"
+          name="longitude"
+          type="longitude"
+          placeholder="23.532"
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+      </FormGrid>
+      <FormGrid item xs={6}>
+        <FormLabel htmlFor="country">Country</FormLabel>
+        <TextField
+          value={country}
+          id="Country"
+          name="Country"
+          type="text"
+          placeholder="Country"
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+      </FormGrid>
+      <FormGrid item xs={6}>
+        <FormLabel htmlFor="state">State</FormLabel>
+        <TextField
+          value={state}
           id="state"
           name="state"
-          value={state}
-          onChange={(e) => {
-            setState(e.target.value);
+          type="text"
+          placeholder="State"
+          InputProps={{
+            readOnly: true,
           }}
-          displayEmpty
-        >
-          <MenuItem value="">Select State</MenuItem>
-          {stateList.map((item, index) => (
-            <MenuItem key={index} value={item}>
-              {item.name}
-            </MenuItem>
-          ))}
-        </Select>
-        {/* <FormHelperText>Without label</FormHelperText> */}
+        />
       </FormGrid>
       <FormGrid item xs={6}>
-        <FormLabel htmlFor="city" required>
-          City
-        </FormLabel>
-        <Select
+        <FormLabel htmlFor="city">City</FormLabel>
+        <TextField
+          value={city}
           id="city"
           name="city"
-          value={city}
-          onChange={(e) => {
-            setCity(e.target.value);
+          type="text"
+          placeholder="City"
+          InputProps={{
+            readOnly: true,
           }}
-          displayEmpty
-        >
-          <MenuItem value="">Select City</MenuItem>
-          {cityList.map((item, index) => (
-            <MenuItem key={index} value={item.name}>
-              {item.name}
-            </MenuItem>
-          ))}
-        </Select>
-        {/* <FormHelperText>Without label</FormHelperText> */}
+        />
       </FormGrid>
       <FormGrid item xs={12}>
         &nbsp;

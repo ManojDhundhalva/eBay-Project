@@ -33,6 +33,7 @@ import ToggleColorMode from "../ToggleColorMode";
 import { useAuth } from "../../context/auth";
 import { useProduct } from "../../context/product";
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 
 function ToggleCustomTheme({ showCustomTheme, toggleCustomTheme }) {
   return (
@@ -108,7 +109,6 @@ export default function Checkout({
 
   const [buyerFirstName, setBuyerFirstName] = React.useState("");
   const [buyerLastName, setBuyerLastName] = React.useState("");
-  const [shippingAddressLine, setShippingAddressLine] = React.useState("");
   const [country, setCountry] = React.useState("");
   const [state, setState] = React.useState("");
   const [city, setCity] = React.useState("");
@@ -116,6 +116,10 @@ export default function Checkout({
   const [phoneNumber, setPhoneNumber] = React.useState("");
   const [paymentType, setPaymentType] = React.useState("creditCard"); //bankTransfer
   const [isPaid, setIsPaid] = React.useState(false);
+
+  const [location, setLocation] = useState("");
+  const [latitude, setLatitude] = useState(0.0);
+  const [longitude, setLongitude] = useState(0.0);
 
   const { mode, setMode } = useAuth();
   const [showCustomTheme, setShowCustomTheme] = React.useState(true);
@@ -127,96 +131,71 @@ export default function Checkout({
     setMode((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
-  const toggleCustomTheme = () => {
-    setShowCustomTheme((prev) => !prev);
-  };
-
   const handleNext = () => {
-    setActiveStep(activeStep + 1);
+    if (
+      activeStep == 0 &&
+      (location === "" || phoneNumber.length !== 10 || pincode === "",
+      buyerFirstName === "" || buyerLastName === "")
+    ) {
+      toast("Please, Fill Your Details", {
+        icon: "👏",
+      });
+    } else {
+      setActiveStep(activeStep + 1);
+    }
   };
 
   const handleBack = () => {
     setActiveStep(activeStep - 1);
   };
 
-  const getUniqueCities = () => {
-    const uniqueCities = Array.from(
-      new Set(cartList.map((city) => city.seller_city))
-    );
-    return uniqueCities;
-  };
+  const [uniqueCities, setUniqueCities] = useState([]);
 
-  const [coordinatesData, setCoordinatesData] = useState(null); //source
-
+  // Function to update unique cities whenever products change
   useEffect(() => {
-    async function fetchCityCoordinates() {
-      if (city === "") {
-        return;
-      }
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${city}`
-      );
-      const data = await response.json();
-      if (data && data.length > 0) {
-        const cityCoordinates = {
-          city: city,
-          latitude: parseFloat(data[0].lat),
-          longitude: parseFloat(data[0].lon),
-        };
-        setCoordinatesData(cityCoordinates);
-      } else {
-        setCoordinatesData(null);
-      }
-    }
-    fetchCityCoordinates();
-  }, [city]);
-
-  const uniqueCities = getUniqueCities();
-  const [cityData, setCityData] = useState([]); // destination
-  useEffect(() => {
-    async function fetchCityCoordinates() {
-      const promises = uniqueCities.map(async (city) => {
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${city}`
+    const updateUniqueCities = () => {
+      // Use reduce to filter out unique combinations of seller_city, latitude, and longitude
+      const uniqueCitiesArray = cartList.reduce((unique, product) => {
+        // Check if a product with the same seller_city, latitude, and longitude already exists
+        const existingProduct = unique.find(
+          (p) =>
+            p.seller_city === product.seller_city &&
+            p.latitude === product.latitude &&
+            p.longitude === product.longitude
         );
-        const data = await response.json();
-        if (data && data.length > 0) {
-          return {
-            city: city,
-            latitude: parseFloat(data[0].lat),
-            longitude: parseFloat(data[0].lon),
-          };
-        } else {
-          return {
-            city: city,
-            latitude: null,
-            longitude: null,
-          };
-        }
-      });
-      const cityCoordinates = await Promise.all(promises);
-      setCityData(cityCoordinates);
-    }
 
-    fetchCityCoordinates();
-  }, []);
-  useEffect(() => {
-    console.log(cityData);
-  }, [cityData]);
-  useEffect(() => {
-    console.log(city);
-  }, [city]);
-  useEffect(() => {
-    console.log(coordinatesData);
-  }, [coordinatesData]);
+        // If not, add the product to the unique array
+        if (!existingProduct) {
+          unique.push({
+            seller_city: product.seller_city,
+            latitude: product.latitude,
+            longitude: product.longitude,
+          });
+        }
+
+        return unique;
+      }, []);
+
+      // Set the state of uniqueCities
+      setUniqueCities(uniqueCitiesArray);
+    };
+
+    // Call the update function
+    updateUniqueCities();
+  }, [cartList]);
+
+  // useEffect(() => {
+  //   console.log(uniqueCities);
+  // }, [uniqueCities]);
 
   const [distances, setDistances] = useState([]);
+  const [totalDistanceKM, setTotalDistanceKM] = useState(0);
 
   const calculateDistance = (dest) => {
     const R = 6371; // Earth's radius in kilometers
 
     // Check if coordinatesData is null
-    if (!coordinatesData) {
+    if (latitude === "" || longitude === "") {
       return {
         sourceCity: "Unknown",
         destinationCity: dest.city,
@@ -224,8 +203,9 @@ export default function Checkout({
       };
     }
 
-    const { latitude: lat1, longitude: lon1 } = coordinatesData;
-    const { latitude: lat2, longitude: lon2, city } = dest;
+    const lat1 = latitude;
+    const lon1 = longitude;
+    const { latitude: lat2, longitude: lon2, seller_city } = dest;
 
     // Convert latitude and longitude from degrees to radians
     const dLat = (lat2 - lat1) * (Math.PI / 180);
@@ -244,42 +224,41 @@ export default function Checkout({
     const calculatedDistance = R * c;
 
     return {
-      sourceCity: coordinatesData.city,
-      destinationCity: city,
+      sourceCity: seller_city,
+      destinationCity: location,
       distanceKM: calculatedDistance.toFixed(2),
     };
   };
 
   const handleCalculateDistance = () => {
-    const distancesArray = cityData.map((dest) => calculateDistance(dest));
+    const distancesArray = uniqueCities.map((dest) => calculateDistance(dest));
     setDistances(distancesArray);
   };
 
   useEffect(() => {
     handleCalculateDistance();
-  }, [coordinatesData]);
+  }, [latitude, longitude]);
 
   useEffect(() => {
     console.log("distances", distances);
   }, [distances]);
 
+  useEffect(() => {
+    const total = distances.reduce(
+      (acc, curr) => Number(acc) + Number(curr.distanceKM),
+      0
+    );
+    setTotalDistanceKM(total);
+  }, [distances]);
+
   return (
     <ThemeProvider theme={showCustomTheme ? checkoutTheme : defaultTheme}>
       <CssBaseline />
-      {distances.length > 0 && (
-        <div>
-          <h3>Distances</h3>
-          <ul>
-            {distances.map((distance, index) => (
-              <li key={index}>
-                Distance from {distance.sourceCity} to{" "}
-                {distance.destinationCity}: {distance.distanceKM} kilometers
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      <Grid container sx={{ height: { xs: "100%", sm: "100dvh" } }}>
+      <Grid
+        container
+        sx={{ height: { xs: "100%", sm: "100dvh" } }}
+        className="mb-5"
+      >
         <Grid
           item
           xs={12}
@@ -332,6 +311,7 @@ export default function Checkout({
             }}
           >
             <Info
+              totalDistanceKM={totalDistanceKM}
               totalQuantities={totalQuantities}
               selectedQuantities={selectedQuantities}
               totalPrice={activeStep >= 1 ? TotalAmount : TotalAmount}
@@ -515,8 +495,6 @@ export default function Checkout({
                     setBuyerFirstName={setBuyerFirstName}
                     buyerLastName={buyerLastName}
                     setBuyerLastName={setBuyerLastName}
-                    shippingAddressLine={shippingAddressLine}
-                    setShippingAddressLine={setShippingAddressLine}
                     country={country}
                     setCountry={setCountry}
                     state={state}
@@ -527,6 +505,12 @@ export default function Checkout({
                     setPincode={setPincode}
                     phoneNumber={phoneNumber}
                     setPhoneNumber={setPhoneNumber}
+                    location={location}
+                    setLocation={setLocation}
+                    latitude={latitude}
+                    setLatitude={setLatitude}
+                    longitude={longitude}
+                    setLongitude={setLongitude}
                   />
                 ) : activeStep === 1 ? (
                   <PaymentForm
@@ -581,6 +565,7 @@ export default function Checkout({
                     variant="contained"
                     endIcon={<ChevronRightRoundedIcon />}
                     onClick={handleNext}
+                    className="mb-5"
                     sx={{
                       width: { xs: "100%", sm: "fit-content" },
                     }}
