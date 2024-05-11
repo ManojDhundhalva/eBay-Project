@@ -23,6 +23,49 @@ INSERT INTO product_description (
     value
 ) VALUES ($1, $2, $3);
 `;
+/**/
+const findSellerCityStateCountry = `
+SELECT seller_city, seller_state, seller_country FROM seller WHERE seller_user_id = $1;
+`;
+
+const IfExistSellerSideManager = `
+SELECT username FROM users WHERE username = $1;
+`;
+
+const createAccount = `
+INSERT INTO users (
+    id,
+    firstname,
+    lastname,
+    username,
+    emailid,
+    password,
+    role,
+    phone_number
+) 
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
+`;
+
+const createInventory = `
+INSERT INTO inventory_house (
+    inventory_house_id,
+    manager_id,
+    inventory_house_name,
+    inventory_house_city,
+    inventory_house_state,
+    inventory_house_country
+) 
+VALUES ($1, $2, $3, $4, $5, $6);
+`;
+
+const createShipper = `
+INSERT INTO shipper (
+    shipper_id,
+    shipper_inventory_house_id
+) 
+VALUES ($1, $2);
+`;
+/**/
 
 const getAllProducts = `
 SELECT 
@@ -117,4 +160,9 @@ module.exports = {
   checkIfAlredyWatched,
   watchProduct,
   incrementWatchCount,
+  IfExistSellerSideManager,
+  createAccount,
+  findSellerCityStateCountry,
+  createInventory,
+  createShipper,
 };

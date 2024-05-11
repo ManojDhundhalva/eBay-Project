@@ -341,7 +341,7 @@ export default function Register() {
                   >
                     User
                   </MenuItem>
-                  <MenuItem
+                  {/* <MenuItem
                     style={{ fontFamily: "Quicksand", fontWeight: "bold" }}
                     value="manager"
                   >
@@ -352,7 +352,7 @@ export default function Register() {
                     value="shipper"
                   >
                     Shipper
-                  </MenuItem>
+                  </MenuItem> */}
                 </Select>
               </FormGrid>
               <FormGrid item xs={12} md={6} className="mt-3">

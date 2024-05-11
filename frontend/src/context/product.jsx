@@ -11,7 +11,7 @@ export const ProductProvider = ({ children }) => {
   const [wishList, setWishList] = useState([]);
   const [isAddedBankAccount, setIsAddedBankAccount] = useState(false);
 
-  const { LogOut } = useAuth();
+  const { LogOut, isLoggedIn } = useAuth();
   const navigate = useNavigate();
 
   const checkBankAccount = async () => {
@@ -199,7 +199,7 @@ export const ProductProvider = ({ children }) => {
     checkBankAccount();
     getCart();
     getWishList();
-  }, []);
+  }, [isLoggedIn]);
 
   return (
     <productContext.Provider

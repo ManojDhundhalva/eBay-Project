@@ -62,6 +62,54 @@ WHERE
     product_id = $1 AND user_id = $2;
 `;
 
+//Order Status Proccess
+const makeShippingStatus = `
+INSERT INTO shipping_status (
+    tracking_id,
+    order_id,
+    shipping_status_order_placed,
+    shipping_status_in_queue_at_seller_inventory
+) VALUES ($1, $2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+`;
+
+const IfExistBuyerSideManager = `
+SELECT username FROM users WHERE username = $1;
+`;
+
+const createAccount = `
+INSERT INTO users (
+    id,
+    firstname,
+    lastname,
+    username,
+    emailid,
+    password,
+    role,
+    phone_number
+) 
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
+`;
+
+const createInventory = `
+INSERT INTO inventory_house (
+    inventory_house_id,
+    manager_id,
+    inventory_house_name,
+    inventory_house_city,
+    inventory_house_state,
+    inventory_house_country
+) 
+VALUES ($1, $2, $3, $4, $5, $6);
+`;
+
+const createShipper = `
+INSERT INTO shipper (
+    shipper_id,
+    shipper_inventory_house_id
+) 
+VALUES ($1, $2);
+`;
+
 module.exports = {
   makeOrderPayment,
   makeOrderAfterPayment,
@@ -69,4 +117,9 @@ module.exports = {
   makeUpdateProductQuantity,
   transferMoneyToSeller,
   clearCart,
+  makeShippingStatus,
+  IfExistBuyerSideManager,
+  createAccount,
+  createInventory,
+  createShipper,
 };

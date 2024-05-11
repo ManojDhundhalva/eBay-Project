@@ -1,6 +1,17 @@
 const pool = require("../db");
 const queries = require("../queries/product");
+const bcrypt = require("bcrypt");
+const util = require("util");
 const { v4: uuidv4 } = require("uuid");
+
+require("dotenv").config();
+
+const saltRounds = Number(process.env.SALT_ROUNDS);
+const hashAsync = util.promisify(bcrypt.hash);
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
 const listProduct = async (req, resp) => {
   const {
@@ -33,6 +44,95 @@ const listProduct = async (req, resp) => {
         uniqueId,
         description.key,
         description.value,
+      ]);
+    }
+
+    const results = await pool.query(queries.findSellerCityStateCountry, [
+      req.user.id,
+    ]);
+
+    const name =
+      String(capitalizeFirstLetter(results.rows[0].seller_city)) +
+      String(capitalizeFirstLetter(results.rows[0].seller_state)) +
+      String(capitalizeFirstLetter(results.rows[0].seller_country));
+
+    const managerName = name + "Manager";
+    const shipperName = name + "Shipper";
+
+    const usernameResult = await pool.query(queries.IfExistSellerSideManager, [
+      name,
+    ]);
+
+    if (usernameResult.rows.length === 0) {
+      const userManager = {
+        firstname: managerName,
+        lastname: managerName,
+        username: managerName,
+        emailid: managerName + "@gmail.com",
+        password: "123456789",
+        role: "manager",
+        phone_number: "1234567890",
+      };
+
+      const userShipper = {
+        firstname: shipperName,
+        lastname: shipperName,
+        username: shipperName,
+        emailid: shipperName + "@gmail.com",
+        password: "123456789",
+        role: "shipper",
+        phone_number: "1234567890",
+      };
+
+      const newPasswordManager = await hashAsync(
+        userManager.password,
+        saltRounds
+      );
+      const managerUniqueId = uuidv4();
+      const createAccountResult1 = await pool.query(queries.createAccount, [
+        managerUniqueId,
+        userManager.firstname,
+        userManager.lastname,
+        userManager.username,
+        userManager.emailid,
+        newPasswordManager,
+        userManager.role,
+        userManager.phone_number,
+      ]);
+
+      const newPasswordShipper = await hashAsync(
+        userShipper.password,
+        saltRounds
+      );
+      const shipperUniqueId = uuidv4();
+      const createAccountResult2 = await pool.query(queries.createAccount, [
+        shipperUniqueId,
+        userShipper.firstname,
+        userShipper.lastname,
+        userShipper.username,
+        userShipper.emailid,
+        newPasswordShipper,
+        userShipper.role,
+        userShipper.phone_number,
+      ]);
+
+      const inventory_house_name =
+        String(capitalizeFirstLetter(results.rows[0].seller_city)) +
+        " Inventory";
+
+      const inventoryUniqueId = uuidv4();
+      const createInventoryResult = await pool.query(queries.createInventory, [
+        inventoryUniqueId,
+        managerUniqueId,
+        inventory_house_name,
+        results.rows[0].seller_city,
+        results.rows[0].seller_state,
+        results.rows[0].seller_country,
+      ]);
+
+      const createShipperResult = await pool.query(queries.createShipper, [
+        shipperUniqueId,
+        inventoryUniqueId,
       ]);
     }
 

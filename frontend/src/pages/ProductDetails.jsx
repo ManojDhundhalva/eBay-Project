@@ -22,7 +22,6 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
 function ProductDetails() {
-
   const navigate = useNavigate();
   const [product, setProduct] = useState({});
   const [selectedQuantity, setSelectedQuantity] = useState(1);
@@ -290,28 +289,32 @@ function ProductDetails() {
                   </Typography>
                 </Grid>
                 <Grid item xs={10} style={{ marginTop: "1em" }}>
-                  {!isAddedToCart ? (
-                    <Button
-                      variant="contained"
-                      onClick={() => {
-                        addToCart(window.localStorage.getItem("product-id"));
-                        setIsAddedToCart(true);
-                      }}
-                    >
-                      <ShoppingCartIcon /> Add To Cart
-                    </Button>
+                  {product.product_available_quantity ? (
+                    !isAddedToCart ? (
+                      <Button
+                        variant="contained"
+                        onClick={() => {
+                          addToCart(window.localStorage.getItem("product-id"));
+                          setIsAddedToCart(true);
+                        }}
+                      >
+                        <ShoppingCartIcon /> Add To Cart
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="contained"
+                        onClick={() => {
+                          deleteFromCart(
+                            window.localStorage.getItem("product-id")
+                          );
+                          setIsAddedToCart(false);
+                        }}
+                      >
+                        <RemoveShoppingCartIcon /> Remove From The Cart
+                      </Button>
+                    )
                   ) : (
-                    <Button
-                      variant="contained"
-                      onClick={() => {
-                        deleteFromCart(
-                          window.localStorage.getItem("product-id")
-                        );
-                        setIsAddedToCart(false);
-                      }}
-                    >
-                      <RemoveShoppingCartIcon /> Remove From The Cart
-                    </Button>
+                    <></>
                   )}
                   {!isAddedToWishList ? (
                     <Button
