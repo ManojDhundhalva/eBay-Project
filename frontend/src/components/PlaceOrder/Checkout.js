@@ -94,7 +94,7 @@ export default function Checkout({
   setIsOrderPlaced,
   totalQuantities,
 }) {
-  const { cartList, setCartList } = useProduct();
+  const { cartList, setCartList, getOrderList } = useProduct();
   const { LogOut } = useAuth();
   const navigate = useNavigate();
 
@@ -313,6 +313,7 @@ export default function Checkout({
             error: <b>Failed to order place.</b>, // Error message
           }
         );
+        getOrderList();
         setOrderId(results1.data.order_id);
         handleNext();
       } catch (err) {

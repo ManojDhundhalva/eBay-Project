@@ -67,9 +67,8 @@ const makeShippingStatus = `
 INSERT INTO shipping_status (
     tracking_id,
     order_id,
-    shipping_status_order_placed,
-    shipping_status_in_queue_at_seller_inventory
-) VALUES ($1, $2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    shipping_status_order_placed
+) VALUES ($1, $2, CURRENT_TIMESTAMP);
 `;
 
 const IfExistBuyerSideManager = `
@@ -110,6 +109,25 @@ INSERT INTO shipper (
 VALUES ($1, $2);
 `;
 
+const getAllOrders = `
+SELECT o.*, s.*, 
+       (
+        SELECT ARRAY_AGG(
+            JSON_BUILD_OBJECT(
+                'product_image', (SELECT ARRAY_AGG(pi.product_image) FROM product_image AS pi WHERE pi.product_id = h.has_order_product_id),
+                'has_order_product_id', h.has_order_product_id,
+                'has_order_product_quantity', h.has_order_product_quantity
+            )
+        )
+        FROM has_order AS h
+        WHERE o.order_id = h.has_order_id
+       ) AS product
+FROM order_details AS o
+JOIN shipping_status AS s ON o.order_id = s.order_id
+WHERE o.order_buyer_id = $1
+GROUP BY o.order_id, s.tracking_id;
+`;
+
 module.exports = {
   makeOrderPayment,
   makeOrderAfterPayment,
@@ -122,4 +140,5 @@ module.exports = {
   createAccount,
   createInventory,
   createShipper,
+  getAllOrders,
 };

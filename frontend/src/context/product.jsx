@@ -9,6 +9,7 @@ const productContext = createContext();
 export const ProductProvider = ({ children }) => {
   const [cartList, setCartList] = useState([]);
   const [wishList, setWishList] = useState([]);
+  const [orderList, setOrderList] = useState([]);
   const [isAddedBankAccount, setIsAddedBankAccount] = useState(false);
 
   const { LogOut, isLoggedIn } = useAuth();
@@ -29,6 +30,28 @@ export const ProductProvider = ({ children }) => {
         }
       );
       setIsAddedBankAccount(results.data.isAccount);
+    } catch (err) {
+      // LogOut();
+      console.log("Error -> ", err);
+    }
+  };
+
+  const getOrderList = async () => {
+    const headers = {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${window.localStorage.getItem("token")}`,
+    };
+    try {
+      const results = await axios.get(
+        `http://localhost:8000/api/v1/order?username=${window.localStorage.getItem(
+          "username"
+        )}&role=${window.localStorage.getItem("role")}`,
+        {
+          headers,
+        }
+      );
+      console.log(results.data);
+      setOrderList(results.data);
     } catch (err) {
       // LogOut();
       console.log("Error -> ", err);
@@ -199,6 +222,7 @@ export const ProductProvider = ({ children }) => {
     checkBankAccount();
     getCart();
     getWishList();
+    getOrderList();
   }, [isLoggedIn]);
 
   return (
@@ -214,6 +238,9 @@ export const ProductProvider = ({ children }) => {
         deleteFromWishList,
         isAddedBankAccount,
         setIsAddedBankAccount,
+        getOrderList,
+        orderList,
+        setOrderList,
       }}
     >
       {children}

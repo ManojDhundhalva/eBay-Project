@@ -193,7 +193,18 @@ const makeOrder = async (req, resp) => {
   }
 };
 
+const getAllOrders = async (req, resp) => {
+  try {
+    const results = await pool.query(queries.getAllOrders, [req.user.id]);
+    resp.status(200).json(results.rows);
+  } catch (err) {
+    console.log("Error -> ", err);
+    resp.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   makePayment,
   makeOrder,
+  getAllOrders,
 };

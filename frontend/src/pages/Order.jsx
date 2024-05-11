@@ -22,24 +22,51 @@ import Checkout from "../components/PlaceOrder/Checkout";
 import { useProduct } from "../context/product";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import { styled } from "@mui/material/styles";
+import ButtonBase from "@mui/material/ButtonBase";
+import Box from "@mui/material/Box";
+import Stepper from "@mui/material/Stepper";
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+
+const steps = [
+  "order placed",
+  "order shipped",
+  "reached at your's inventory",
+  "Out for Delivery",
+  "Delivered",
+];
 
 function Order() {
-  const {
-    cartList,
-    addToCart,
-    deleteFromCart,
-    wishList,
-    addToWishList,
-    deleteFromWishList,
-  } = useProduct();
+  const { orderList } = useProduct();
 
   const navigate = useNavigate();
-  const isProductInWishList = (productId) => {
-    return wishList.some((item) => item.product_id === productId);
-  };
 
-  const isProductInCartList = (productId) => {
-    return cartList.some((item) => item.product_id === productId);
+  const formatTimestamp = (timestamp) => {
+    const currentTime = new Date();
+    const productTime = new Date(timestamp);
+    const timeDifference = currentTime - productTime;
+
+    const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(
+      (timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+    const minutes = Math.floor(
+      (timeDifference % (1000 * 60 * 60)) / (1000 * 60)
+    );
+
+    let formattedTimestamp = "";
+    if (days > 0) {
+      formattedTimestamp += `${days} days `;
+    }
+    if (hours > 0) {
+      formattedTimestamp += `${hours} hr `;
+    }
+    if (minutes > 0) {
+      formattedTimestamp += `${minutes} min `;
+    }
+
+    return formattedTimestamp ? `${formattedTimestamp} ago` : "Just now";
   };
 
   return (
@@ -68,118 +95,103 @@ function Order() {
                           Order List
                         </Typography>
                         <Typography variant="body1" className="mb-0 text-muted">
-                          {wishList.length} items
+                          {orderList.length} items
                         </Typography>
                       </div>
                       <hr className="my-4" />
                       {/* Repeat this section for each item */}
-                      {wishList.map((item) => (
-                        <React.Fragment key={item.product_id}>
+                      {orderList.map((item, index) => (
+                        <React.Fragment key={index}>
                           <Grid
                             container
                             spacing={2}
                             alignItems="center"
                             className="mb-4"
+                            justifyContent="space-between"
                           >
-                            {item.product_images.map((image, index) => (
+                            <Grid item xs={12} sm={8} container>
+                              <Grid item>
+                                <Grid item xs sx={{ textAlign: "left" }}>
+                                  <Typography
+                                    gutterBottom
+                                    variant="subtitle1"
+                                    component="div"
+                                  >
+                                    Order id : {item.order_buyer_id}
+                                  </Typography>
+                                  <Typography variant="body2" gutterBottom>
+                                    Tracking id : {item.tracking_id}
+                                  </Typography>
+                                  <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                  >
+                                    {new Date(
+                                      item.order_timestamp
+                                    ).toLocaleDateString()}{" "}
+                                    ({formatTimestamp(item.order_timestamp)})
+                                  </Typography>
+                                  <Typography
+                                    variant="subtitle1"
+                                    component="div"
+                                  >
+                                    &#x20b9;{" "}
+                                    {Number(
+                                      Number(
+                                        Number(item.order_shipping_cost) +
+                                          Number(
+                                            item.order_shipping_cost *
+                                              (process.env
+                                                .REACT_APP_EBAY_CHARGES /
+                                                100)
+                                          )
+                                      ) + Number(item.order_total_cost)
+                                    ).toFixed(2)}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            </Grid>
+                            {item.product.map((image, index) => (
                               <Grid key={index} item md={2} lg={2} xl={2}>
                                 <CardMedia
                                   width={50}
                                   height={100}
                                   component="img"
-                                  src={image}
+                                  src={image.product_image[0]}
                                   alt="Product Image"
                                   className="rounded-3"
                                 />
                               </Grid>
                             ))}
-                            <Grid
-                              item
-                              md={3}
-                              lg={2}
-                              xl={2}
-                              className="text-end"
-                            >
-                              <Typography variant="subtitle2" className="mb-0">
-                                &#x20b9;
-                                {Number(item.product_price).toFixed(2)}
-                              </Typography>
-                            </Grid>
-                            <Grid
-                              item
-                              md={0.5}
-                              lg={0.5}
-                              xl={0.5}
-                              className="text-end"
-                            >
-                              {/* Wishlist icon */}
-                              {item.product_available_quantity ? (
-                                isProductInCartList(item.product_id) ? (
-                                  <Tooltip
-                                    title="Remove From Cart"
-                                    TransitionComponent={Zoom}
-                                    arrow
-                                  >
-                                    <ShoppingCartIcon
-                                      onClick={() =>
-                                        deleteFromCart(item.product_id)
-                                      }
-                                      color="primary"
-                                      style={{ cursor: "pointer" }}
-                                    />
-                                  </Tooltip>
-                                ) : (
-                                  <Tooltip
-                                    title="Add To Cart"
-                                    TransitionComponent={Zoom}
-                                    arrow
-                                  >
-                                    <ShoppingCartOutlinedIcon
-                                      style={{ cursor: "pointer" }}
-                                      onClick={() => addToCart(item.product_id)}
-                                    />
-                                  </Tooltip>
-                                )
-                              ) : (
-                                <></>
-                              )}
-                            </Grid>
-                            <Grid
-                              item
-                              md={0.5}
-                              lg={0.5}
-                              xl={0.5}
-                              className="text-end"
-                            >
-                              {/* Wishlist icon */}
-                              {isProductInWishList(item.product_id) ? (
-                                <Tooltip
-                                  title="Remove WishList"
-                                  TransitionComponent={Zoom}
-                                  arrow
-                                >
-                                  <FavoriteIcon
-                                    onClick={() =>
-                                      deleteFromWishList(item.product_id)
-                                    }
-                                    style={{ cursor: "pointer", color: "red" }}
-                                  />
-                                </Tooltip>
-                              ) : (
-                                <Tooltip
-                                  title="Add WishList"
-                                  TransitionComponent={Zoom}
-                                  arrow
-                                >
-                                  <FavoriteBorderIcon
-                                    style={{ cursor: "pointer" }}
-                                    onClick={() =>
-                                      addToWishList(item.product_id)
-                                    }
-                                  />
-                                </Tooltip>
-                              )}
-                            </Grid>
+                          </Grid>
+                          <Grid item xs={12}>
+                            <Box sx={{ width: "100%" }}>
+                              <Stepper
+                                activeStep={
+                                  item.shipping_status_order_placed !== null
+                                    ? 1
+                                    : item.shipping_status_order_shipped !==
+                                      null
+                                    ? 2
+                                    : item.shipping_status_reached_at_buyers_inventory !==
+                                      null
+                                    ? 3
+                                    : item.shipping_status_out_for_delivery !==
+                                      null
+                                    ? 4
+                                    : item.shipping_status_delivered !== null
+                                    ? 5
+                                    : 6
+                                }
+                                alternativeLabel
+                              >
+                                {steps.map((label) => (
+                                  <Step key={label}>
+                                    <StepLabel>{label}</StepLabel>
+                                  </Step>
+                                ))}
+                              </Stepper>
+                            </Box>
                           </Grid>
                           <hr className="my-4" />
                         </React.Fragment>
