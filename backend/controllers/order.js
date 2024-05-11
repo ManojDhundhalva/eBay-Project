@@ -1,6 +1,7 @@
 const pool = require("../db");
 const queries = require("../queries/order");
 const { v4: uuidv4 } = require("uuid");
+require("dotenv").config();
 
 const makePayment = async (req, resp) => {
   const { payment_amount, payment_type } = req.body;
@@ -68,7 +69,22 @@ const makeOrder = async (req, resp) => {
         prdouctQuanties[product.product_id],
         product.product_id,
       ]);
+
+      const results3 = await pool.query(queries.transferMoneyToSeller, [
+        prdouctQuanties[product.product_id],
+        Number(
+          Number(product.product_price) -
+            Number(product.product_price * (process.env.EBAY_CHARGES / 100))
+        ).toFixed(2),
+        product.seller_user_id,
+      ]);
+
+      const results4 = await pool.query(queries.clearCart, [
+        product.product_id,
+        req.user.id,
+      ]);
     }
+
     resp.status(200).json({ order_id: orderUniqueID });
   } catch (err) {
     console.log("Error -> ", err);

@@ -83,19 +83,7 @@ function Info({
               <ListItemText
                 className="text-uppercase"
                 sx={{ mr: 2 }}
-                primary={`Total Distance`}
-              />
-
-              <Typography variant="body2" fontWeight="medium">
-                {(totalDistanceKM).toFixed(2)} KM
-              </Typography>
-            </ListItem>
-            <ListItem sx={{ py: 1, px: 0 }}>
-              <ListItemText
-                className="text-uppercase"
-                sx={{ mr: 2 }}
                 primary={`Shipping Cost`}
-                secondary={`Distance(${process.env.REACT_APP_SHIPPING_CHARGES}%)`}
               />
               <Typography variant="body1" fontWeight="medium">
                 ₹{" "}

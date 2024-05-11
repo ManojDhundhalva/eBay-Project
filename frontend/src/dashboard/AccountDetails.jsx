@@ -139,28 +139,6 @@ export default function AccountDetails() {
   };
 
   const LPtheme = createTheme(getLPTheme());
-  const [countryList, setCountryList] = useState([]);
-  const [stateList, setStateList] = useState([]);
-  const [cityList, setCityList] = useState([]);
-
-  const [sellerCity, setSellerCity] = useState("");
-  const [sellerState, setSellerState] = useState("");
-  const [sellerCountry, setSellerCountry] = useState("");
-
-  useEffect(() => {
-    setCountryList(Country.getAllCountries());
-  }, []);
-
-  useEffect(() => {
-    setState("");
-    setCity("");
-    setStateList(State.getStatesOfCountry(country.isoCode));
-  }, [country]);
-
-  useEffect(() => {
-    setCity("");
-    setCityList(City.getCitiesOfState(state.countryCode, state.isoCode));
-  }, [state]);
 
   const [apiKey, setApiKey] = useState("");
   useEffect(() => {
@@ -212,12 +190,28 @@ export default function AccountDetails() {
     );
 
     ttSearchBox.on("tomtom.searchbox.resultselected", function (data) {
-      // const newLocation =
-      //   String(data.data.result.position.lat) +
-      //   "," +
-      //   String(data.data.result.position.lng);
-      // setLocation(newLocation);
-      setLocation(data.data.text);
+      if (data.data?.text !== undefined) {
+        // console.log(data.data.text);
+        setLocation(data.data.text);
+      }
+      if (data.data.result.address?.country !== undefined) {
+        // console.log(data.data.result.address.country);
+        setCountry(data.data.result.address.country);
+      }
+      if (data.data.result.address?.countrySubdivision !== undefined) {
+        // console.log(data.data.result.address.countrySubdivision);
+        setState(data.data.result.address.countrySubdivision);
+      }
+      if (data.data.result.address?.countrySecondarySubdivision !== undefined) {
+        // console.log(data.data.result.address.countrySecondarySubdivision);
+        setCity(data.data.result.address.countrySecondarySubdivision);
+      }
+      if (data.data.result.address?.postalCode !== undefined) {
+        // console.log(data.data.result.address.postalCode);
+        setPincode(data.data.result.address.postalCode);
+      } else {
+        setPincode("");
+      }
       if (
         data.data.result.position?.lat !== undefined &&
         data.data.result.position?.lng !== undefined
@@ -313,8 +307,8 @@ export default function AccountDetails() {
           seller_longitude: longitude,
           seller_location: location,
           seller_city: city,
-          seller_state: state.name,
-          seller_country: country.name,
+          seller_state: state,
+          seller_country: country,
           seller_pincode: pincode,
         },
         { headers }
@@ -364,9 +358,9 @@ export default function AccountDetails() {
         setLongitude(data.seller_coordinates.y);
         setLocation(data.seller_location);
         setPincode(data.seller_pincode);
-        setSellerCity(data.seller_city);
-        setSellerState(data.seller_state);
-        setSellerCountry(data.seller_country);
+        setCity(data.seller_city);
+        setState(data.seller_state);
+        setCountry(data.seller_country);
 
         // // Find corresponding country, state, and city objects
       } else {
@@ -381,33 +375,6 @@ export default function AccountDetails() {
   React.useEffect(() => {
     getAccount();
   }, []);
-
-  useEffect(() => {
-    const foundCountry = countryList.find(
-      (country) => country.name === sellerCountry
-    );
-    if (foundCountry) {
-      setCountry(foundCountry);
-      setStateList(State.getStatesOfCountry(foundCountry.isoCode));
-    }
-  }, [sellerCountry]);
-
-  useEffect(() => {
-    const foundState = stateList.find((state) => state.name === sellerState);
-    if (foundState) {
-      setState(foundState);
-      setCityList(
-        City.getCitiesOfState(foundState.countryCode, foundState.isoCode)
-      );
-    }
-  }, [stateList]);
-
-  useEffect(() => {
-    const foundCity = cityList.find((city) => city.name === sellerCity);
-    if (foundCity) {
-      setCity(foundCity.name);
-    }
-  }, [cityList]);
 
   return (
     <>
@@ -530,105 +497,47 @@ export default function AccountDetails() {
                   }}
                 />
               </FormGrid>
-
               <FormGrid item xs={6}>
-                <FormLabel htmlFor="country" required>
-                  Country
-                </FormLabel>
-                <Select
-                  id="country"
-                  name="country"
+                <FormLabel htmlFor="country">Country</FormLabel>
+                <TextField
                   value={country}
-                  onChange={(e) => {
-                    setCountry(e.target.value);
+                  id="Country"
+                  name="Country"
+                  type="text"
+                  placeholder="Country"
+                  InputProps={{
+                    readOnly: true,
                   }}
-                  displayEmpty
-                  inputProps={{
-                    readOnly: !editOn,
-                  }}
-                  error={country === ""}
-                >
-                  <MenuItem value="">Select Country</MenuItem>
-                  {countryList.map((item, index) => (
-                    <MenuItem
-                      key={index}
-                      value={item}
-                    >
-                      {item.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {editOn && (
-                  <FormHelperText style={{ color: "red" }}>
-                    {country === "" ? "Please, Select country" : ""}
-                  </FormHelperText>
-                )}
+                />
               </FormGrid>
               <FormGrid item xs={6}>
-                <FormLabel htmlFor="state" required>
-                  State
-                </FormLabel>
-                <Select
+                <FormLabel htmlFor="state">State</FormLabel>
+                <TextField
+                  value={state}
                   id="state"
                   name="state"
-                  value={state}
-                  onChange={(e) => {
-                    setState(e.target.value);
+                  type="text"
+                  placeholder="State"
+                  InputProps={{
+                    readOnly: true,
                   }}
-                  displayEmpty
-                  inputProps={{
-                    readOnly: !editOn,
-                  }}
-                  error={state === ""}
-                >
-                  <MenuItem value="">Select State</MenuItem>
-                  {stateList.map((item, index) => (
-                    <MenuItem
-                      key={index}
-                      value={item}
-                    >
-                      {item.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {editOn && (
-                  <FormHelperText style={{ color: "red" }}>
-                    {state === "" ? "Please, Select State" : ""}
-                  </FormHelperText>
-                )}
+                />
               </FormGrid>
               <FormGrid item xs={6}>
-                <FormLabel htmlFor="city" required>
-                  City
-                </FormLabel>
-                <Select
+                <FormLabel htmlFor="city">City</FormLabel>
+                <TextField
+                  value={city}
                   id="city"
                   name="city"
-                  value={city}
-                  onChange={(e) => {
-                    setCity(e.target.value);
+                  type="text"
+                  placeholder="City"
+                  InputProps={{
+                    readOnly: true,
                   }}
-                  displayEmpty
-                  inputProps={{
-                    readOnly: !editOn,
-                  }}
-                  error={city === ""}
-                >
-                  <MenuItem value="">Select City</MenuItem>
-                  {cityList.map((item, index) => (
-                    <MenuItem
-                      key={index}
-                      value={item.name}
-                    >
-                      {item.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {editOn && (
-                  <FormHelperText style={{ color: "red" }}>
-                    {city === "" ? "Please, Select City" : ""}
-                  </FormHelperText>
-                )}
+                />
+              </FormGrid>
+              <FormGrid item xs={12}>
+                &nbsp;
               </FormGrid>
               <FormGrid item xs={12}>
                 <FormLabel htmlFor="bank" style={{ fontWeight: "bold" }}>

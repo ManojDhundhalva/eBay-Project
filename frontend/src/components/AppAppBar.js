@@ -148,6 +148,16 @@ function AppAppBar({ mode, toggleColorMode }) {
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
+                    navigate("/order");
+                  }}
+                  sx={{ py: "6px", px: "12px" }}
+                >
+                  <Typography variant="body2" color="text.primary">
+                    Order
+                  </Typography>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
                     navigate("/wish-list");
                   }}
                   sx={{ py: "6px", px: "12px" }}

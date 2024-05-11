@@ -35,6 +35,7 @@ import { useProduct } from "../../context/product";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function ToggleCustomTheme({ showCustomTheme, toggleCustomTheme }) {
   return (
@@ -78,7 +79,7 @@ ToggleCustomTheme.propTypes = {
   toggleCustomTheme: PropTypes.func.isRequired,
 };
 
-const steps = ["Shipping address", "Payment details", "Review your order"];
+const steps = ["Shipping address", "Review your order", "Payment details"];
 
 const logoStyle = {
   width: "140px",
@@ -87,27 +88,15 @@ const logoStyle = {
   marginRight: "-8px",
 };
 
-function getStepContent(step) {
-  switch (step) {
-    case 0:
-      return <AddressForm />;
-    case 1:
-      return <PaymentForm />;
-    case 2:
-      return <Review />;
-    default:
-      throw new Error("Unknown step");
-  }
-}
-
 export default function Checkout({
   TotalAmount,
   selectedQuantities,
   setIsOrderPlaced,
   totalQuantities,
 }) {
-  const { cartList } = useProduct();
+  const { cartList, setCartList } = useProduct();
   const { LogOut } = useAuth();
+  const navigate = useNavigate();
 
   const [buyerFirstName, setBuyerFirstName] = React.useState("");
   const [buyerLastName, setBuyerLastName] = React.useState("");
@@ -256,6 +245,7 @@ export default function Checkout({
     setTotalDistanceKM(total);
   }, [distances]);
 
+  const [orderId, setOrderId] = useState("");
   const handleOrderPayment = async () => {
     const headers = {
       "Content-Type": "application/json",
@@ -323,6 +313,8 @@ export default function Checkout({
             error: <b>Failed to order place.</b>, // Error message
           }
         );
+        setOrderId(results1.data.order_id);
+        handleNext();
       } catch (err) {
         LogOut();
         console.error("Error in order placing:", err);
@@ -556,10 +548,14 @@ export default function Checkout({
                 <Typography variant="h5">Thank you for your order!</Typography>
                 <Typography variant="body1" color="text.secondary">
                   Your order number is
-                  <strong>&nbsp;#140396</strong>. We have emailed your order
+                  <strong>&nbsp;{orderId}</strong>. We have emailed your order
                   confirmation and will update you once its shipped.
                 </Typography>
                 <Button
+                  onClick={() => {
+                    setCartList([]);
+                    navigate("/order");
+                  }}
                   variant="contained"
                   sx={{
                     alignSelf: "start",
@@ -595,13 +591,26 @@ export default function Checkout({
                     setLongitude={setLongitude}
                   />
                 ) : activeStep === 1 ? (
+                  <Review
+                    buyerFirstName={buyerFirstName}
+                    buyerLastName={buyerLastName}
+                    location={location}
+                    pincode={pincode}
+                    country={country}
+                    state={state}
+                    city={city}
+                    distances={distances}
+                    totalDistanceKM={totalDistanceKM}
+                    totalQuantities={totalQuantities}
+                    selectedQuantities={selectedQuantities}
+                    totalPrice={TotalAmount}
+                  />
+                ) : (
                   <PaymentForm
                     handleOrderPayment={handleOrderPayment}
                     paymentType={paymentType}
                     setPaymentType={setPaymentType}
                   />
-                ) : (
-                  <Review />
                 )}
                 <Box
                   sx={{
@@ -652,8 +661,12 @@ export default function Checkout({
                     sx={{
                       width: { xs: "100%", sm: "fit-content" },
                     }}
+                    style={{
+                      display:
+                        activeStep === steps.length - 1 ? "none" : "block",
+                    }}
                   >
-                    {activeStep === steps.length - 1 ? "Place order" : "Next"}
+                    Next
                   </Button>
                 </Box>
               </React.Fragment>

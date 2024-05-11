@@ -4,6 +4,7 @@ SELECT
     p.product_title, 
     p.product_price, 
     p.product_available_quantity,
+    s.seller_user_id,
 	s.seller_city,
 	s.seller_coordinates[0] AS latitude,
 	s.seller_coordinates[1] AS longitude,
@@ -23,6 +24,7 @@ GROUP BY
     p.product_title, 
     p.product_price,
     p.product_available_quantity,
+	s.seller_user_id,
 	s.seller_city,
 	s.seller_coordinates[0],
 	s.seller_coordinates[1];
