@@ -8,7 +8,7 @@ import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
-function Queue() {
+function ReceivedQueue() {
   const [allQueues, setAllQueues] = useState([]);
 
   const getAllQueuesOfInventory = async () => {
@@ -18,13 +18,14 @@ function Queue() {
     };
     try {
       const results = await axios.get(
-        `http://localhost:8000/api/v1/inventory/queue?username=${window.localStorage.getItem(
+        `http://localhost:8000/api/v1/inventory/received-queue?username=${window.localStorage.getItem(
           "username"
         )}&role=${window.localStorage.getItem("role")}`,
         {
           headers,
         }
       );
+      console.log(results.data);
       setAllQueues(results.data);
     } catch (err) {
       console.error("Error fetching profile:", err);
@@ -154,7 +155,7 @@ function Queue() {
 
   return (
     <>
-      <h1>All Queues({allQueues.length})</h1>
+      <h1>All Received Queue({allQueues.length})</h1>
       {allQueues.map((item, index) => (
         <Card key={index} sx={{ minWidth: 275 }}>
           <CardContent>
@@ -217,4 +218,4 @@ function Queue() {
   );
 }
 
-export default Queue;
+export default ReceivedQueue;

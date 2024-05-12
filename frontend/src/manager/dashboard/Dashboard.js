@@ -33,6 +33,8 @@ import Profile from "./Profile";
 import Person2Icon from "@mui/icons-material/Person2";
 import Queue from "./Queue";
 import HourglassTopIcon from "@mui/icons-material/HourglassTop";
+import ReceivedQueue from "./ReceivedQueue";
+import HourglassBottomIcon from "@mui/icons-material/HourglassBottom";
 
 const drawerWidth = 240;
 
@@ -176,6 +178,16 @@ export default function Dashboard() {
               </ListItemButton>
               <ListItemButton
                 onClick={() => {
+                  setCurrentlyAt("Received Queues");
+                }}
+              >
+                <ListItemIcon>
+                  <HourglassBottomIcon />
+                </ListItemIcon>
+                <ListItemText primary="Received Queues" />
+              </ListItemButton>
+              <ListItemButton
+                onClick={() => {
                   setCurrentlyAt("Account Details");
                 }}
               >
@@ -235,6 +247,7 @@ export default function Dashboard() {
           {currentlyAt === "Home Page" && <HomePage />}
           {currentlyAt === "All Products" && <AllProducts />}
           {currentlyAt === "Queues" && <Queue />}
+          {currentlyAt === "Received Queues" && <ReceivedQueue />}
           {currentlyAt === "Account Details" && <AccountDetails />}
           {currentlyAt === "Stats" && <Stats />}
           {currentlyAt === "Profile" && <Profile />}

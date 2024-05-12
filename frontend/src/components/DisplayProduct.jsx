@@ -24,7 +24,7 @@ function DisplayProduct() {
       );
       setAllProduct(results.data);
     } catch (err) {
-      LogOut();
+      // LogOut();
       console.error("Error fetching profile:", err);
     }
   };
