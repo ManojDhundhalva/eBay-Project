@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Grid,
   Typography,
@@ -8,8 +8,49 @@ import {
   CardActions,
   Button,
 } from "@mui/material";
+import axios from "axios";
 
 export default function Profile() {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState("User");
+  const [phoneNumber, setPhoneNumber] = useState("");
+
+  const imageURL =
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1fYaY9LEjaK0yhT3WsncM36y6MD9sLCHU4A&s";
+
+  const getProfile = async () => {
+    const headers = {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${window.localStorage.getItem("token")}`,
+    };
+    try {
+      const results = await axios.get(
+        `http://localhost:8000/api/v1/profile?username=${window.localStorage.getItem(
+          "username"
+        )}&role=${window.localStorage.getItem("role")}`,
+        {
+          headers,
+        }
+      );
+      setFirstName(results.data.firstname);
+      setLastName(results.data.lastname);
+      setUserName(results.data.username);
+      setEmail(results.data.emailid);
+      setRole(results.data.role);
+      setPhoneNumber(results.data.phone_number);
+    } catch (err) {
+      // LogOut();
+      console.error("Error fetching profile:", err);
+    }
+  };
+
+  useEffect(() => {
+    getProfile();
+  }, []);
+
   return (
     <div
       className="gradient-custom-2"
@@ -27,7 +68,7 @@ export default function Profile() {
                 style={{ width: "150px" }}
               >
                 <img
-                  src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
+                  src={imageURL}
                   alt="Generic placeholder image"
                   className="mt-4 mb-2 img-thumbnail"
                   style={{ width: "150px", zIndex: "1" }}
@@ -40,8 +81,8 @@ export default function Profile() {
                 </Button>
               </div>
               <div className="ms-3" style={{ marginTop: "130px" }}>
-                <Typography variant="h5">Andy Horwitz</Typography>
-                <Typography>New York</Typography>
+                <Typography variant="h5">{userName}</Typography>
+                <Typography>{email}</Typography>
               </div>
             </div>
             <div
@@ -82,13 +123,16 @@ export default function Profile() {
                 </Typography>
                 <div className="p-4" style={{ backgroundColor: "#f8f9fa" }}>
                   <Typography variant="body1" className="font-italic mb-1">
-                    Web Developer
+                    First Name : {firstName}
                   </Typography>
                   <Typography variant="body1" className="font-italic mb-1">
-                    Lives in New York
+                    Last Name : {lastName}
                   </Typography>
                   <Typography variant="body1" className="font-italic mb-0">
-                    Photographer
+                    Phone Number : {phoneNumber}
+                  </Typography>
+                  <Typography variant="body1" className="font-italic mb-0">
+                    Inventory
                   </Typography>
                 </div>
               </div>

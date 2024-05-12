@@ -31,6 +31,8 @@ import HomePage from "./HomePage";
 import ContrastIcon from "@mui/icons-material/Contrast";
 import Profile from "./Profile";
 import Person2Icon from "@mui/icons-material/Person2";
+import Queue from "./Queue";
+import HourglassTopIcon from "@mui/icons-material/HourglassTop";
 
 const drawerWidth = 240;
 
@@ -164,6 +166,16 @@ export default function Dashboard() {
               </ListItemButton>
               <ListItemButton
                 onClick={() => {
+                  setCurrentlyAt("Queues");
+                }}
+              >
+                <ListItemIcon>
+                  <HourglassTopIcon />
+                </ListItemIcon>
+                <ListItemText primary="Queues" />
+              </ListItemButton>
+              <ListItemButton
+                onClick={() => {
                   setCurrentlyAt("Account Details");
                 }}
               >
@@ -219,8 +231,10 @@ export default function Dashboard() {
           }}
         >
           <Toolbar />
+
           {currentlyAt === "Home Page" && <HomePage />}
           {currentlyAt === "All Products" && <AllProducts />}
+          {currentlyAt === "Queues" && <Queue />}
           {currentlyAt === "Account Details" && <AccountDetails />}
           {currentlyAt === "Stats" && <Stats />}
           {currentlyAt === "Profile" && <Profile />}
