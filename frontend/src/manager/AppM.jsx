@@ -3,9 +3,6 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import AboutUS from "../pages/AboutUs";
-import Profile from "../pages/Profile";
-import LandingPage from "../LandingPage";
-import AppAppBar from "../components/AppAppBar";
 import { useAuth } from "../context/auth";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import getLPTheme from "../getLPTheme";
@@ -27,15 +24,12 @@ function AppM() {
       {/* {!isHiddenPath && <Navbar />} */}
       <ThemeProvider theme={LPtheme}>
         <CssBaseline />
-        {/* {!isHiddenPath && (
-          <AppAppBar mode={mode} toggleColorMode={toggleColorMode} />
-        )} */}
+        
         <Routes>
           <Route exact path="/" element={<Home />} />
           <Route exact path="/login" element={<Login />} />
           <Route exact path="/register" element={<Register />} />
           <Route exact path="/aboutus" element={<AboutUS />} />
-          <Route exact path="/profile" element={<Profile />} />
         </Routes>
       </ThemeProvider>
       {/* {!isHiddenPath && <Footer />} */}
