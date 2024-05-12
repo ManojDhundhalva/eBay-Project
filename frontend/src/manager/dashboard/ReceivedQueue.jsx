@@ -109,6 +109,14 @@ function ReceivedQueue() {
       headerAlign: "center",
     },
     {
+      field: "seller_city",
+      headerName: "Seller City",
+      type: "number",
+      width: 140,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
       field: "has_order_product_quantity",
       headerName: "Ordered Quantity",
       type: "number",

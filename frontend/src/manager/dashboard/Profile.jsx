@@ -9,6 +9,7 @@ import {
   Button,
 } from "@mui/material";
 import axios from "axios";
+import { useAuth } from "../../context/auth";
 
 export default function Profile() {
   const [firstName, setFirstName] = useState("");
@@ -17,6 +18,8 @@ export default function Profile() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("User");
   const [phoneNumber, setPhoneNumber] = useState("");
+
+  const { LogOut } = useAuth();
 
   const imageURL =
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1fYaY9LEjaK0yhT3WsncM36y6MD9sLCHU4A&s";
@@ -74,10 +77,13 @@ export default function Profile() {
                   style={{ width: "150px", zIndex: "1" }}
                 />
                 <Button
+                  onClick={() => {
+                    LogOut();
+                  }}
                   variant="outlined"
                   style={{ height: "36px", overflow: "visible", color: "#000" }}
                 >
-                  Edit profile
+                  LogOut
                 </Button>
               </div>
               <div className="ms-3" style={{ marginTop: "130px" }}>

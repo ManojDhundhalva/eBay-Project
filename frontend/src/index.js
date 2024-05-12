@@ -14,30 +14,30 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        {window.localStorage.getItem("role") === "user" ||
-        window.localStorage.getItem("role") === null ? (
-          <ProductProvider>
+        <ProductProvider>
+          {window.localStorage.getItem("role") === "user" ||
+          window.localStorage.getItem("role") === null ? (
             <App />
-          </ProductProvider>
-        ) : window.localStorage.getItem("role") === "manager" ? (
-          <>
-            <AppM />
-          </>
-        ) : (
-          <>
-            <AppM />
-          </>
-        )}
-        <Toaster
-          position="top-center"
-          toastOptions={{
-            style: {
-              zIndex: 9999,
-              fontFamily: "Quicksand",
-              fontWeight: "600",
-            },
-          }}
-        />
+          ) : window.localStorage.getItem("role") === "manager" ? (
+            <>
+              <AppM />
+            </>
+          ) : (
+            <>
+              <AppM />
+            </>
+          )}
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              style: {
+                zIndex: 9999,
+                fontFamily: "Quicksand",
+                fontWeight: "600",
+              },
+            }}
+          />
+        </ProductProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>

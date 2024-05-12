@@ -31,6 +31,26 @@ function Queue() {
     }
   };
 
+  const handleOrderShipped = async () => {
+    const headers = {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${window.localStorage.getItem("token")}`,
+    };
+    try {
+      const results = await axios.post(
+        `http://localhost:8000/api/v1/inventory/order-shipped?username=${window.localStorage.getItem(
+          "username"
+        )}&role=${window.localStorage.getItem("role")}`,
+        {},
+        {
+          headers,
+        }
+      );
+    } catch (err) {
+      console.error("Error fetching profile:", err);
+    }
+  };
+
   useEffect(() => {
     getAllQueuesOfInventory();
   }, []);
@@ -213,6 +233,9 @@ function Queue() {
           </CardActions>
         </Card>
       ))}
+      <Button variant="contained" onClick={handleOrderShipped}>
+        Send To Buyer's Inventory
+      </Button>
     </>
   );
 }
