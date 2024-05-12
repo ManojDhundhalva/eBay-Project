@@ -367,7 +367,7 @@ export default function AccountDetails() {
         console.error("Failed to fetch account details");
       }
     } catch (err) {
-      LogOut();
+      // LogOut();
       console.error("Error fetching profile:", err);
     }
   };

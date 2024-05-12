@@ -98,7 +98,7 @@ const Profile = () => {
         }
       );
     } catch (err) {
-      LogOut();
+      // LogOut();
       console.error("Error updating profile:", err);
     }
 
@@ -126,7 +126,7 @@ const Profile = () => {
       setRole(results.data.role);
       setPhoneNumber(results.data.phone_number);
     } catch (err) {
-      LogOut();
+      // LogOut();
       console.error("Error fetching profile:", err);
     }
   };

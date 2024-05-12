@@ -317,11 +317,11 @@ export default function Checkout({
         setOrderId(results1.data.order_id);
         handleNext();
       } catch (err) {
-        LogOut();
+        // LogOut();
         console.error("Error in order placing:", err);
       }
     } catch (err) {
-      LogOut();
+      // LogOut();
       console.error("Error updating profile:", err);
     }
   };

@@ -154,7 +154,7 @@ export default function ListProduct() {
       // Display success toast
       toast.success("Product listed successfully!");
     } catch (err) {
-      LogOut();
+      // LogOut();
       console.error("Error listing product:", err);
       toast.error("Error listing product. Please try again later.");
     }

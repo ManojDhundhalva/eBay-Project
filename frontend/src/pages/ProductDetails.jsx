@@ -103,7 +103,7 @@ function ProductDetails() {
       );
       setProduct(results.data);
     } catch (err) {
-      LogOut();
+      // LogOut();
       console.error("Error fetching profile:", err);
     }
   };

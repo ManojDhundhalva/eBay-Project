@@ -7,25 +7,37 @@ import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/auth";
 import { Toaster } from "react-hot-toast";
 import { ProductProvider } from "./context/product";
+import AppM from "./manager/AppM";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <ProductProvider>
-          <App />
-          <Toaster
-            position="top-center"
-            toastOptions={{
-              style: {
-                zIndex: 9999,
-                fontFamily: "Quicksand",
-                fontWeight: "600",
-              },
-            }}
-          />
-        </ProductProvider>
+        {window.localStorage.getItem("role") === "user" ||
+        window.localStorage.getItem("role") === null ? (
+          <ProductProvider>
+            <App />
+          </ProductProvider>
+        ) : window.localStorage.getItem("role") === "manager" ? (
+          <>
+            <AppM />
+          </>
+        ) : (
+          <>
+            <AppM />
+          </>
+        )}
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            style: {
+              zIndex: 9999,
+              fontFamily: "Quicksand",
+              fontWeight: "600",
+            },
+          }}
+        />
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>

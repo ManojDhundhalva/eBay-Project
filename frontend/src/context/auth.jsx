@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
     window.localStorage.removeItem("username");
     window.localStorage.removeItem("role");
     setIsLoggedIn(false);
-    navigate("/");
+    navigate("/login");
   };
 
   const validateUser = () => {
