@@ -254,7 +254,7 @@ function Order() {
                             cursor: "pointer",
                           }}
                         >
-                          <ArrowBack sx={{ mr: 1 }} /> Back to shop
+                          <ArrowBack sx={{ mr: 1 }} /> Back
                         </Typography>
                       </div>
                     </div>

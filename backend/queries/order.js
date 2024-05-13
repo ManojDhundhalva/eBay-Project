@@ -135,22 +135,40 @@ GROUP BY o.order_id;
 `;
 
 const getOrderDetailsByOrderId = `
-SELECT o.*,
-       (
+SELECT 
+	o.*,
+	py.*,
+    (
         SELECT ARRAY_AGG(
             JSON_BUILD_OBJECT(
+				'seller_city', s.seller_city,
+    			'seller_state', s.seller_state,
+   				'seller_country', s.seller_country,
+				'seller_latitude', s.seller_coordinates[0],
+				'seller_longitude', s.seller_coordinates[1],
 				'has_order', h.*,
 				'product', p.*,
-                'product_image', (SELECT ARRAY_AGG(pi.product_image) FROM product_image AS pi WHERE pi.product_id = h.has_order_product_id)
+                'product_image', (
+									SELECT ARRAY_AGG(pi.product_image) 
+									FROM product_image AS pi 
+									WHERE pi.product_id = h.has_order_product_id
+								)
             )
         )
         FROM has_order AS h
 		JOIN product AS p ON p.product_id = h.has_order_product_id
+	    JOIN seller AS s ON s.seller_user_id = p.product_seller_id
         WHERE o.order_id = h.has_order_id
        ) AS products
-FROM order_details AS o
-WHERE o.order_id = $1
-GROUP BY o.order_id;
+FROM 
+	order_details AS o
+JOIN 
+	payment AS py ON py.payment_transaction_id = o.order_transaction_id
+WHERE 
+	o.order_id = $1
+GROUP BY
+	o.order_id,
+	py.payment_transaction_id;
 `;
 
 module.exports = {

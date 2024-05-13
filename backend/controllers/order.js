@@ -204,7 +204,7 @@ const getOrdersDetails = async (req, resp) => {
     const results = await pool.query(queries.getOrderDetailsByOrderId, [
       req.query.orderId,
     ]);
-    resp.status(200).json(results.rows);
+    resp.status(200).json(results.rows[0]);
   } catch (err) {
     console.log("Error -> ", err);
     resp.status(500).json({ message: "Internal Server Error" });
