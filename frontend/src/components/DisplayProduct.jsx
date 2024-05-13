@@ -30,7 +30,9 @@ function DisplayProduct() {
   };
 
   useEffect(() => {
-    getAllProducts();
+    if (window.localStorage.getItem("role") === "user") {
+      getAllProducts();
+    }
   }, []);
 
   return (

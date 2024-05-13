@@ -219,10 +219,12 @@ export const ProductProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    checkBankAccount();
-    getCart();
-    getWishList();
-    getOrderList();
+    if (window.localStorage.getItem("role") === "user") {
+      checkBankAccount();
+      getCart();
+      getWishList();
+      getOrderList();
+    }
   }, [isLoggedIn]);
 
   return (

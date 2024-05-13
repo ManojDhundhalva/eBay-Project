@@ -120,7 +120,12 @@ function Order() {
                                     Order id : {item.order_buyer_id}
                                   </Typography>
                                   <Typography variant="body2" gutterBottom>
-                                    Tracking id : {item.tracking_id}
+                                    Shipping address :{" "}
+                                    {item.order_shipping_location}
+                                  </Typography>
+                                  <Typography variant="body2" gutterBottom>
+                                    (+91)
+                                    {item.order_shipping_address_mobile_number}
                                   </Typography>
                                   <Typography
                                     variant="body2"
@@ -131,6 +136,7 @@ function Order() {
                                     ).toLocaleDateString()}{" "}
                                     ({formatTimestamp(item.order_timestamp)})
                                   </Typography>
+
                                   <Typography
                                     variant="subtitle1"
                                     component="div"

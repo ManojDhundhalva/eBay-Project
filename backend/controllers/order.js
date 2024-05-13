@@ -69,7 +69,10 @@ const makeOrder = async (req, resp) => {
     ]);
 
     for (const product of productList) {
+
+      const tracking_id = uuidv4();
       const results1 = await pool.query(queries.makeHasOrder, [
+        tracking_id,
         orderUniqueID,
         prdouctQuanties[product.product_id],
         product.product_id,
@@ -94,12 +97,6 @@ const makeOrder = async (req, resp) => {
         req.user.id,
       ]);
     }
-
-    const tracking_id = uuidv4();
-    const results5 = await pool.query(queries.makeShippingStatus, [
-      tracking_id,
-      orderUniqueID,
-    ]);
 
     const name =
       String(capitalizeFirstLetter(order_shipping_address_city)) +

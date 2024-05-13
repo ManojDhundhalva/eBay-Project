@@ -31,12 +31,14 @@ VALUES
 
 const makeHasOrder = `
 INSERT INTO has_order (
+    tracking_id,
     has_order_id,
     has_order_product_quantity,
-    has_order_product_id
+    has_order_product_id,
+    shipping_status_order_placed
 ) 
 VALUES 
-    ($1, $2, $3);
+    ($1, $2, $3, $4, CURRENT_TIMESTAMP);
 `;
 
 const makeUpdateProductQuantity = `
@@ -110,22 +112,26 @@ VALUES ($1, $2);
 `;
 
 const getAllOrders = `
-SELECT o.*, s.*, 
+SELECT o.*,
        (
         SELECT ARRAY_AGG(
             JSON_BUILD_OBJECT(
                 'product_image', (SELECT ARRAY_AGG(pi.product_image) FROM product_image AS pi WHERE pi.product_id = h.has_order_product_id),
                 'has_order_product_id', h.has_order_product_id,
-                'has_order_product_quantity', h.has_order_product_quantity
+                'has_order_product_quantity', h.has_order_product_quantity,
+				'shipping_status_order_placed', h.shipping_status_order_placed,
+				'shipping_status_order_shipped', h.shipping_status_order_shipped,
+				'shipping_status_reached_at_buyers_inventory', h.shipping_status_reached_at_buyers_inventory,
+				'shipping_status_out_for_delivery', h.shipping_status_out_for_delivery,
+				'shipping_status_delivered', h.shipping_status_delivered
             )
         )
         FROM has_order AS h
         WHERE o.order_id = h.has_order_id
        ) AS product
 FROM order_details AS o
-JOIN shipping_status AS s ON o.order_id = s.order_id
 WHERE o.order_buyer_id = $1
-GROUP BY o.order_id, s.tracking_id;
+GROUP BY o.order_id;
 `;
 
 module.exports = {

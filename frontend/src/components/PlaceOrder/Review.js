@@ -91,7 +91,7 @@ export default function Review({
               primary={`Total Distance`}
             />
             <Typography variant="body1" fontWeight="medium">
-              {totalDistanceKM} KM
+              {totalDistanceKM.toFixed(2)} KM
             </Typography>
           </ListItem>
           <ListItem sx={{ py: 1, px: 0 }}>
