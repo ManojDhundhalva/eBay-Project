@@ -151,6 +151,60 @@ SET product_watch_count = product_watch_count + 1
 WHERE product_id = $1;
 `;
 
+const isProductValid = `
+SELECT DISTINCT h.has_order_product_id
+FROM order_details AS o
+JOIN has_order AS h ON h.has_order_id = o.order_id
+WHERE o.order_buyer_id = $1
+AND h.has_order_product_id = $2
+`;
+
+const ifProductRatingOfUserExist = `
+SELECT * 
+FROM 
+    product_review 
+WHERE 
+    product_id = $1 AND user_id = $2;
+`;
+
+const updateRating = `
+UPDATE product_review
+SET product_review_rating = $1
+WHERE product_id = $2 AND user_id = $3;
+`;
+
+const createRating = `
+INSERT INTO product_review (
+    product_id, 
+    user_id, 
+    product_review_rating
+)
+VALUES ($1, $2, $3);
+`;
+
+const ifProductCommentOfUserExist = `
+SELECT * 
+FROM 
+    product_comment 
+WHERE 
+    product_id = $1 AND user_id = $2;
+`;
+
+const updateComment = `
+UPDATE product_comment
+SET product_comment = $1
+WHERE product_id = $2 AND user_id = $3;
+`;
+
+const createComment = `
+INSERT INTO product_comment (
+    product_id, 
+    user_id, 
+    product_comment
+)
+VALUES ($1, $2, $3);
+`;
+
 module.exports = {
   listProduct,
   addImage,
@@ -165,4 +219,11 @@ module.exports = {
   findSellerCityStateCountry,
   createInventory,
   createShipper,
+  isProductValid,
+  ifProductRatingOfUserExist,
+  updateRating,
+  createRating,
+  ifProductCommentOfUserExist,
+  updateComment,
+  createComment,
 };

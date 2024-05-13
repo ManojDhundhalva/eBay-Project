@@ -168,7 +168,10 @@ const getProductsDetails = async (req, resp) => {
 const rateTheProduct = async (req, resp) => {
   const { product_id, product_review_rating } = req.body;
   try {
-    const results = await pool.query(queries.ifProductExist, [product_id]);
+    const results = await pool.query(queries.isProductValid, [
+      req.user.id,
+      product_id,
+    ]);
     if (results.rows.length) {
       const results1 = await pool.query(queries.ifProductRatingOfUserExist, [
         product_id,
@@ -177,12 +180,12 @@ const rateTheProduct = async (req, resp) => {
 
       if (results1.rows.length) {
         const results2 = await pool.query(queries.updateRating, [
+          product_review_rating,
           product_id,
           req.user.id,
-          product_review_rating,
         ]);
       } else {
-        const results2 = await pool.query(queries.createRating, [
+        const results3 = await pool.query(queries.createRating, [
           product_id,
           req.user.id,
           product_review_rating,
@@ -190,7 +193,45 @@ const rateTheProduct = async (req, resp) => {
       }
       return resp.status(200).json({ message: "Rated successfully!" });
     } else {
-      return resp.status(404).json({ message: "Product not found!" });
+      return resp.status(201).json({ message: "Product not found!" });
+    }
+  } catch (err) {
+    console.log("Error rating product: ", err);
+    return resp.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const makeCommentOnProduct = async (req, resp) => {
+  const { product_id, product_comment } = req.body;
+  try {
+    const results = await pool.query(queries.isProductValid, [
+      req.user.id,
+      product_id,
+    ]);
+    if (results.rows.length) {
+      const results1 = await pool.query(queries.ifProductCommentOfUserExist, [
+        product_id,
+        req.user.id,
+      ]);
+
+      if (results1.rows.length) {
+        const results2 = await pool.query(queries.updateComment, [
+          product_comment,
+          product_id,
+          req.user.id,
+        ]);
+      } else {
+        const results3 = await pool.query(queries.createComment, [
+          product_id,
+          req.user.id,
+          product_comment,
+        ]);
+      }
+      return resp
+        .status(200)
+        .json({ message: "Comment added on product successfully!" });
+    } else {
+      return resp.status(201).json({ message: "Product not found!" });
     }
   } catch (err) {
     console.log("Error rating product: ", err);
@@ -232,4 +273,5 @@ module.exports = {
   getProductsDetails,
   rateTheProduct,
   watchProduct,
+  makeCommentOnProduct,
 };

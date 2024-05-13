@@ -20,6 +20,26 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import RemoveShoppingCartIcon from "@mui/icons-material/RemoveShoppingCart";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import TextField from "@mui/material/TextField";
+import FormLabel from "@mui/material/FormLabel";
+import { styled } from "@mui/system";
+
+const FormGrid = styled(Grid)(() => ({
+  display: "flex",
+  flexDirection: "column",
+}));
+
+const labels = {
+  1: "Useless",
+  2: "Poor",
+  3: "Ok",
+  4: "Good",
+  5: "Excellent",
+};
+
+function getLabelText(value) {
+  return `${value} Star${value !== 1 ? "s" : ""}, ${labels[value]}`;
+}
 
 function ProductDetails() {
   const navigate = useNavigate();
@@ -27,6 +47,12 @@ function ProductDetails() {
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [isAddedToWishList, setIsAddedToWishList] = useState(false);
+
+  const [value, setValue] = React.useState(1);
+  const [hover, setHover] = React.useState(-1);
+  const [isInOrderedProductIds, setIsInOrderedProductIds] = useState(false);
+  const [productComment, setProductComment] = useState("");
+
   const {
     cartList,
     addToCart,
@@ -34,6 +60,7 @@ function ProductDetails() {
     wishList,
     addToWishList,
     deleteFromWishList,
+    orderedProductIds,
   } = useProduct();
 
   const { LogOut } = useAuth();
@@ -108,6 +135,66 @@ function ProductDetails() {
     }
   };
 
+  const rateTheOrderedProduct = async () => {
+    const headers = {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${window.localStorage.getItem("token")}`,
+    };
+    try {
+      const results = await axios.post(
+        `http://localhost:8000/api/v1/product/rate-product?username=${window.localStorage.getItem(
+          "username"
+        )}&role=${window.localStorage.getItem("role")}`,
+        {
+          product_review_rating: value,
+          product_id: window.localStorage.getItem("product-id"),
+        },
+        {
+          headers,
+        }
+      );
+      if (results.status === 200) {
+        toast.success("Rated Successfully!");
+      } else {
+        toast.error("Error, NOT Rated");
+      }
+      console.log(results);
+    } catch (err) {
+      // LogOut();
+      console.error("Error fetching profile:", err);
+    }
+  };
+
+  const makeCommentOnProduct = async () => {
+    const headers = {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${window.localStorage.getItem("token")}`,
+    };
+    try {
+      const results = await axios.post(
+        `http://localhost:8000/api/v1/product/comment-on-product?username=${window.localStorage.getItem(
+          "username"
+        )}&role=${window.localStorage.getItem("role")}`,
+        {
+          product_comment: productComment,
+          product_id: window.localStorage.getItem("product-id"),
+        },
+        {
+          headers,
+        }
+      );
+      if (results.status === 200) {
+        toast.success("Commented Successfully!");
+      } else {
+        toast.error("Error, NOT Commented");
+      }
+      console.log(results);
+    } catch (err) {
+      // LogOut();
+      console.error("Error fetching profile:", err);
+    }
+  };
+
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -126,6 +213,9 @@ function ProductDetails() {
     if (window.localStorage.getItem("product-id") === null) {
       navigate(-1);
     } else {
+      setIsInOrderedProductIds(
+        orderedProductIds.includes(window.localStorage.getItem("product-id"))
+      );
       getProductDetails();
       checkIsAddedToCart();
       checkIsAddedToWishList();
@@ -411,6 +501,67 @@ function ProductDetails() {
             <ProductRatingGraph />
           </Box>
         </Grid>
+        {isInOrderedProductIds ? (
+          <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+            <Box
+              id="image"
+              sx={(theme) => ({
+                mb: { xs: 8, sm: 10 },
+                alignSelf: "center",
+                // height: { xs: 200, sm: 700 },
+                height: "auto",
+                width: "100%",
+                backgroundSize: "cover",
+                borderRadius: "10px",
+                outline: "1px solid",
+                outlineColor:
+                  theme.palette.mode === "light"
+                    ? alpha("#BFCCD9", 0.5)
+                    : alpha("#9CCCFC", 0.1),
+                boxShadow:
+                  theme.palette.mode === "light"
+                    ? `0 0 12px 8px ${alpha("#9CCCFC", 0.2)}`
+                    : `0 0 24px 12px ${alpha("#033363", 0.2)}`,
+                //   color: theme.palette.mode !== "light" ? "black" : "white",
+              })}
+            >
+              <h3>Rate This Product</h3>
+              <Box
+                sx={{
+                  width: 200,
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <Rating
+                  name="hover-feedback"
+                  value={value}
+                  precision={1}
+                  getLabelText={getLabelText}
+                  onChange={(event, newValue) => {
+                    setValue(newValue);
+                  }}
+                  onChangeActive={(event, newHover) => {
+                    setHover(newHover);
+                  }}
+                  emptyIcon={
+                    <StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />
+                  }
+                />
+                {value !== null && (
+                  <Box sx={{ ml: 2 }}>
+                    {labels[hover !== -1 ? hover : value]}
+                  </Box>
+                )}
+              </Box>
+              <Button onClick={rateTheOrderedProduct} variant="contained">
+                Submit Rating
+              </Button>
+            </Box>
+          </Grid>
+        ) : (
+          <></>
+        )}
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
           <Box
             id="image"
@@ -435,32 +586,26 @@ function ProductDetails() {
             })}
           >
             <h3>Comment</h3>
-          </Box>
-        </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-          <Box
-            id="image"
-            sx={(theme) => ({
-              mb: { xs: 8, sm: 10 },
-              alignSelf: "center",
-              // height: { xs: 200, sm: 700 },
-              height: "auto",
-              width: "100%",
-              backgroundSize: "cover",
-              borderRadius: "10px",
-              outline: "1px solid",
-              outlineColor:
-                theme.palette.mode === "light"
-                  ? alpha("#BFCCD9", 0.5)
-                  : alpha("#9CCCFC", 0.1),
-              boxShadow:
-                theme.palette.mode === "light"
-                  ? `0 0 12px 8px ${alpha("#9CCCFC", 0.2)}`
-                  : `0 0 24px 12px ${alpha("#033363", 0.2)}`,
-              //   color: theme.palette.mode !== "light" ? "black" : "white",
-            })}
-          >
-            <h3>Policy</h3>
+            <FormGrid item xs={12}>
+              <FormLabel htmlFor="comment" style={{ fontWeight: "bold" }}>
+                Comment
+              </FormLabel>
+            </FormGrid>
+            <FormGrid item xs={12}>
+              <TextField
+                id="outlined-basic"
+                variant="outlined"
+                multiline
+                maxRows={4}
+                fullWidth
+                onChange={(e) => {
+                  setProductComment(e.target.value);
+                }}
+              />
+            </FormGrid>
+            <Button onClick={makeCommentOnProduct} variant="contained">
+              Submit Comment
+            </Button>
           </Box>
         </Grid>
       </Grid>

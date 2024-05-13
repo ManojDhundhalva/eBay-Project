@@ -11,6 +11,7 @@ export const ProductProvider = ({ children }) => {
   const [wishList, setWishList] = useState([]);
   const [orderList, setOrderList] = useState([]);
   const [isAddedBankAccount, setIsAddedBankAccount] = useState(false);
+  const [orderedProductIds, setOrderedProductIds] = useState([]);
 
   const { LogOut, isLoggedIn } = useAuth();
   const navigate = useNavigate();
@@ -50,8 +51,16 @@ export const ProductProvider = ({ children }) => {
           headers,
         }
       );
-      console.log(results.data);
+      // console.log(results.data);
       setOrderList(results.data);
+
+      const productIdsSet = new Set();
+      results.data.forEach((cart) => {
+        cart.products.forEach((product) => {
+          productIdsSet.add(product.has_order_product_id);
+        });
+      });
+      setOrderedProductIds(Array.from(productIdsSet));
     } catch (err) {
       // LogOut();
       console.log("Error -> ", err);
@@ -243,6 +252,7 @@ export const ProductProvider = ({ children }) => {
         getOrderList,
         orderList,
         setOrderList,
+        orderedProductIds,
       }}
     >
       {children}
