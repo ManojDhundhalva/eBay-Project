@@ -128,9 +128,28 @@ SELECT o.*,
         )
         FROM has_order AS h
         WHERE o.order_id = h.has_order_id
-       ) AS product
+       ) AS products
 FROM order_details AS o
 WHERE o.order_buyer_id = $1
+GROUP BY o.order_id;
+`;
+
+const getOrderDetailsByOrderId = `
+SELECT o.*,
+       (
+        SELECT ARRAY_AGG(
+            JSON_BUILD_OBJECT(
+				'has_order', h.*,
+				'product', p.*,
+                'product_image', (SELECT ARRAY_AGG(pi.product_image) FROM product_image AS pi WHERE pi.product_id = h.has_order_product_id)
+            )
+        )
+        FROM has_order AS h
+		JOIN product AS p ON p.product_id = h.has_order_product_id
+        WHERE o.order_id = h.has_order_id
+       ) AS products
+FROM order_details AS o
+WHERE o.order_id = $1
 GROUP BY o.order_id;
 `;
 
@@ -147,4 +166,5 @@ module.exports = {
   createInventory,
   createShipper,
   getAllOrders,
+  getOrderDetailsByOrderId,
 };

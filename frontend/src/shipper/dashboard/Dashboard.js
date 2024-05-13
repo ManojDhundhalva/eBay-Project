@@ -20,21 +20,18 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import MenuIcon from "@mui/icons-material/Menu";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { useNavigate } from "react-router-dom";
-import AccountDetails from "./AccountDetails";
 import Stats from "./Stats";
 import { useAuth } from "../../context/auth";
 import getLPTheme from "../../getLPTheme";
 import ToggleColorMode from "../../components/ToggleColorMode";
-import AllProducts from "./AllProducts";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import HomePage from "./HomePage";
 import ContrastIcon from "@mui/icons-material/Contrast";
 import Profile from "./Profile";
 import Person2Icon from "@mui/icons-material/Person2";
-import Queue from "./Queue";
 import HourglassTopIcon from "@mui/icons-material/HourglassTop";
-import ReceivedQueue from "./ReceivedQueue";
 import HourglassBottomIcon from "@mui/icons-material/HourglassBottom";
+import ShipperQueue from "./ShipperQueue";
 
 const drawerWidth = 240;
 
@@ -158,43 +155,13 @@ export default function Dashboard() {
               </ListItemButton>
               <ListItemButton
                 onClick={() => {
-                  setCurrentlyAt("All Products");
-                }}
-              >
-                <ListItemIcon>
-                  <InventoryIcon />
-                </ListItemIcon>
-                <ListItemText primary="All Products" />
-              </ListItemButton>
-              <ListItemButton
-                onClick={() => {
-                  setCurrentlyAt("Queues");
-                }}
-              >
-                <ListItemIcon>
-                  <HourglassTopIcon />
-                </ListItemIcon>
-                <ListItemText primary="Queues" />
-              </ListItemButton>
-              <ListItemButton
-                onClick={() => {
-                  setCurrentlyAt("Received Queues");
+                  setCurrentlyAt("All Queues");
                 }}
               >
                 <ListItemIcon>
                   <HourglassBottomIcon />
                 </ListItemIcon>
-                <ListItemText primary="Ordered Queues" />
-              </ListItemButton>
-              <ListItemButton
-                onClick={() => {
-                  setCurrentlyAt("Account Details");
-                }}
-              >
-                <ListItemIcon>
-                  <AccountBalanceWalletIcon />
-                </ListItemIcon>
-                <ListItemText primary="Bank Details" />
+                <ListItemText primary="All Queues" />
               </ListItemButton>
               <ListItemButton
                 onClick={() => {
@@ -245,10 +212,7 @@ export default function Dashboard() {
           <Toolbar />
 
           {currentlyAt === "Home Page" && <HomePage />}
-          {currentlyAt === "All Products" && <AllProducts />}
-          {currentlyAt === "Queues" && <Queue />}
-          {currentlyAt === "Received Queues" && <ReceivedQueue />}
-          {currentlyAt === "Account Details" && <AccountDetails />}
+          {currentlyAt === "All Queues" && <ShipperQueue />}
           {currentlyAt === "Stats" && <Stats />}
           {currentlyAt === "Profile" && <Profile />}
         </Box>

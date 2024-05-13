@@ -9,38 +9,33 @@ import {
   Select,
   Typography,
 } from "@mui/material";
-import { Add, Minimize, ArrowBack } from "@mui/icons-material";
-import { Link, useNavigate } from "react-router-dom";
+import { ArrowBack } from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
-import RemoveIcon from "@mui/icons-material/Remove";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
-import Checkout from "../components/PlaceOrder/Checkout";
-import { useProduct } from "../context/product";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import { styled } from "@mui/material/styles";
 import ButtonBase from "@mui/material/ButtonBase";
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
+import { useProduct } from "../context/product";
+import { Link, useNavigate } from "react-router-dom";
 
 const steps = [
-  "order placed",
-  "order shipped",
-  "reached at your's inventory",
+  "Order placed",
+  "Order shipped",
+  "Reached at buyer's inventory",
   "Out for Delivery",
   "Delivered",
 ];
 
 function Order() {
   const { orderList } = useProduct();
-
   const navigate = useNavigate();
+  const [orderStepOfOrderId, setOrderStepOfOrderId] = useState({});
 
   const formatTimestamp = (timestamp) => {
     const currentTime = new Date();
@@ -68,6 +63,52 @@ function Order() {
 
     return formattedTimestamp ? `${formattedTimestamp} ago` : "Just now";
   };
+
+  useEffect(() => {
+    // Assuming orderList is an array of orders
+    const newOrderStepOfOrderId = {};
+    orderList.forEach((order) => {
+      let step = 0;
+      if (
+        order.products.every(
+          (product) => product.shipping_status_order_placed !== null
+        )
+      ) {
+        step = 1;
+      }
+      if (
+        order.products.every(
+          (product) => product.shipping_status_order_shipped !== null
+        )
+      ) {
+        step = 2;
+      }
+      if (
+        order.products.every(
+          (product) =>
+            product.shipping_status_reached_at_buyers_inventory !== null
+        )
+      ) {
+        step = 3;
+      }
+      if (
+        order.products.every(
+          (product) => product.shipping_status_out_for_delivery !== null
+        )
+      ) {
+        step = 4;
+      }
+      if (
+        order.products.every(
+          (product) => product.shipping_status_delivered !== null
+        )
+      ) {
+        step = 5;
+      }
+      newOrderStepOfOrderId[order.order_id] = step;
+    });
+    setOrderStepOfOrderId(newOrderStepOfOrderId);
+  }, [orderList]);
 
   return (
     <>
@@ -99,7 +140,6 @@ function Order() {
                         </Typography>
                       </div>
                       <hr className="my-4" />
-                      {/* Repeat this section for each item */}
                       {orderList.map((item, index) => (
                         <React.Fragment key={index}>
                           <Grid
@@ -117,26 +157,41 @@ function Order() {
                                     variant="subtitle1"
                                     component="div"
                                   >
-                                    Order id : {item.order_buyer_id}
+                                    Order id :{" "}
+                                    <span
+                                      onClick={() => {
+                                        window.localStorage.setItem(
+                                          "order-id",
+                                          item.order_id
+                                        );
+                                        navigate("/order-details");
+                                      }}
+                                      style={{
+                                        textDecoration: "underline",
+                                        cursor: "pointer",
+                                      }}
+                                    >
+                                      {item.order_id}
+                                    </span>
                                   </Typography>
                                   <Typography variant="body2" gutterBottom>
                                     Shipping address :{" "}
                                     {item.order_shipping_location}
                                   </Typography>
                                   <Typography variant="body2" gutterBottom>
-                                    (+91)
+                                    Contact Number : (+91)
                                     {item.order_shipping_address_mobile_number}
                                   </Typography>
                                   <Typography
                                     variant="body2"
                                     color="text.secondary"
                                   >
+                                    Ordered Date :{" "}
                                     {new Date(
                                       item.order_timestamp
                                     ).toLocaleDateString()}{" "}
                                     ({formatTimestamp(item.order_timestamp)})
                                   </Typography>
-
                                   <Typography
                                     variant="subtitle1"
                                     component="div"
@@ -157,7 +212,7 @@ function Order() {
                                 </Grid>
                               </Grid>
                             </Grid>
-                            {item.product.map((image, index) => (
+                            {item.products.map((image, index) => (
                               <Grid key={index} item md={2} lg={2} xl={2}>
                                 <CardMedia
                                   width={50}
@@ -173,22 +228,7 @@ function Order() {
                           <Grid item xs={12}>
                             <Box sx={{ width: "100%" }}>
                               <Stepper
-                                activeStep={
-                                  item.shipping_status_order_placed !== null
-                                    ? 1
-                                    : item.shipping_status_order_shipped !==
-                                      null
-                                    ? 2
-                                    : item.shipping_status_reached_at_buyers_inventory !==
-                                      null
-                                    ? 3
-                                    : item.shipping_status_out_for_delivery !==
-                                      null
-                                    ? 4
-                                    : item.shipping_status_delivered !== null
-                                    ? 5
-                                    : 6
-                                }
+                                activeStep={orderStepOfOrderId[item.order_id]}
                                 alternativeLabel
                               >
                                 {steps.map((label) => (

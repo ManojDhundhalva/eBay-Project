@@ -7,19 +7,20 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import Chip from "@mui/material/Chip";
 import { toast } from "react-hot-toast";
 
-function Queue() {
+function ReceivedQueue() {
   const [allQueues, setAllQueues] = useState([]);
 
-  const getAllQueuesOfInventory = async () => {
+  const getAllQueuesOfShipper = async () => {
     const headers = {
       "Content-Type": "application/json",
       authorization: `Bearer ${window.localStorage.getItem("token")}`,
     };
     try {
       const results = await axios.get(
-        `http://localhost:8000/api/v1/inventory/queue?username=${window.localStorage.getItem(
+        `http://localhost:8000/api/v1/shipper?username=${window.localStorage.getItem(
           "username"
         )}&role=${window.localStorage.getItem("role")}`,
         {
@@ -33,7 +34,7 @@ function Queue() {
     }
   };
 
-  const handleOrderShipped = async () => {
+  const handleDeliverProducts = async () => {
     const productIdsArray = allQueues.flatMap((item) =>
       item.products.map((product) => product.product_id)
     );
@@ -46,16 +47,16 @@ function Queue() {
     try {
       toast.promise(
         axios.post(
-          `http://localhost:8000/api/v1/inventory/order-shipped?username=${window.localStorage.getItem(
+          `http://localhost:8000/api/v1/shipper?username=${window.localStorage.getItem(
             "username"
           )}&role=${window.localStorage.getItem("role")}`,
           { productIdsArray },
           { headers }
         ),
         {
-          loading: "Shipping orders...",
-          success: "Orders shipped successfully!",
-          error: (err) => `Error shipping orders: ${err.message}`,
+          loading: "Delivering Rroducts...",
+          success: "Order is delivered!",
+          error: (err) => `Error, while delivering orders: ${err.message}`,
         }
       );
     } catch (err) {
@@ -64,8 +65,8 @@ function Queue() {
   };
 
   useEffect(() => {
-    if (window.localStorage.getItem("role") === "manager") {
-      getAllQueuesOfInventory();
+    if (window.localStorage.getItem("role") === "shipper") {
+      getAllQueuesOfShipper();
     }
   }, []);
 
@@ -142,10 +143,25 @@ function Queue() {
       headerAlign: "center",
     },
     {
+      field: "seller_city",
+      headerName: "Seller City",
+      type: "number",
+      width: 140,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
       field: "has_order_product_quantity",
       headerName: "Ordered Quantity",
       type: "number",
       width: 140,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "product_tracking_id",
+      headerName: "Product Tracking id",
+      width: 300,
       align: "center",
       headerAlign: "center",
     },
@@ -164,31 +180,11 @@ function Queue() {
       align: "center",
       headerAlign: "center",
     },
-    {
-      field: "product_timestamp",
-      headerName: "Product Timestamp",
-      width: 200,
-      align: "center",
-      headerAlign: "center",
-      valueGetter: (params) => {
-        const timestamp = new Date(params);
-        const formattedDate = timestamp.toLocaleString("en-GB", {
-          month: "numeric",
-          day: "numeric",
-          year: "numeric",
-          hour: "numeric",
-          minute: "numeric",
-          second: "numeric",
-          hour12: true,
-        });
-        return formattedDate;
-      },
-    },
   ];
 
   return (
     <>
-      <h1>All Queues({allQueues.length})</h1>
+      <h1>All Ordered Queues({allQueues.length})</h1>
       {allQueues.map((item, index) => (
         <Card key={index} sx={{ minWidth: 275 }}>
           <CardContent>
@@ -242,16 +238,15 @@ function Queue() {
                 pageSize={3}
                 autoHeight
               />
-              <Button variant="contained">Send To Buyer's Inventory</Button>
+              <Button variant="contained" onClick={handleDeliverProducts}>
+                Deliver
+              </Button>
             </div>
           </CardActions>
         </Card>
       ))}
-      <Button variant="contained" onClick={handleOrderShipped}>
-        Send To Buyer's Inventory
-      </Button>
     </>
   );
 }
 
-export default Queue;
+export default ReceivedQueue;

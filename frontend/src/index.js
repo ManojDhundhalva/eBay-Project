@@ -8,6 +8,7 @@ import { AuthProvider } from "./context/auth";
 import { Toaster } from "react-hot-toast";
 import { ProductProvider } from "./context/product";
 import AppM from "./manager/AppM";
+import AppS from "./shipper/AppS";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -24,7 +25,7 @@ root.render(
             </>
           ) : (
             <>
-              <AppM />
+              <AppS />
             </>
           )}
           <Toaster

@@ -7,6 +7,8 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import Chip from "@mui/material/Chip";
+import { toast } from "react-hot-toast";
 
 function ReceivedQueue() {
   const [allQueues, setAllQueues] = useState([]);
@@ -32,8 +34,40 @@ function ReceivedQueue() {
     }
   };
 
+  const handleOutForDelivery = async () => {
+    const productIdsArray = allQueues.flatMap((item) =>
+      item.products.map((product) => product.product_id)
+    );
+
+    const headers = {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${window.localStorage.getItem("token")}`,
+    };
+
+    try {
+      toast.promise(
+        axios.post(
+          `http://localhost:8000/api/v1/inventory/order-out-for-delivery?username=${window.localStorage.getItem(
+            "username"
+          )}&role=${window.localStorage.getItem("role")}`,
+          { productIdsArray },
+          { headers }
+        ),
+        {
+          loading: "Out for delivering...",
+          success: "Orders are Out For Delivery!",
+          error: (err) => `Error, orders: ${err.message}`,
+        }
+      );
+    } catch (err) {
+      console.error("Error shipping orders:", err);
+    }
+  };
+
   useEffect(() => {
-    getAllQueuesOfInventory();
+    if (window.localStorage.getItem("role") === "manager") {
+      getAllQueuesOfInventory();
+    }
   }, []);
 
   const generateRowsWithIndex = (rows) => {
@@ -109,6 +143,21 @@ function ReceivedQueue() {
       headerAlign: "center",
     },
     {
+      field: "received",
+      headerName: "Status",
+      width: 140,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => (
+        <Chip
+          style={{ color: params.value ? "green" : "red" }}
+          label={params.value ? "Received" : "Pending"}
+          size="small"
+          // color="success"
+        />
+      ),
+    },
+    {
       field: "seller_city",
       headerName: "Seller City",
       type: "number",
@@ -121,6 +170,13 @@ function ReceivedQueue() {
       headerName: "Ordered Quantity",
       type: "number",
       width: 140,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "product_tracking_id",
+      headerName: "Product Tracking id",
+      width: 300,
       align: "center",
       headerAlign: "center",
     },
@@ -139,31 +195,11 @@ function ReceivedQueue() {
       align: "center",
       headerAlign: "center",
     },
-    {
-      field: "product_timestamp",
-      headerName: "Product Timestamp",
-      width: 200,
-      align: "center",
-      headerAlign: "center",
-      valueGetter: (params) => {
-        const timestamp = new Date(params);
-        const formattedDate = timestamp.toLocaleString("en-GB", {
-          month: "numeric",
-          day: "numeric",
-          year: "numeric",
-          hour: "numeric",
-          minute: "numeric",
-          second: "numeric",
-          hour12: true,
-        });
-        return formattedDate;
-      },
-    },
   ];
 
   return (
     <>
-      <h1>All Received Queue({allQueues.length})</h1>
+      <h1>All Ordered Queues({allQueues.length})</h1>
       {allQueues.map((item, index) => (
         <Card key={index} sx={{ minWidth: 275 }}>
           <CardContent>
@@ -217,7 +253,9 @@ function ReceivedQueue() {
                 pageSize={3}
                 autoHeight
               />
-              <Button variant="contained">Send To Buyer's Inventory</Button>
+              <Button variant="contained" onClick={handleOutForDelivery}>
+                Send To Shipper
+              </Button>
             </div>
           </CardActions>
         </Card>

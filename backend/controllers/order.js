@@ -69,7 +69,6 @@ const makeOrder = async (req, resp) => {
     ]);
 
     for (const product of productList) {
-
       const tracking_id = uuidv4();
       const results1 = await pool.query(queries.makeHasOrder, [
         tracking_id,
@@ -200,8 +199,21 @@ const getAllOrders = async (req, resp) => {
   }
 };
 
+const getOrdersDetails = async (req, resp) => {
+  try {
+    const results = await pool.query(queries.getOrderDetailsByOrderId, [
+      req.query.orderId,
+    ]);
+    resp.status(200).json(results.rows);
+  } catch (err) {
+    console.log("Error -> ", err);
+    resp.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   makePayment,
   makeOrder,
   getAllOrders,
+  getOrdersDetails,
 };
