@@ -55,7 +55,7 @@ function OrderDetails() {
           headers,
         }
       );
-      console.log(results.data);
+      console.log("order-details", results.data);
       setOrderDetails(results.data);
     } catch (err) {
       // LogOut();
@@ -103,25 +103,6 @@ function OrderDetails() {
   function formatTimestamp(postgresTimestamp) {
     // Assuming postgresTimestamp is in ISO format (e.g., '2024-05-13T12:34:56Z')
     return moment(postgresTimestamp).format("DD/MM/YYYY hh:mm A");
-  }
-
-  function deg2rad(deg) {
-    return deg * (Math.PI / 180);
-  }
-
-  function getDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371; // Radius of the Earth in km
-    const dLat = deg2rad(lat2 - lat1);
-    const dLon = deg2rad(lon2 - lon1);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(deg2rad(lat1)) *
-        Math.cos(deg2rad(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = R * c; // Distance in km
-    return distance;
   }
 
   return (
@@ -300,6 +281,7 @@ function OrderDetails() {
                                       name="read-only"
                                       value={item.product.product_avg_rating}
                                       readOnly
+                                      precision={0.1}
                                     />
                                     {item.product.product_avg_rating}
                                   </Typography>
@@ -338,14 +320,7 @@ function OrderDetails() {
                                   >
                                     Distance({"From " + item.seller_city}) :{" "}
                                     {Number(
-                                      getDistance(
-                                        item.seller_latitude,
-                                        item.seller_longitude,
-                                        orderDetails.order_shipping_coordinates
-                                          .x,
-                                        orderDetails.order_shipping_coordinates
-                                          .y
-                                      )
+                                      item.has_order.has_order_distance
                                     ).toFixed(2)}
                                     KM
                                   </Typography>
@@ -360,19 +335,7 @@ function OrderDetails() {
                                     >
                                       &#x20b9;{" "}
                                       {Number(
-                                        Number(
-                                          getDistance(
-                                            item.seller_latitude,
-                                            item.seller_longitude,
-                                            orderDetails
-                                              .order_shipping_coordinates.x,
-                                            orderDetails
-                                              .order_shipping_coordinates.y
-                                          )
-                                        ) *
-                                          (process.env
-                                            .REACT_APP_SHIPPING_CHARGES /
-                                            100)
+                                        item.has_order.has_order_distance_charge
                                       ).toFixed(2)}
                                       ({process.env.REACT_APP_SHIPPING_CHARGES}
                                       %)
@@ -391,10 +354,11 @@ function OrderDetails() {
                                       &#x20b9;{" "}
                                       {Number(
                                         item.product.product_price *
-                                          (process.env.REACT_APP_EBAY_CHARGES /
+                                          (item.has_order
+                                            .has_order_ebay_charge /
                                             100)
                                       ).toFixed(2)}
-                                      ({process.env.REACT_APP_EBAY_CHARGES}%)
+                                      ({item.has_order.has_order_ebay_charge}%)
                                     </span>
                                   </Typography>
                                   <hr />
@@ -411,29 +375,14 @@ function OrderDetails() {
                                       {Number(
                                         Number(item.product.product_price) +
                                           Number(
-                                            Number(
-                                              item.product.product_price *
-                                                (process.env
-                                                  .REACT_APP_EBAY_CHARGES /
-                                                  100)
-                                            ) +
-                                              Number(
-                                                Number(
-                                                  getDistance(
-                                                    item.seller_latitude,
-                                                    item.seller_longitude,
-                                                    orderDetails
-                                                      .order_shipping_coordinates
-                                                      .x,
-                                                    orderDetails
-                                                      .order_shipping_coordinates
-                                                      .y
-                                                  )
-                                                ) *
-                                                  (process.env
-                                                    .REACT_APP_SHIPPING_CHARGES /
-                                                    100)
-                                              )
+                                            item.has_order
+                                              .has_order_distance_charge
+                                          ) +
+                                          Number(
+                                            item.product.product_price *
+                                              (item.has_order
+                                                .has_order_ebay_charge /
+                                                100)
                                           )
                                       ).toFixed(2)}
                                     </span>

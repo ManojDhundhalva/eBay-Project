@@ -262,11 +262,15 @@ export default function Checkout({
             payment_amount: Number(
               Number(TotalAmount) +
                 Number(
-                  TotalAmount * (process.env.REACT_APP_EBAY_CHARGES / 100)
+                  Number(
+                    TotalAmount * (process.env.REACT_APP_EBAY_CHARGES / 100)
+                  ).toFixed(2)
                 ) +
                 Number(
-                  totalDistanceKM *
-                    (process.env.REACT_APP_SHIPPING_CHARGES / 100)
+                  Number(
+                    totalDistanceKM *
+                      (process.env.REACT_APP_SHIPPING_CHARGES / 100)
+                  ).toFixed(2)
                 )
             ).toFixed(2),
             payment_type: paymentType,
@@ -304,6 +308,13 @@ export default function Checkout({
               order_shipping_address_city: city,
               order_shipping_address_pincode: pincode,
               order_shipping_address_mobile_number: phoneNumber,
+              has_order_distance: totalDistanceKM.toFixed(2),
+              has_order_distance_charge: Number(
+                totalDistanceKM * (process.env.REACT_APP_SHIPPING_CHARGES / 100)
+              ).toFixed(2),
+              has_order_eBay_charge: Number(
+                process.env.REACT_APP_EBAY_CHARGES
+              ).toFixed(2),
             },
             { headers }
           ),

@@ -46,6 +46,9 @@ const makeOrder = async (req, resp) => {
     order_shipping_address_city,
     order_shipping_address_pincode,
     order_shipping_address_mobile_number,
+    has_order_distance,
+    has_order_distance_charge,
+    has_order_eBay_charge,
   } = req.body;
 
   try {
@@ -75,6 +78,9 @@ const makeOrder = async (req, resp) => {
         orderUniqueID,
         prdouctQuanties[product.product_id],
         product.product_id,
+        has_order_distance,
+        has_order_distance_charge,
+        has_order_eBay_charge,
       ]);
 
       const results2 = await pool.query(queries.makeUpdateProductQuantity, [

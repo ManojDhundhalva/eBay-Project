@@ -128,6 +128,11 @@ function ProductDetails() {
           headers,
         }
       );
+      console.log(results.data);
+      setValue(
+        results.data.your_rating !== null ? results.data.your_rating : value
+      );
+      setProductComment(results.data.your_comment);
       setProduct(results.data);
     } catch (err) {
       // LogOut();
@@ -158,7 +163,6 @@ function ProductDetails() {
       } else {
         toast.error("Error, NOT Rated");
       }
-      console.log(results);
     } catch (err) {
       // LogOut();
       console.error("Error fetching profile:", err);
@@ -188,7 +192,6 @@ function ProductDetails() {
       } else {
         toast.error("Error, NOT Commented");
       }
-      console.log(results);
     } catch (err) {
       // LogOut();
       console.error("Error fetching profile:", err);
@@ -498,67 +501,116 @@ function ProductDetails() {
               //   color: theme.palette.mode !== "light" ? "black" : "white",
             })}
           >
-            <ProductRatingGraph />
+            {product?.ratings?.total_user_response ? (
+              <ProductRatingGraph productRatings={product.ratings} />
+            ) : (
+              <></>
+            )}
           </Box>
         </Grid>
         {isInOrderedProductIds ? (
-          <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-            <Box
-              id="image"
-              sx={(theme) => ({
-                mb: { xs: 8, sm: 10 },
-                alignSelf: "center",
-                // height: { xs: 200, sm: 700 },
-                height: "auto",
-                width: "100%",
-                backgroundSize: "cover",
-                borderRadius: "10px",
-                outline: "1px solid",
-                outlineColor:
-                  theme.palette.mode === "light"
-                    ? alpha("#BFCCD9", 0.5)
-                    : alpha("#9CCCFC", 0.1),
-                boxShadow:
-                  theme.palette.mode === "light"
-                    ? `0 0 12px 8px ${alpha("#9CCCFC", 0.2)}`
-                    : `0 0 24px 12px ${alpha("#033363", 0.2)}`,
-                //   color: theme.palette.mode !== "light" ? "black" : "white",
-              })}
-            >
-              <h3>Rate This Product</h3>
+          <>
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
               <Box
-                sx={{
-                  width: 200,
-                  display: "flex",
-                  alignItems: "center",
-                }}
+                id="image"
+                sx={(theme) => ({
+                  mb: { xs: 8, sm: 10 },
+                  alignSelf: "center",
+                  // height: { xs: 200, sm: 700 },
+                  height: "auto",
+                  width: "100%",
+                  backgroundSize: "cover",
+                  borderRadius: "10px",
+                  outline: "1px solid",
+                  outlineColor:
+                    theme.palette.mode === "light"
+                      ? alpha("#BFCCD9", 0.5)
+                      : alpha("#9CCCFC", 0.1),
+                  boxShadow:
+                    theme.palette.mode === "light"
+                      ? `0 0 12px 8px ${alpha("#9CCCFC", 0.2)}`
+                      : `0 0 24px 12px ${alpha("#033363", 0.2)}`,
+                  //   color: theme.palette.mode !== "light" ? "black" : "white",
+                })}
               >
-                <Rating
-                  name="hover-feedback"
-                  value={value}
-                  precision={1}
-                  getLabelText={getLabelText}
-                  onChange={(event, newValue) => {
-                    setValue(newValue);
+                <h3>Rate This Product</h3>
+                <Box
+                  sx={{
+                    width: 200,
+                    display: "flex",
+                    alignItems: "center",
                   }}
-                  onChangeActive={(event, newHover) => {
-                    setHover(newHover);
-                  }}
-                  emptyIcon={
-                    <StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />
-                  }
-                />
-                {value !== null && (
-                  <Box sx={{ ml: 2 }}>
-                    {labels[hover !== -1 ? hover : value]}
-                  </Box>
-                )}
+                >
+                  <Rating
+                    name="hover-feedback"
+                    value={value}
+                    precision={1}
+                    getLabelText={getLabelText}
+                    onChange={(event, newValue) => {
+                      setValue(newValue);
+                    }}
+                    onChangeActive={(event, newHover) => {
+                      setHover(newHover);
+                    }}
+                    emptyIcon={
+                      <StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />
+                    }
+                  />
+                  {value !== null && (
+                    <Box sx={{ ml: 2 }}>
+                      {labels[hover !== -1 ? hover : value]}
+                    </Box>
+                  )}
+                </Box>
+                <Button onClick={rateTheOrderedProduct} variant="contained">
+                  Submit Rating
+                </Button>
               </Box>
-              <Button onClick={rateTheOrderedProduct} variant="contained">
-                Submit Rating
-              </Button>
-            </Box>
-          </Grid>
+            </Grid>
+
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+              <Box
+                id="image"
+                sx={(theme) => ({
+                  mb: { xs: 8, sm: 10 },
+                  alignSelf: "center",
+                  // height: { xs: 200, sm: 700 },
+                  height: "auto",
+                  width: "100%",
+                  backgroundSize: "cover",
+                  borderRadius: "10px",
+                  outline: "1px solid",
+                  outlineColor:
+                    theme.palette.mode === "light"
+                      ? alpha("#BFCCD9", 0.5)
+                      : alpha("#9CCCFC", 0.1),
+                  boxShadow:
+                    theme.palette.mode === "light"
+                      ? `0 0 12px 8px ${alpha("#9CCCFC", 0.2)}`
+                      : `0 0 24px 12px ${alpha("#033363", 0.2)}`,
+                  //   color: theme.palette.mode !== "light" ? "black" : "white",
+                })}
+              >
+                <h3>ADD Comment</h3>
+                <FormGrid item xs={12}>
+                  <TextField
+                    value={productComment}
+                    id="outlined-basic"
+                    variant="outlined"
+                    multiline
+                    maxRows={4}
+                    fullWidth
+                    onChange={(e) => {
+                      setProductComment(e.target.value);
+                    }}
+                  />
+                </FormGrid>
+                <Button onClick={makeCommentOnProduct} variant="contained">
+                  Submit Comment
+                </Button>
+              </Box>
+            </Grid>
+          </>
         ) : (
           <></>
         )}
@@ -586,26 +638,17 @@ function ProductDetails() {
             })}
           >
             <h3>Comment</h3>
-            <FormGrid item xs={12}>
-              <FormLabel htmlFor="comment" style={{ fontWeight: "bold" }}>
-                Comment
-              </FormLabel>
-            </FormGrid>
-            <FormGrid item xs={12}>
-              <TextField
-                id="outlined-basic"
-                variant="outlined"
-                multiline
-                maxRows={4}
-                fullWidth
-                onChange={(e) => {
-                  setProductComment(e.target.value);
-                }}
-              />
-            </FormGrid>
-            <Button onClick={makeCommentOnProduct} variant="contained">
-              Submit Comment
-            </Button>
+            {product.product_commnet &&
+              product.product_commnet.map((item, index) => (
+                <div key={index} style={{ display: "flex" }}>
+                  <Typography key={index} variant="h6" fontWeight="bold">
+                    {item.comment === product.your_comment
+                      ? "YOU"
+                      : item.username}
+                  </Typography>
+                  <Typography>{item.comment}</Typography>
+                </div>
+              ))}
           </Box>
         </Grid>
       </Grid>

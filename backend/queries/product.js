@@ -92,44 +92,84 @@ LIMIT 10;
 
 const getProductsDetails = `
 SELECT 
-    c.*, 
-	s.seller_city, 
+    c.*,
+    s.seller_city, 
     s.seller_state, 
     s.seller_country, 
     s.seller_pincode, 
-    ARRAY_AGG(json_build_object('key', pd.key, 'value', pd.value)) AS product_description 
-FROM 
+	(SELECT 
+	 json_build_object(
+		 'total_user_response', COUNT(DISTINCT user_id),
+		 'rating_1_count', SUM(CASE WHEN product_review_rating = 1 THEN 1 ELSE 0 END), 
+		 'rating_2_count', SUM(CASE WHEN product_review_rating = 2 THEN 1 ELSE 0 END),
+		 'rating_3_count', SUM(CASE WHEN product_review_rating = 3 THEN 1 ELSE 0 END),
+		 'rating_4_count', SUM(CASE WHEN product_review_rating = 4 THEN 1 ELSE 0 END),
+		 'rating_5_count', SUM(CASE WHEN product_review_rating = 5 THEN 1 ELSE 0 END)
+	 ) AS ratings
+	FROM 
+		product_review
+	WHERE 
+		product_id = $1
+	),
     (SELECT 
-        p.*,
-        ARRAY_AGG(pi.product_image) AS product_images 
+        product_review_rating AS your_rating 
     FROM 
-        product AS p
-    JOIN 
-        product_image AS pi ON p.product_id = pi.product_id 
+        product_review AS pr 
     WHERE 
-        p.product_id = $1
-    GROUP BY 
-        p.product_id) AS c
+        pr.product_id = $1
+        AND user_id = $2),
+    (SELECT 
+        product_comment AS your_comment 
+    FROM 
+        product_comment AS pc 
+    WHERE 
+        pc.product_id = $1
+        AND user_id = $2),
+    ARRAY_AGG(json_build_object('key', pd.key, 'value', pd.value)) AS product_description,
+    (SELECT
+        ARRAY_AGG(json_build_object('comment', pc.product_comment, 'username',  u.username)) AS product_commnet   
+    FROM
+        product_comment AS pc
+    JOIN
+        users AS u
+    ON
+        pc.user_id = u.id
+    WHERE
+        pc.product_id = $1)
+FROM 
+    (
+        SELECT 
+            p.*,
+            ARRAY_AGG(pi.product_image) AS product_images 
+        FROM 
+            product AS p
+        JOIN 
+            product_image AS pi ON p.product_id = pi.product_id 
+        WHERE 
+            p.product_id = $1
+        GROUP BY 
+            p.product_id
+    ) AS c
 JOIN 
-    product_description AS pd ON c.product_id = pd.product_id 
+    product_description AS pd ON c.product_id = pd.product_id
 JOIN 
     seller AS s ON c.product_seller_id = s.seller_user_id
 GROUP BY 
-	c.*,
-	c.product_seller_id,
-	c.product_title,
-	c.product_price,
-	c.product_available_quantity,
-	c.product_watch_count,
-	c.product_avg_rating,
-	c.product_seller_mobile_number,
-	c.product_timestamp,
-	c.product_images,
+    c.*,
+    c.product_seller_id,
+    c.product_title,
+    c.product_price,
+    c.product_available_quantity,
+    c.product_watch_count,
+    c.product_avg_rating,
+    c.product_seller_mobile_number,
+    c.product_timestamp,
+    c.product_images,
     c.product_id,
-	s.seller_city, 
+    s.seller_city, 
     s.seller_state, 
     s.seller_country, 
-	s.seller_pincode;
+    s.seller_pincode;
 `;
 
 const checkIfAlredyWatched = `

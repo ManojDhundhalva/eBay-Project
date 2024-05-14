@@ -71,14 +71,14 @@ function Order() {
       let step = 0;
       if (
         order.products.every(
-          (product) => product.shipping_status_order_placed !== null
+          (product) => product.has_order.shipping_status_order_placed !== null
         )
       ) {
         step = 1;
       }
       if (
         order.products.every(
-          (product) => product.shipping_status_order_shipped !== null
+          (product) => product.has_order.shipping_status_order_shipped !== null
         )
       ) {
         step = 2;
@@ -86,21 +86,23 @@ function Order() {
       if (
         order.products.every(
           (product) =>
-            product.shipping_status_reached_at_buyers_inventory !== null
+            product.has_order.shipping_status_reached_at_buyers_inventory !==
+            null
         )
       ) {
         step = 3;
       }
       if (
         order.products.every(
-          (product) => product.shipping_status_out_for_delivery !== null
+          (product) =>
+            product.has_order.shipping_status_out_for_delivery !== null
         )
       ) {
         step = 4;
       }
       if (
         order.products.every(
-          (product) => product.shipping_status_delivered !== null
+          (product) => product.has_order.shipping_status_delivered !== null
         )
       ) {
         step = 5;
@@ -109,6 +111,10 @@ function Order() {
     });
     setOrderStepOfOrderId(newOrderStepOfOrderId);
   }, [orderList]);
+
+  useEffect(() => {
+    console.log("orderList", orderList);
+  }, []);
 
   return (
     <>
@@ -197,17 +203,7 @@ function Order() {
                                     component="div"
                                   >
                                     &#x20b9;{" "}
-                                    {Number(
-                                      Number(
-                                        Number(item.order_shipping_cost) +
-                                          Number(
-                                            item.order_shipping_cost *
-                                              (process.env
-                                                .REACT_APP_EBAY_CHARGES /
-                                                100)
-                                          )
-                                      ) + Number(item.order_total_cost)
-                                    ).toFixed(2)}
+                                    {Number(item.payment_amount).toFixed(2)}
                                   </Typography>
                                 </Grid>
                               </Grid>

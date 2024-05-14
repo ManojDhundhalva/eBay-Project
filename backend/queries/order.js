@@ -35,10 +35,13 @@ INSERT INTO has_order (
     has_order_id,
     has_order_product_quantity,
     has_order_product_id,
+    has_order_distance,
+    has_order_distance_charge,
+    has_order_eBay_charge,
     shipping_status_order_placed
 ) 
 VALUES 
-    ($1, $2, $3, $4, CURRENT_TIMESTAMP);
+    ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP);
 `;
 
 const makeUpdateProductQuantity = `
@@ -112,26 +115,39 @@ VALUES ($1, $2);
 `;
 
 const getAllOrders = `
-SELECT o.*,
-       (
-        SELECT ARRAY_AGG(
-            JSON_BUILD_OBJECT(
-                'product_image', (SELECT ARRAY_AGG(pi.product_image) FROM product_image AS pi WHERE pi.product_id = h.has_order_product_id),
-                'has_order_product_id', h.has_order_product_id,
-                'has_order_product_quantity', h.has_order_product_quantity,
-				'shipping_status_order_placed', h.shipping_status_order_placed,
-				'shipping_status_order_shipped', h.shipping_status_order_shipped,
-				'shipping_status_reached_at_buyers_inventory', h.shipping_status_reached_at_buyers_inventory,
-				'shipping_status_out_for_delivery', h.shipping_status_out_for_delivery,
-				'shipping_status_delivered', h.shipping_status_delivered
+SELECT
+    o.*,
+    py.payment_amount,
+    (
+        SELECT
+            ARRAY_AGG(
+                JSON_BUILD_OBJECT(
+                    'product_image', (
+                        SELECT
+                            ARRAY_AGG(pi.product_image)
+                        FROM
+                            product_image AS pi
+                        WHERE
+                            pi.product_id = h.has_order_product_id
+                    ),
+                    'has_order', h.*
+                )
             )
-        )
-        FROM has_order AS h
-        WHERE o.order_id = h.has_order_id
-       ) AS products
-FROM order_details AS o
-WHERE o.order_buyer_id = $1
-GROUP BY o.order_id;
+        FROM
+            has_order AS h
+        WHERE
+            o.order_id = h.has_order_id
+    ) AS products
+FROM
+    order_details AS o
+JOIN 
+    payment AS py ON py.payment_transaction_id = o.order_transaction_id
+WHERE
+    o.order_buyer_id = $1
+GROUP BY
+    o.order_id,
+    py.payment_transaction_id;
+
 `;
 
 const getOrderDetailsByOrderId = `

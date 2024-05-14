@@ -60,7 +60,7 @@ const listProduct = async (req, resp) => {
     const shipperName = name + "Shipper";
 
     const usernameResult = await pool.query(queries.IfExistSellerSideManager, [
-      name,
+      managerName,
     ]);
 
     if (usernameResult.rows.length === 0) {
@@ -157,6 +157,7 @@ const getProductsDetails = async (req, resp) => {
   try {
     const results = await pool.query(queries.getProductsDetails, [
       req.query.productId,
+      req.user.id,
     ]);
     return resp.status(200).json(results.rows[0]);
   } catch (err) {
