@@ -11,6 +11,34 @@ const getAllCategories = async (req, resp) => {
   }
 };
 
+const getFilteredProducts = async (req, resp) => {
+  const { value } = req.body;
+  try {
+    const categoryResults = await pool.query(queries.isInCategory, [value]);
+    const subCategoryResults = await pool.query(queries.isInSubCategory, [
+      value,
+    ]);
+
+    let query, queryParams;
+    if (categoryResults.rows.length > 0) {
+      query = queries.getAllCategoryProduct;
+    } else if (subCategoryResults.rows.length > 0) {
+      query = queries.getAllSubCategoryProduct;
+    } else {
+      query = queries.getAllSubSubCategoryProduct;
+    }
+
+    queryParams = [req.user.id, value];
+    const products = await pool.query(query, queryParams);
+
+    resp.status(200).json(products.rows);
+  } catch (err) {
+    console.error("Error retrieving filtered products:", err);
+    resp.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   getAllCategories,
+  getFilteredProducts,
 };

@@ -24,6 +24,110 @@ ORDER BY
 	c.category_name;
 `;
 
+const getFilteredProducts = `
+SELECT * 
+FROM product AS p 
+JOIN (
+    SELECT * 
+    FROM category_has_sub_category 
+    NATURAL JOIN sub_category_has_sub_sub_category 
+    WHERE category_name = 'Clothing & Accessories'
+) AS c 
+ON p.product_category_name = c.category_name 
+AND p.product_sub_category_name = c.sub_category_name 
+AND p.product_sub_sub_category_name = c.sub_sub_category_name;
+`;
+
+const isInCategory = `
+SELECT * 
+FROM category_has_sub_category 
+WHERE category_name = $1;
+`;
+
+const isInSubCategory = `
+SELECT * 
+FROM category_has_sub_category 
+WHERE sub_category_name = $1;
+`;
+
+const getAllCategoryProduct = `
+SELECT 
+    p.product_id,
+    p.product_title, 
+    p.product_price, 
+    p.product_avg_rating,
+    ARRAY_AGG(pi.product_image) AS product_images 
+FROM 
+    product AS p 
+JOIN 
+    product_image AS pi 
+ON 
+    p.product_id = pi.product_id
+WHERE 
+    p.product_seller_id <> $1 
+	AND p.product_available_quantity <> 0
+	AND p.product_category_name = $2
+GROUP BY
+    p.product_id,
+    p.product_title,
+    p.product_price,
+    p.product_avg_rating
+`;
+
+const getAllSubCategoryProduct = `
+SELECT 
+    p.product_id,
+    p.product_title, 
+    p.product_price, 
+    p.product_avg_rating,
+    ARRAY_AGG(pi.product_image) AS product_images 
+FROM 
+    product AS p 
+JOIN 
+    product_image AS pi 
+ON 
+    p.product_id = pi.product_id
+WHERE 
+    p.product_seller_id <> $1 
+	AND p.product_available_quantity <> 0
+	AND p.product_sub_category_name = $2
+GROUP BY
+    p.product_id,
+    p.product_title,
+    p.product_price,
+    p.product_avg_rating
+`;
+
+const getAllSubSubCategoryProduct = `
+SELECT 
+    p.product_id,
+    p.product_title, 
+    p.product_price, 
+    p.product_avg_rating,
+    ARRAY_AGG(pi.product_image) AS product_images 
+FROM 
+    product AS p 
+JOIN 
+    product_image AS pi 
+ON 
+    p.product_id = pi.product_id
+WHERE 
+    p.product_seller_id <> $1 
+	AND p.product_available_quantity <> 0
+	AND p.product_sub_sub_category_name = $2
+GROUP BY
+    p.product_id,
+    p.product_title,
+    p.product_price,
+    p.product_avg_rating
+`;
+
 module.exports = {
   getAllCategories,
+  getFilteredProducts,
+  isInCategory,
+  isInSubCategory,
+  getAllCategoryProduct,
+  getAllSubCategoryProduct,
+  getAllSubSubCategoryProduct,
 };

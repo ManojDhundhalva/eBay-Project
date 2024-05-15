@@ -32,6 +32,8 @@ import ClassOutlinedIcon from "@mui/icons-material/ClassOutlined";
 import CircleOutlinedIcon from "@mui/icons-material/CircleOutlined";
 import RadioButtonUncheckedOutlinedIcon from "@mui/icons-material/RadioButtonUncheckedOutlined";
 import RadioButtonCheckedOutlinedIcon from "@mui/icons-material/RadioButtonCheckedOutlined";
+import axios from "axios";
+import ProductCard from "../components/ProductCard";
 
 function DotIcon() {
   return (
@@ -250,7 +252,8 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(props, ref) {
 
 export default function Category() {
   const { categories } = useProduct();
-  const [selectedValue, setSelectedValue] = useState(null); // State to hold selected value
+  const [selectedValue, setSelectedValue] = useState(null);
+  const [products, setProducts] = useState([]);
 
   // Convert categories into the format required for the RichTreeView
   const transformedCategories = categories?.map((category) => ({
@@ -271,8 +274,28 @@ export default function Category() {
   }));
 
   // Function to handle click on tree item label
-  const handleItemClick = (value) => {
+  const handleItemClick = async (value) => {
     setSelectedValue(value); // Update selected value
+
+    const headers = {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${window.localStorage.getItem("token")}`,
+    };
+    try {
+      const results = await axios.post(
+        `http://localhost:8000/api/v1/category/filter-products?username=${window.localStorage.getItem(
+          "username"
+        )}&role=${window.localStorage.getItem("role")}`,
+        { value },
+        {
+          headers,
+        }
+      );
+      setProducts(results.data);
+    } catch (err) {
+      // LogOut();
+      console.log("Error -> ", err);
+    }
   };
 
   useEffect(() => {
@@ -284,7 +307,7 @@ export default function Category() {
       <h1>Category</h1>
       <h1>Category</h1>
       <Grid container spacing={2}>
-        <Grid item xs={4} style={{ backgroundColor: "ghostwhite" }}>
+        <Grid item xs={3} style={{ backgroundColor: "ghostwhite" }}>
           <RichTreeView
             items={transformedCategories}
             aria-label="file explorer"
@@ -303,9 +326,17 @@ export default function Category() {
             }}
           />
         </Grid>
-        <Grid item xs={8}>
-          <h1>Selected Value: {selectedValue}</h1>{" "}
-          {/* Display selected value */}
+        <Grid container item xs={9}>
+          <Grid container item xs={8}>
+            <h1>Selected Value: {selectedValue}</h1>
+          </Grid>
+          <Grid container item xs={9}>
+            {products.map((data, index) => (
+              <Grid item xs={4.5} key={index} style={{ margin: "0 auto" }}>
+                <ProductCard key={index} product={data} />
+              </Grid>
+            ))}
+          </Grid>
         </Grid>
       </Grid>
     </>
