@@ -13,8 +13,32 @@ export const ProductProvider = ({ children }) => {
   const [isAddedBankAccount, setIsAddedBankAccount] = useState(false);
   const [orderedProductIds, setOrderedProductIds] = useState([]);
 
+  const [categories, setCategories] = useState([]);
+
   const { LogOut, isLoggedIn } = useAuth();
   const navigate = useNavigate();
+
+  const getAllCategories = async () => {
+    const headers = {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${window.localStorage.getItem("token")}`,
+    };
+    try {
+      const results = await axios.get(
+        `http://localhost:8000/api/v1/category?username=${window.localStorage.getItem(
+          "username"
+        )}&role=${window.localStorage.getItem("role")}`,
+        {
+          headers,
+        }
+      );
+      console.log(results.data);
+      setCategories(results.data);
+    } catch (err) {
+      // LogOut();
+      console.log("Error -> ", err);
+    }
+  };
 
   const checkBankAccount = async () => {
     const headers = {
@@ -189,7 +213,6 @@ export const ProductProvider = ({ children }) => {
           headers,
         }
       );
-      console.log(results.data);
       setWishList(results.data);
     } catch (err) {
       // LogOut();
@@ -229,6 +252,7 @@ export const ProductProvider = ({ children }) => {
 
   useEffect(() => {
     if (window.localStorage.getItem("role") === "user") {
+      getAllCategories();
       checkBankAccount();
       getCart();
       getWishList();
@@ -253,6 +277,7 @@ export const ProductProvider = ({ children }) => {
         orderList,
         setOrderList,
         orderedProductIds,
+        categories,
       }}
     >
       {children}

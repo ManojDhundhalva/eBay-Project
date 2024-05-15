@@ -5,8 +5,11 @@ INSERT INTO product (
     product_title,
     product_price,
     product_available_quantity,
-    product_seller_mobile_number
-) VALUES ($1, $2, $3, $4, $5, $6);
+    product_seller_mobile_number,
+    product_category_name,
+    product_sub_category_name,
+    product_sub_sub_category_name
+) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);
 `;
 
 const addImage = `
@@ -166,6 +169,9 @@ GROUP BY
     c.product_timestamp,
     c.product_images,
     c.product_id,
+    c.product_category_name,
+	c.product_sub_category_name,
+	c.product_sub_sub_category_name,
     s.seller_city, 
     s.seller_state, 
     s.seller_country, 

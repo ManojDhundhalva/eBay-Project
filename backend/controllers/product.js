@@ -21,6 +21,9 @@ const listProduct = async (req, resp) => {
     product_seller_mobile_number,
     product_image,
     product_description,
+    product_category_name,
+    product_sub_category_name,
+    product_sub_sub_category_name,
   } = req.body;
 
   try {
@@ -33,6 +36,9 @@ const listProduct = async (req, resp) => {
       product_price,
       product_available_quantity,
       product_seller_mobile_number,
+      product_category_name,
+      product_sub_category_name,
+      product_sub_sub_category_name,
     ]);
 
     for (const image of product_image) {

@@ -10,6 +10,7 @@ const { verifyTokenAndAuthorizationUser } = require("./middlewares/verifyUser");
 const orderRoutes = require("./routes/order");
 const inventoryRoutes = require("./routes/inventory");
 const shipperRoutes = require("./routes/shipper");
+const categoryRoutes = require("./routes/category");
 // const sellerRoutes = require("./routes/seller");
 const cors = require("cors");
 const dotenv = require("dotenv");
@@ -35,6 +36,7 @@ app.use("/api/v1/wish-list", wishListRoutes);
 app.use("/api/v1/order", orderRoutes);
 app.use("/api/v1/inventory", inventoryRoutes);
 app.use("/api/v1/shipper", shipperRoutes);
+app.use("/api/v1/category", categoryRoutes);
 // app.use("/api/v1/seller", sellerRoutes);
 
 app.get(

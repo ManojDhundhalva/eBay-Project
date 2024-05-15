@@ -16,6 +16,11 @@ import { Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth";
 import { useProduct } from "../context/product";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormHelperText from "@mui/material/FormHelperText";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 
 const FormGrid = styled(Grid)(() => ({
   display: "flex",
@@ -31,6 +36,23 @@ export default function ListProduct() {
   const [descriptionInputs, setDescriptionInputs] = useState([
     { key: "", value: "" },
   ]);
+
+  const { categories: categoriesData } = useProduct();
+  const [category, setCategory] = useState("");
+  const [subCategory, setSubCategory] = useState("");
+  const [subSubCategory, setSubSubCategory] = useState("");
+
+  const handleCategoryChange = (e) => {
+    setCategory(e.target.value);
+    setSubCategory(""); // Reset subCategory when category changes
+    setSubSubCategory(""); // Reset subSubCategory when category changes
+  };
+
+  const handleSubCategoryChange = (e) => {
+    setSubCategory(e.target.value);
+    setSubSubCategory(""); // Reset subSubCategory when subCategory changes
+  };
+
   const LPtheme = createTheme(getLPTheme());
   const navigate = useNavigate();
 
@@ -139,6 +161,9 @@ export default function ListProduct() {
           product_seller_mobile_number: phoneNumber,
           product_image: imageInputs,
           product_description: descriptionInputs,
+          product_category_name: category,
+          product_sub_category_name: subCategory,
+          product_sub_sub_category_name: subSubCategory,
         },
         { headers }
       );
@@ -310,6 +335,82 @@ export default function ListProduct() {
                   }
                 />
               </FormGrid>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6} className="mt-3">
+                  <FormControl sx={{ m: 1, minWidth: 120 }}>
+                    <FormLabel htmlFor="category" required>
+                      Category
+                    </FormLabel>
+                    <Select
+                      value={category}
+                      onChange={handleCategoryChange}
+                      displayEmpty
+                      inputProps={{ "aria-label": "Without label" }}
+                    >
+                      <MenuItem value="">Select Category</MenuItem>
+                      {categoriesData.map((categoryItem, index) => (
+                        <MenuItem key={index} value={categoryItem.category}>
+                          {categoryItem.category}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                {category && (
+                  <Grid item xs={12} md={6} className="mt-3">
+                    <FormControl sx={{ m: 1, minWidth: 120 }}>
+                      <FormLabel htmlFor="sub-category" required>
+                        Sub Category
+                      </FormLabel>
+                      <Select
+                        value={subCategory}
+                        onChange={handleSubCategoryChange}
+                        displayEmpty
+                        inputProps={{ "aria-label": "Without label" }}
+                      >
+                        <MenuItem value="">Select Sub Category</MenuItem>
+                        {categoriesData
+                          .find((item) => item.category === category)
+                          ?.sub_categories.map((subCategoryItem, index) => (
+                            <MenuItem
+                              key={index}
+                              value={subCategoryItem.sub_category}
+                            >
+                              {subCategoryItem.sub_category}
+                            </MenuItem>
+                          ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                )}
+                {subCategory && (
+                  <Grid item xs={12} md={6} className="mt-3">
+                    <FormControl sx={{ m: 1, minWidth: 120 }}>
+                      <FormLabel htmlFor="sub-sub-category" required>
+                        Sub Sub Category
+                      </FormLabel>
+                      <Select
+                        value={subSubCategory}
+                        onChange={(e) => setSubSubCategory(e.target.value)}
+                        displayEmpty
+                        inputProps={{ "aria-label": "Without label" }}
+                      >
+                        <MenuItem value="">Select Sub Sub Category</MenuItem>
+                        {categoriesData
+                          .find((item) => item.category === category)
+                          ?.sub_categories.find(
+                            (item) => item.sub_category === subCategory
+                          )
+                          ?.sub_sub_category.map((subSubItem, index) => (
+                            <MenuItem key={index} value={subSubItem}>
+                              {subSubItem}
+                            </MenuItem>
+                          ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                )}
+              </Grid>
               <FormGrid item xs={12} md={6} className="mt-3">
                 <FormLabel htmlFor="phoneNumber" required>
                   Seller Phone Number

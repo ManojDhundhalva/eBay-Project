@@ -21,6 +21,7 @@ import Cart from "./pages/Cart";
 import WishList from "./pages/WishList";
 import Order from "./pages/Order";
 import OrderDetails from "./pages/OrderDetails";
+import Category from "./pages/Category";
 
 function App() {
   const { mode, setMode, toggleColorMode } = useAuth();
@@ -53,6 +54,7 @@ function App() {
           <Route exact path="/wish-list" element={<WishList />} />
           <Route exact path="/order" element={<Order />} />
           <Route exact path="/order-details" element={<OrderDetails />} />
+          <Route exact path="/category" element={<Category />} />
         </Routes>
       </ThemeProvider>
       {/* {!isHiddenPath && <Footer />} */}

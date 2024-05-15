@@ -348,6 +348,21 @@ function ProductDetails() {
                 </Grid>
                 <Grid item xs={10} style={{ marginTop: "1em" }}>
                   <Typography variant="h5" fontWeight="bold">
+                    Category: {product.product_category_name}
+                  </Typography>
+                </Grid>
+                <Grid item xs={10} style={{ marginTop: "1em" }}>
+                  <Typography variant="h5" fontWeight="bold">
+                    Sub Category: {product.product_sub_category_name}
+                  </Typography>
+                </Grid>
+                <Grid item xs={10} style={{ marginTop: "1em" }}>
+                  <Typography variant="h5" fontWeight="bold">
+                    Sub Sub Category: {product.product_sub_sub_category_name}
+                  </Typography>
+                </Grid>
+                <Grid item xs={10} style={{ marginTop: "1em" }}>
+                  <Typography variant="h5" fontWeight="bold">
                     Product Timestamp:{" "}
                     {new Date(product.product_timestamp).toLocaleDateString()}
                   </Typography>
