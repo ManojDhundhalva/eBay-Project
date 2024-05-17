@@ -1,7 +1,6 @@
 import "./App.css";
 import React from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
-import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Login from "./pages/Login";
@@ -22,6 +21,8 @@ import WishList from "./pages/WishList";
 import Order from "./pages/Order";
 import OrderDetails from "./pages/OrderDetails";
 import Category from "./pages/Category";
+import Home from "./manager/Home";
+import ShipperHomePage from "./shipper/ShipperHomePage";
 
 function App() {
   const { mode, setMode, toggleColorMode } = useAuth();
@@ -38,23 +39,36 @@ function App() {
       {/* {!isHiddenPath && <Navbar />} */}
       <ThemeProvider theme={LPtheme}>
         <CssBaseline />
-        {!isHiddenPath && (
-          <AppAppBar mode={mode} toggleColorMode={toggleColorMode} />
-        )}
+        {(window.localStorage.getItem("role") === "user" ||
+          window.localStorage.getItem("role") === null) &&
+          !isHiddenPath && <AppAppBar />}
         <Routes>
-          <Route exact path="/" element={<LandingPage />} />
           <Route exact path="/login" element={<Login />} />
           <Route exact path="/register" element={<Register />} />
-          <Route exact path="/aboutus" element={<AboutUS />} />
-          <Route exact path="/profile" element={<Profile />} />
-          <Route exact path="/account" element={<Account />} />
-          <Route exact path="/list-product" element={<ListProduct />} />
-          <Route exact path="/product-details" element={<ProductDetails />} />
-          <Route exact path="/cart" element={<Cart />} />
-          <Route exact path="/wish-list" element={<WishList />} />
-          <Route exact path="/order" element={<Order />} />
-          <Route exact path="/order-details" element={<OrderDetails />} />
-          <Route exact path="/category" element={<Category />} />
+          {window.localStorage.getItem("role") === "user" ||
+          window.localStorage.getItem("role") === null ? (
+            <>
+              <Route exact path="/" element={<LandingPage />} />
+              <Route exact path="/aboutus" element={<AboutUS />} />
+              <Route exact path="/profile" element={<Profile />} />
+              <Route exact path="/account" element={<Account />} />
+              <Route exact path="/list-product" element={<ListProduct />} />
+              <Route
+                exact
+                path="/product-details"
+                element={<ProductDetails />}
+              />
+              <Route exact path="/cart" element={<Cart />} />
+              <Route exact path="/wish-list" element={<WishList />} />
+              <Route exact path="/order" element={<Order />} />
+              <Route exact path="/order-details" element={<OrderDetails />} />
+              <Route exact path="/category" element={<Category />} />
+            </>
+          ) : window.localStorage.getItem("role") === "manager" ? (
+            <Route exact path="/" element={<Home />} />
+          ) : (
+            <Route exact path="/" element={<ShipperHomePage />} />
+          )}
         </Routes>
       </ThemeProvider>
       {/* {!isHiddenPath && <Footer />} */}

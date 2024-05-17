@@ -7,8 +7,6 @@ import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/auth";
 import { Toaster } from "react-hot-toast";
 import { ProductProvider } from "./context/product";
-import AppM from "./manager/AppM";
-import AppS from "./shipper/AppS";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -16,18 +14,7 @@ root.render(
     <BrowserRouter>
       <AuthProvider>
         <ProductProvider>
-          {window.localStorage.getItem("role") === "user" ||
-          window.localStorage.getItem("role") === null ? (
-            <App />
-          ) : window.localStorage.getItem("role") === "manager" ? (
-            <>
-              <AppM />
-            </>
-          ) : (
-            <>
-              <AppS />
-            </>
-          )}
+          <App />
           <Toaster
             position="top-center"
             toastOptions={{
