@@ -17,6 +17,7 @@ import FAQ from "./components/FAQ";
 import Footer from "./components/Footer";
 import getLPTheme from "./getLPTheme";
 import DisplayProduct from "./components/DisplayProduct";
+import HomePageCategory from "./components/HomePageCategory";
 
 function ToggleCustomTheme({ showCustomTheme, toggleCustomTheme }) {
   return (
@@ -64,6 +65,7 @@ export default function LandingPage() {
   return (
     <>
       <Hero />
+      <HomePageCategory />
       <DisplayProduct />
       <Box sx={{ bgcolor: "background.default" }}>
         <LogoCollection />

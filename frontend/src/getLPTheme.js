@@ -381,49 +381,49 @@ export default function getLPTheme(mode) {
           }),
         },
       },
-      MuiChip: {
-        styleOverrides: {
-          root: ({ theme }) => ({
-            alignSelf: "center",
-            py: 1.5,
-            px: 0.5,
-            background: `linear-gradient(to bottom right, ${brand[50]}, ${brand[100]})`,
-            border: "1px solid",
-            borderColor: `${alpha(brand[500], 0.3)}`,
-            fontWeight: "600",
-            "&:hover": {
-              backgroundColor: brand[500],
-            },
-            "&:focus-visible": {
-              borderColor: brand[800],
-              backgroundColor: brand[200],
-            },
-            "& .MuiChip-label": {
-              color: brand[500],
-            },
-            "& .MuiChip-icon": {
-              color: brand[500],
-            },
-            ...(theme.palette.mode === "dark" && {
-              background: `linear-gradient(to bottom right, ${brand[700]}, ${brand[900]})`,
-              borderColor: `${alpha(brand[500], 0.5)}`,
-              "&:hover": {
-                backgroundColor: brand[600],
-              },
-              "&:focus-visible": {
-                borderColor: brand[200],
-                backgroundColor: brand[600],
-              },
-              "& .MuiChip-label": {
-                color: brand[200],
-              },
-              "& .MuiChip-icon": {
-                color: brand[200],
-              },
-            }),
-          }),
-        },
-      },
+      // MuiChip: {
+      //   styleOverrides: {
+      //     root: ({ theme }) => ({
+      //       alignSelf: "center",
+      //       py: 1.5,
+      //       px: 0.5,
+      //       background: `linear-gradient(to bottom right, ${brand[50]}, ${brand[100]})`,
+      //       border: "1px solid",
+      //       borderColor: `${alpha(brand[500], 0.3)}`,
+      //       fontWeight: "600",
+      //       "&:hover": {
+      //         backgroundColor: brand[500],
+      //       },
+      //       "&:focus-visible": {
+      //         borderColor: brand[800],
+      //         backgroundColor: brand[200],
+      //       },
+      //       "& .MuiChip-label": {
+      //         color: brand[500],
+      //       },
+      //       "& .MuiChip-icon": {
+      //         color: brand[500],
+      //       },
+      //       ...(theme.palette.mode === "dark" && {
+      //         background: `linear-gradient(to bottom right, ${brand[700]}, ${brand[900]})`,
+      //         borderColor: `${alpha(brand[500], 0.5)}`,
+      //         "&:hover": {
+      //           backgroundColor: brand[600],
+      //         },
+      //         "&:focus-visible": {
+      //           borderColor: brand[200],
+      //           backgroundColor: brand[600],
+      //         },
+      //         "& .MuiChip-label": {
+      //           color: brand[200],
+      //         },
+      //         "& .MuiChip-icon": {
+      //           color: brand[200],
+      //         },
+      //       }),
+      //     }),
+      //   },
+      // },
       MuiDivider: {
         styleOverrides: {
           root: ({ theme }) => ({
