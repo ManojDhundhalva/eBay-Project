@@ -76,6 +76,7 @@ SELECT
     p.product_title, 
     p.product_price, 
     p.product_avg_rating,
+    p.product_watch_count,
     ARRAY_AGG(pi.product_image) AS product_images 
 FROM 
     product AS p 
@@ -89,7 +90,8 @@ GROUP BY
     p.product_id,
     p.product_title,
     p.product_price,
-    p.product_avg_rating
+    p.product_avg_rating,
+    p.product_watch_count
 LIMIT 10;
 `;
 

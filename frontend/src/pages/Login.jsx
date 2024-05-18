@@ -28,7 +28,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [justVerify, setJustVerify] = useState(false);
   const [validPassword, setValidPassword] = useState(false);
-  const { setIsLoggedIn, validateUser } = useAuth();
+  const { setIsLoggedIn, validateUser, isLoggedIn } = useAuth();
 
   const handlePasswordofLogin = (e) => {
     const input = e.target.value;
@@ -91,7 +91,11 @@ export default function Login() {
   };
 
   useEffect(() => {
-    validateUser();
+    if (window.localStorage.getItem("token") === null) {
+      validateUser();
+    } else {
+      navigate(-1);
+    }
   }, []);
 
   return (

@@ -52,7 +52,7 @@ export default function Register() {
   const [phoneNumber, setPhoneNumber] = useState("");
 
   const navigate = useNavigate();
-  const { mode, validateUser } = useAuth();
+  const { mode, validateUser, isLoggedIn } = useAuth();
   const LPtheme = createTheme(getLPTheme(mode));
 
   const handlePhoneNumber = (e) => {
@@ -116,7 +116,11 @@ export default function Register() {
   };
 
   useEffect(() => {
-    validateUser();
+    if (window.localStorage.getItem("token") === null) {
+      validateUser();
+    } else {
+      navigate(-1);
+    }
   }, []);
 
   return (

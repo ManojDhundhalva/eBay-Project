@@ -251,7 +251,8 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(props, ref) {
 });
 
 export default function Category() {
-  const { categories } = useProduct();
+  const { categories, selectedCategoryHome, setSelectedCategoryHome } =
+    useProduct();
   const [selectedValue, setSelectedValue] = useState(null);
   const [products, setProducts] = useState([]);
 
@@ -299,7 +300,10 @@ export default function Category() {
   };
 
   useEffect(() => {
-    console.log(transformedCategories);
+    if (selectedCategoryHome !== "") {
+      handleItemClick(selectedCategoryHome);
+      setSelectedCategoryHome("");
+    }
   }, []);
 
   return (
@@ -331,11 +335,15 @@ export default function Category() {
             <h1>Selected Value: {selectedValue}</h1>
           </Grid>
           <Grid container item xs={9}>
-            {products.map((data, index) => (
-              <Grid item xs={4.5} key={index} style={{ margin: "0 auto" }}>
-                <ProductCard key={index} product={data} />
-              </Grid>
-            ))}
+            {products.length ? (
+              products.map((data, index) => (
+                <Grid item xs={4.5} key={index} style={{ margin: "0 auto" }}>
+                  <ProductCard key={index} product={data} />
+                </Grid>
+              ))
+            ) : (
+              <>Empty</>
+            )}
           </Grid>
         </Grid>
       </Grid>

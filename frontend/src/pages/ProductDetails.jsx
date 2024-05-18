@@ -23,6 +23,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import TextField from "@mui/material/TextField";
 import FormLabel from "@mui/material/FormLabel";
 import { styled } from "@mui/system";
+import DisplayImages from "../components/DisplayImages";
 
 const FormGrid = styled(Grid)(() => ({
   display: "flex",
@@ -233,7 +234,10 @@ function ProductDetails() {
       </Typography>
       <Grid container spacing={3} justifyContent="center">
         <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
-          <Box
+          {product.product_images && (
+            <DisplayImages images={product.product_images} />
+          )}
+          {/* <Box
             id="image"
             sx={(theme) => ({
               mt: { xs: 8, sm: 10 },
@@ -283,7 +287,7 @@ function ProductDetails() {
                   </Carousel.Item>
                 ))}
             </Carousel>
-          </Box>
+          </Box> */}
         </Grid>
         <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
           <Box

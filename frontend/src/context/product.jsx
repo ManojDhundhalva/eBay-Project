@@ -15,6 +15,8 @@ export const ProductProvider = ({ children }) => {
 
   const [categories, setCategories] = useState([]);
 
+  const [selectedCategoryHome, setSelectedCategoryHome] = useState("");
+
   const { LogOut, isLoggedIn } = useAuth();
   const navigate = useNavigate();
 
@@ -278,6 +280,8 @@ export const ProductProvider = ({ children }) => {
         setOrderList,
         orderedProductIds,
         categories,
+        selectedCategoryHome,
+        setSelectedCategoryHome,
       }}
     >
       {children}
