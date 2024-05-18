@@ -1,0 +1,27 @@
+.magnifying-glass-container {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .magnifying-glass-image {
+    position: relative;
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 300px; /* Adjust the width according to your image size */
+    height: 200px; /* Adjust the height according to your image size */
+  }
+  
+  .magnifying-glass {
+    position: absolute;
+    width: 100px; /* Adjust the size of the magnifying glass */
+    height: 100px; /* Adjust the size of the magnifying glass */
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    background-repeat: no-repeat;
+    background-size: 200% 200%;
+    z-index: 999;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    cursor: crosshair; /* Change cursor to crosshair when hovering over the image */
+  }
+  

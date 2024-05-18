@@ -1,126 +1,166 @@
-import * as React from "react";
-import { useTheme } from "@mui/material/styles";
+import React, { useState, useRef } from "react";
+import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
-import MobileStepper from "@mui/material/MobileStepper";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
+import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
-import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
-import SwipeableViews from "react-swipeable-views";
-import { autoPlay } from "react-swipeable-views-utils";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { Grid } from "@mui/material";
 
-const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
+// Styling for ScrollBox
+const ScrollBox = styled(Box)({
+  overflowY: "auto",
+  whiteSpace: "nowrap",
+  height: "60vh",
+  "&::-webkit-scrollbar": {
+    display: "none",
+  },
+  "-ms-overflow-style": "none",
+  "scrollbar-width": "none",
+});
 
-const images = [
-  {
-    label: "San Francisco – Oakland Bay Bridge, United States",
-    imgPath:
-      "https://images.unsplash.com/photo-1537944434965-cf4679d1a598?auto=format&fit=crop&w=400&h=250&q=60",
-  },
-  {
-    label: "Bird",
-    imgPath:
-      "https://images.unsplash.com/photo-1538032746644-0212e812a9e7?auto=format&fit=crop&w=400&h=250&q=60",
-  },
-  {
-    label: "Bali, Indonesia",
-    imgPath:
-      "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=400&h=250",
-  },
-  {
-    label: "Goč, Serbia",
-    imgPath:
-      "https://images.unsplash.com/photo-1512341689857-198e7e2f3ca8?auto=format&fit=crop&w=400&h=250&q=60",
-  },
-];
+// MagnifyingGlass Component
+const MagnifyingGlass = ({ src, zoom }) => {
+  const magnifyingGlassRef = useRef(null);
+  const [bgPosition, setBgPosition] = useState("0% 0%");
+  const [glassPosition, setGlassPosition] = useState({ x: -9999, y: -9999 });
 
-export default function DisplayImages({ images }) {
-  const theme = useTheme();
-  const [activeStep, setActiveStep] = React.useState(0);
-  const maxSteps = images.length;
-
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  const handleMouseMove = (e) => {
+    const { left, top, width, height } =
+      magnifyingGlassRef.current.getBoundingClientRect();
+    const x = ((e.pageX - left) / width) * 100;
+    const y = ((e.pageY - top) / height) * 100;
+    setBgPosition(`${x}% ${y}%`);
+    setGlassPosition({ x: e.pageX - left, y: e.pageY - top });
   };
 
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleStepChange = (step) => {
-    setActiveStep(step);
+  const glassStyle = {
+    position: "absolute",
+    top: glassPosition.y - 75, // Adjusting for the larger circle
+    left: glassPosition.x - 75, // Adjusting for the larger circle
+    width: "180px", // Increased diameter
+    height: "180px", // Increased diameter
+    borderRadius: "50%",
+    boxShadow: "0 0 10px rgba(0,0,0,0.5)",
+    backgroundImage: `url(${src})`,
+    backgroundSize: `${zoom * 100}%`,
+    backgroundPosition: bgPosition,
+    pointerEvents: "none",
   };
 
   return (
-    <Box sx={{ maxWidth: 400, flexGrow: 1 }}>
-      <Paper
-        square
-        elevation={0}
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          height: 50,
-          pl: 2,
-          bgcolor: "background.default",
+    <div
+      ref={magnifyingGlassRef}
+      onMouseMove={handleMouseMove}
+      style={{
+        position: "relative",
+        width: "100%",
+        paddingBottom: "75%", // Maintain aspect ratio
+        borderRadius: "10px",
+        overflow: "hidden",
+      }}
+    >
+      <img
+        src={src}
+        style={{
+          objectFit: "cover",
+          width: "100%",
+          height: "100%",
+          borderRadius: "10px",
+          position: "absolute",
+          top: 0,
+          left: 0,
         }}
-      >
-        <Typography>{images[activeStep].label}</Typography>
-      </Paper>
-      <AutoPlaySwipeableViews
-        axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-        index={activeStep}
-        onChangeIndex={handleStepChange}
-        enableMouseEvents
-      >
-        {images.map((step, index) => (
-          <div key={step.label}>
-            {Math.abs(activeStep - index) <= 2 ? (
-              <Box
-                component="img"
-                sx={{
-                  height: 255,
-                  display: "block",
-                  maxWidth: 400,
-                  overflow: "hidden",
-                  width: "100%",
-                }}
-                src={step.imgPath}
-                alt={step.label}
-              />
-            ) : null}
-          </div>
-        ))}
-      </AutoPlaySwipeableViews>
-      <MobileStepper
-        steps={maxSteps}
-        position="static"
-        activeStep={activeStep}
-        nextButton={
-          <Button
-            size="small"
-            onClick={handleNext}
-            disabled={activeStep === maxSteps - 1}
-          >
-            Next
-            {theme.direction === "rtl" ? (
-              <KeyboardArrowLeft />
-            ) : (
-              <KeyboardArrowRight />
-            )}
-          </Button>
-        }
-        backButton={
-          <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
-            {theme.direction === "rtl" ? (
-              <KeyboardArrowRight />
-            ) : (
-              <KeyboardArrowLeft />
-            )}
-            Back
-          </Button>
-        }
       />
+      <div style={glassStyle}></div>
+    </div>
+  );
+};
+
+const DisplayImages = ({ images }) => {
+  const [selectedImg, setSelectedImg] = useState(images[0]);
+  const scrollBoxRef = useRef(null);
+
+  const scrollTop = () => {
+    if (scrollBoxRef.current) {
+      scrollBoxRef.current.scrollBy({ top: -300, behavior: "smooth" });
+    }
+  };
+
+  const scrollDown = () => {
+    if (scrollBoxRef.current) {
+      scrollBoxRef.current.scrollBy({ top: 300, behavior: "smooth" });
+    }
+  };
+
+  return (
+    <Box sx={{ width: "100%" }}>
+      <Stack direction="row" style={{ position: "relative" }}>
+        <Box
+          sx={{
+            position: "relative",
+            width: { xs: "15vh", sm: "20vh" },
+            marginX: 2,
+          }}
+        >
+          <Button
+            onClick={scrollTop}
+            sx={{
+              position: "absolute",
+              left: "50%",
+              transform: "translateX(-50%)",
+              top: "-4vh",
+              zIndex: 1,
+              minWidth: "unset",
+              backgroundColor: "lightblue",
+              borderRadius: "100%",
+            }}
+          >
+            <KeyboardArrowUpIcon />
+          </Button>
+          <ScrollBox ref={scrollBoxRef}>
+            <Stack spacing={2}>
+              {images.map((image, index) => (
+                <img
+                  style={{
+                    width: { xs: "15vh", sm: "20vh" },
+                    height: { xs: "15vh", sm: "20vh" },
+                    // width: "20vh",
+                    // height: "20vh",
+                    borderRadius: "10px",
+                    cursor: "pointer",
+                  }}
+                  key={index}
+                  src={image}
+                  onClick={() => {
+                    setSelectedImg(image);
+                  }}
+                />
+              ))}
+            </Stack>
+          </ScrollBox>
+          <Button
+            onClick={scrollDown}
+            sx={{
+              position: "absolute",
+              left: "50%",
+              transform: "translateX(-50%)",
+              bottom: "-4vh",
+              zIndex: 1,
+              minWidth: "unset",
+              backgroundColor: "lightblue",
+              borderRadius: "100%",
+            }}
+          >
+            <KeyboardArrowDownIcon />
+          </Button>
+        </Box>
+        <Box sx={{ flex: 1 }}>
+          <MagnifyingGlass src={selectedImg} zoom={6} />
+        </Box>
+      </Stack>
     </Box>
   );
-}
+};
+
+export default DisplayImages;

@@ -132,11 +132,11 @@ const ProductRatingGraph = ({ productRatings }) => {
         </div>
         <div>
           {/* google, apple, facebook, twitter and native. */}
-          <EmojiPicker
+          {/* <EmojiPicker
             emojiStyle="facebook"
             theme={Theme.DARK}
             // skinTonePicker={SkinTones}
-          />
+          /> */}
         </div>
       </div>
     </>
