@@ -22,6 +22,13 @@ import TextField from "@mui/material/TextField";
 // import SimpleImageSlider from "react-simple-image-slider";
 import { styled } from "@mui/system";
 import DisplayImages from "../components/DisplayImages";
+import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
+import Chip from "@mui/material/Chip";
+import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
+import StarRateRoundedIcon from "@mui/icons-material/StarRateRounded";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import Link from "@mui/material/Link";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 
 const FormGrid = styled(Grid)(() => ({
   display: "flex",
@@ -192,164 +199,253 @@ function ProductDetails() {
     }
   };
 
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  };
+
   return (
     <>
-      <Grid container className="mt-5">
-        <Grid
-          xs={12}
-          sm={12}
-          md={7}
-          lg={7}
-          xl={7}
-          className="mt-4"
-          // style={{ backgroundColor: "lightgreen" }}
-        >
+      <Grid container className="mt-5" padding={0}>
+        <Grid xs={12} sm={12} md={7} lg={7} xl={7} className="mt-4">
           {product.product_images && (
             <DisplayImages images={product.product_images} />
           )}
         </Grid>
         <Grid
-          item
           xs={12}
           sm={12}
           md={5}
           lg={5}
           xl={5}
-          style={{ backgroundColor: "ghostwhite" }}
+          margin={0}
+          padding={0}
           className="mt-4"
         >
-          <Grid item style={{ marginTop: "1em" }}>
-            <Typography variant="h2" fontWeight="bold">
-              Product Details
-            </Typography>
-          </Grid>
-          <Grid item style={{ marginTop: "1em" }}>
-            <Typography variant="h5" fontWeight="bold">
-              Product ID: {window.localStorage.getItem("product-id")}
-            </Typography>
-          </Grid>
-          <Grid item style={{ marginTop: "1em" }}>
-            <Typography variant="h5" fontWeight="bold">
-              Product Price: {product.product_price}
-            </Typography>
-          </Grid>
-          <Grid item style={{ marginTop: "1em" }}>
-            <Typography variant="h5" fontWeight="bold">
-              Product Title: {product.product_title}
-            </Typography>
-          </Grid>
-          <Grid item style={{ marginTop: "1em" }}>
-            <Typography variant="h5" fontWeight="bold">
-              Product Available Quantity: {product.product_available_quantity}
-            </Typography>
-          </Grid>
-          <Grid item style={{ marginTop: "1em" }}>
-            <Typography variant="h5" fontWeight="bold">
-              Product Average Rating: {product.product_avg_rating}
-            </Typography>
-          </Grid>
-          <Grid item style={{ marginTop: "1em" }}>
-            <Typography variant="h5" fontWeight="bold">
-              Product Watch Count: {product.product_watch_count}
-            </Typography>
-          </Grid>
-          <Grid item style={{ marginTop: "1em" }}>
-            <Typography variant="h5" fontWeight="bold">
-              Category: {product.product_category_name}
-            </Typography>
-          </Grid>
-          <Grid item style={{ marginTop: "1em" }}>
-            <Typography variant="h5" fontWeight="bold">
-              Sub Category: {product.product_sub_category_name}
-            </Typography>
-          </Grid>
-          <Grid item style={{ marginTop: "1em" }}>
-            <Typography variant="h5" fontWeight="bold">
-              Sub Sub Category: {product.product_sub_sub_category_name}
-            </Typography>
-          </Grid>
-          <Grid item style={{ marginTop: "1em" }}>
-            <Typography variant="h5" fontWeight="bold">
-              Product Timestamp:{" "}
-              {new Date(product.product_timestamp).toLocaleDateString()}
-            </Typography>
-            <Typography variant="h5" fontWeight="bold">
-              Product Timestamp: {formatTimestamp(product.product_timestamp)}
-            </Typography>
-          </Grid>
-          <Grid item style={{ marginTop: "1em" }}>
-            <Typography variant="h5" fontWeight="bold">
-              seller_city
-              {product.seller_city}
-            </Typography>
-          </Grid>
-          <Grid item style={{ marginTop: "1em" }}>
-            <Typography variant="h5" fontWeight="bold">
-              seller_state
-              {product.seller_state}
-            </Typography>
-          </Grid>
-          <Grid item style={{ marginTop: "1em" }}>
-            <Typography variant="h5" fontWeight="bold">
-              seller_country
-              {product.seller_country}
-            </Typography>
-          </Grid>
-          <Grid item style={{ marginTop: "1em" }}>
-            <Typography variant="h5" fontWeight="bold">
-              seller_pincode
-              {product.seller_pincode}
-            </Typography>
-          </Grid>
-          <Grid item style={{ marginTop: "1em" }}>
-            {product.product_available_quantity ? (
-              !isAddedToCart ? (
+          <Grid
+            paddingLeft={5}
+            paddingTop={2}
+            marginRight={2}
+            marginLeft={{ xs: 2, sm: 2, md: 0, xl: 0, lg: 0 }}
+            style={{
+              backgroundColor: "ghostwhite",
+              borderRadius: "10px",
+            }}
+          >
+            <Grid container item style={{ marginTop: "1em" }}>
+              <Grid item xs={10}>
+                <Typography
+                  variant="h3"
+                  fontWeight="bold"
+                  textTransform="uppercase"
+                >
+                  {product.product_title}
+                </Typography>
+              </Grid>
+              <Grid
+                item
+                xs={2}
+                style={{
+                  marginTop: "1em",
+                  fontWeight: "bold",
+                }}
+              >
+                <Chip
+                  style={{ backgroundColor: "lightgrey", color: "black" }}
+                  label={
+                    <>
+                      <RemoveRedEyeOutlinedIcon /> {product.product_watch_count}
+                    </>
+                  }
+                  color="primary"
+                />
+              </Grid>
+            </Grid>
+            <Grid item style={{ display: "flex" }}>
+              <Grid
+                xs={12}
+                style={{ display: "flex", justifyContent: "space-between" }}
+              >
+                <Grid xs={12} style={{ display: "flex" }}>
+                  <div>
+                    <Rating
+                      name="product-rating"
+                      value={parseFloat(product.product_avg_rating)}
+                      precision={0.1} // Set precision to 0.1 to allow fractional part
+                      readOnly
+                      emptyIcon={<StarBorderRoundedIcon />}
+                      icon={<StarRateRoundedIcon />}
+                      style={{
+                        "& .MuiSvgIcon-root": {
+                          borderRadius: "50%", // This will make only the star icons rounded
+                        },
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <Typography variant="subtitle2" fontWeight="bold">
+                      &nbsp;&nbsp;&nbsp;{parseFloat(product.product_avg_rating)}
+                    </Typography>
+                  </div>
+                </Grid>
+                <Grid xs={4} style={{ fontWeight: "bold" }}>
+                  {formatTimestamp(product.product_timestamp)}
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid>ID : {window.localStorage.getItem("product-id")}</Grid>
+            <Grid>Listed On : {formatDate(product.product_timestamp)}</Grid>
+            <Grid
+              item
+              style={{
+                marginTop: "1em",
+                display: "flex",
+                alignItems: "flex-end",
+              }}
+            >
+              <Typography variant="h2" style={{ fontWeight: "bold" }}>
+                <span style={{ fontWeight: 500 }}>&#8377;</span>
+                {String(product.product_price).split(".")[0]}
+              </Typography>
+              <Typography variant="subtitle1" style={{ marginLeft: "0.1em" }}>
+                . {String(product.product_price).split(".")[1]}
+              </Typography>
+            </Grid>
+            <Grid item style={{ marginTop: "1em" }}>
+              <Typography variant="subtitle1">
+                Available Quantity :{" "}
+                <Chip
+                  label={
+                    product.product_available_quantity
+                      ? product.product_available_quantity
+                      : "Sold Out"
+                  }
+                  variant="outlined"
+                  color={
+                    product.product_available_quantity ? "primary" : "error"
+                  }
+                />
+              </Typography>
+            </Grid>
+            <Grid marginTop={2} marginBottom={2} padding={0}>
+              <Grid>
+                <Typography variant="h5">Category</Typography>
+              </Grid>
+              <Grid>
+                <Breadcrumbs aria-label="breadcrumb">
+                  <Link
+                    separator={<NavigateNextIcon fontSize="small" />}
+                    to="/"
+                    style={{ color: "black" }}
+                  >
+                    {product.product_category_name}
+                  </Link>
+                  <Link
+                    separator={<NavigateNextIcon fontSize="small" />}
+                    to="/"
+                    style={{ color: "black" }}
+                  >
+                    {product.product_sub_category_name}
+                  </Link>
+                  <Link
+                    separator={<NavigateNextIcon fontSize="small" />}
+                    to="/"
+                    style={{ color: "black" }}
+                  >
+                    {product.product_sub_sub_category_name}
+                  </Link>
+                </Breadcrumbs>
+              </Grid>
+            </Grid>
+            <Grid
+              marginRight={5}
+              padding={2}
+              style={{ backgroundColor: "#e9ecef", borderRadius: "16px" }}
+            >
+              <Grid item>
+                <Typography variant="h5" fontWeight="bold">
+                  Shipping
+                </Typography>
+              </Grid>
+              <Grid container item>
+                <Grid xs={6} item>
+                  <Typography variant="subtitle1">
+                    City : {product.seller_city}
+                  </Typography>
+                </Grid>
+                <Grid xs={6} item>
+                  <Typography variant="subtitle1">
+                    State : {product.seller_state}
+                  </Typography>
+                </Grid>
+                <Grid xs={6} item>
+                  <Typography variant="subtitle1">
+                    Country : {product.seller_country}
+                  </Typography>
+                </Grid>
+                <Grid xs={6} item>
+                  <Typography variant="subtitle1">
+                    Pincode : {product.seller_pincode}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item style={{ marginTop: "1em" }}>
+              {product.product_available_quantity ? (
+                !isAddedToCart ? (
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      addToCart(window.localStorage.getItem("product-id"));
+                      setIsAddedToCart(true);
+                    }}
+                  >
+                    <ShoppingCartIcon /> Add To Cart
+                  </Button>
+                ) : (
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      deleteFromCart(window.localStorage.getItem("product-id"));
+                      setIsAddedToCart(false);
+                    }}
+                  >
+                    <RemoveShoppingCartIcon /> Remove From The Cart
+                  </Button>
+                )
+              ) : (
+                <></>
+              )}
+              {!isAddedToWishList ? (
                 <Button
-                  variant="contained"
+                  variant="outlined"
                   onClick={() => {
-                    addToCart(window.localStorage.getItem("product-id"));
-                    setIsAddedToCart(true);
+                    addToWishList(window.localStorage.getItem("product-id"));
+                    setIsAddedToWishList(true);
                   }}
                 >
-                  <ShoppingCartIcon /> Add To Cart
+                  <FavoriteBorderIcon />
+                  Add To WishList
                 </Button>
               ) : (
                 <Button
-                  variant="contained"
+                  variant="outlined"
                   onClick={() => {
-                    deleteFromCart(window.localStorage.getItem("product-id"));
-                    setIsAddedToCart(false);
+                    deleteFromWishList(
+                      window.localStorage.getItem("product-id")
+                    );
+                    setIsAddedToWishList(false);
                   }}
                 >
-                  <RemoveShoppingCartIcon /> Remove From The Cart
+                  <FavoriteIcon sx={{ color: "red" }} />
+                  ADDED ON WishList
                 </Button>
-              )
-            ) : (
-              <></>
-            )}
-            {!isAddedToWishList ? (
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  addToWishList(window.localStorage.getItem("product-id"));
-                  setIsAddedToWishList(true);
-                }}
-              >
-                <FavoriteBorderIcon />
-                Add To WishList
-              </Button>
-            ) : (
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  deleteFromWishList(window.localStorage.getItem("product-id"));
-                  setIsAddedToWishList(false);
-                }}
-              >
-                <FavoriteIcon sx={{ color: "red" }} />
-                ADDED ON WishList
-              </Button>
-            )}
+              )}
+            </Grid>
           </Grid>
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
