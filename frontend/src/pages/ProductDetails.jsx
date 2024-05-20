@@ -194,8 +194,16 @@ function ProductDetails() {
 
   return (
     <>
-      <Grid container spacing={3} justifyContent="center" className="mt-5">
-        <Grid item xs={12} sm={12} md={12} lg={7} xl={7} className="mt-4">
+      <Grid container className="mt-5">
+        <Grid
+          xs={12}
+          sm={12}
+          md={7}
+          lg={7}
+          xl={7}
+          className="mt-4"
+          // style={{ backgroundColor: "lightgreen" }}
+        >
           {product.product_images && (
             <DisplayImages images={product.product_images} />
           )}
@@ -204,7 +212,7 @@ function ProductDetails() {
           item
           xs={12}
           sm={12}
-          md={12}
+          md={5}
           lg={5}
           xl={5}
           style={{ backgroundColor: "ghostwhite" }}
