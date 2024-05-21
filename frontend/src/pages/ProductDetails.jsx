@@ -32,6 +32,10 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import Stack from "@mui/material/Stack";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import CircleIcon from "@mui/icons-material/Circle";
+import Avatar from "@mui/material/Avatar";
+import StarRoundedIcon from "@mui/icons-material/StarRounded";
+import SendIcon from "@mui/icons-material/Send";
+import moment from "moment";
 
 const FormGrid = styled(Grid)(() => ({
   display: "flex",
@@ -60,6 +64,8 @@ function ProductDetails() {
   const [hover, setHover] = useState(-1);
   const [isInOrderedProductIds, setIsInOrderedProductIds] = useState(false);
   const [productComment, setProductComment] = useState("");
+  const [reviewTimeStamp, setReviewTimeStamp] = useState("");
+  const [isEditOnPost, setIsEditOnPost] = useState(false);
 
   const {
     cartList,
@@ -84,6 +90,11 @@ function ProductDetails() {
     }
   }, []);
 
+  function formatTimestamp(postgresTimestamp) {
+    // Assuming postgresTimestamp is in ISO format (e.g., '2024-05-13T12:34:56Z')
+    return moment(postgresTimestamp).format("DD/MM/YYYY hh:mm A");
+  }
+
   const getProductDetails = async () => {
     const headers = {
       "Content-Type": "application/json",
@@ -98,8 +109,18 @@ function ProductDetails() {
         )}&productId=${window.localStorage.getItem("product-id")}`,
         { headers }
       );
-      setValue(data.your_rating !== null ? data.your_rating : value);
-      setProductComment(data.your_comment);
+      console.log("product", data);
+      setValue(
+        data.your_reviews !== null ? data.your_reviews.your_rating : value
+      );
+      setProductComment(
+        data.your_reviews !== null ? data.your_reviews.your_comment : ""
+      );
+      setReviewTimeStamp(
+        data.your_reviews !== null
+          ? formatTimestamp(data.your_reviews.your_review_timestamp)
+          : ""
+      );
       setProduct(data);
     } catch (error) {
       console.error("Error fetching product details:", error);
@@ -127,7 +148,7 @@ function ProductDetails() {
     );
   };
 
-  const formatTimestamp = (timestamp) => {
+  const formatTimestampAgo = (timestamp) => {
     const currentTime = new Date();
     const productTime = new Date(timestamp);
     const timeDifference = currentTime - productTime;
@@ -148,56 +169,50 @@ function ProductDetails() {
     return formattedTimestamp ? `${formattedTimestamp} ago` : "Just now";
   };
 
-  const rateTheOrderedProduct = async () => {
+  const formatDateAfterReview = (date) => {
+    const padTo2Digits = (num) => num.toString().padStart(2, "0");
+
+    let day = padTo2Digits(date.getDate());
+    let month = padTo2Digits(date.getMonth() + 1); // Months are zero-based
+    let year = date.getFullYear();
+
+    let hours = date.getHours();
+    let minutes = padTo2Digits(date.getMinutes());
+    let ampm = hours >= 12 ? "PM" : "AM";
+
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    hours = padTo2Digits(hours);
+
+    return `${day}/${month}/${year} ${hours}:${minutes} ${ampm}`;
+  };
+
+  const makeReviewOfProduct = async () => {
     const headers = {
       "Content-Type": "application/json",
       authorization: `Bearer ${window.localStorage.getItem("token")}`,
     };
     try {
       const { status } = await axios.post(
-        `http://localhost:8000/api/v1/product/rate-product?username=${window.localStorage.getItem(
+        `http://localhost:8000/api/v1/product/review-product?username=${window.localStorage.getItem(
           "username"
         )}&role=${window.localStorage.getItem("role")}`,
         {
           product_review_rating: value,
-          product_id: window.localStorage.getItem("product-id"),
-        },
-        { headers }
-      );
-      if (status === 200) {
-        toast.success("Rated Successfully!");
-      } else {
-        toast.error("Error, NOT Rated");
-      }
-    } catch (error) {
-      console.error("Error rating the product:", error);
-      // LogOut();
-    }
-  };
-
-  const makeCommentOnProduct = async () => {
-    const headers = {
-      "Content-Type": "application/json",
-      authorization: `Bearer ${window.localStorage.getItem("token")}`,
-    };
-    try {
-      const { status } = await axios.post(
-        `http://localhost:8000/api/v1/product/comment-on-product?username=${window.localStorage.getItem(
-          "username"
-        )}&role=${window.localStorage.getItem("role")}`,
-        {
           product_comment: productComment,
           product_id: window.localStorage.getItem("product-id"),
         },
         { headers }
       );
       if (status === 200) {
-        toast.success("Commented Successfully!");
+        setReviewTimeStamp(formatDateAfterReview(new Date()));
+        toast.success("Review submitted successfully!");
       } else {
-        toast.error("Error, NOT Commented");
+        toast.error("Failed to submit review.");
       }
     } catch (error) {
-      console.error("Error commenting on the product:", error);
+      console.log("Error review the product:", error);
+      toast.error("Failed to submit review.");
       // LogOut();
     }
   };
@@ -282,7 +297,7 @@ function ProductDetails() {
                   }
                 />
                 <Typography variant="subtitle2" style={{ fontWeight: "bold" }}>
-                  {formatTimestamp(product.product_timestamp)}
+                  {formatTimestampAgo(product.product_timestamp)}
                 </Typography>
               </Grid>
             </Grid>
@@ -321,11 +336,8 @@ function ProductDetails() {
               }}
             >
               <Typography variant="h2" style={{ fontWeight: "bold" }}>
-                <span style={{ fontWeight: 500 }}>&#8377;</span>
-                {String(product.product_price).split(".")[0]}
-              </Typography>
-              <Typography variant="subtitle1" style={{ marginLeft: "0.1em" }}>
-                . {String(product.product_price).split(".")[1]}
+                <span style={{ fontWeight: 500 }}>&#8377;</span>{" "}
+                {product.product_price}
               </Typography>
             </Grid>
             <Grid item style={{ marginTop: "1em" }}>
@@ -526,7 +538,7 @@ function ProductDetails() {
           <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
             {product.product_description &&
               product.product_description.map((item, index) => (
-                <Grid container key={index} paddingX={4}>
+                <Grid container key={index} paddingX={4} paddingY={2}>
                   <Grid xs={3} sm={3} md={3} lg={3} xl={3} padding={1}>
                     <Typography variant="h6" fontWeight="bold">
                       <CircleIcon fontSize="small" /> {item.key}
@@ -571,106 +583,210 @@ function ProductDetails() {
             )}
           </Grid>
         </Grid>
-        {isInOrderedProductIds ? (
-          <>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-              <Box
-                style={{ backgroundColor: "lightblue" }}
-                sx={{
-                  height: "auto",
-                  width: "100%",
-                  borderRadius: "10px",
-                }}
-              >
-                <h3>Rate This Product</h3>
-                <Box
-                  sx={{
-                    width: 200,
-                    display: "flex",
-                    alignItems: "center",
-                  }}
+        <Grid
+          xs={12}
+          sm={12}
+          md={12}
+          lg={12}
+          xl={12}
+          margin={4}
+          padding={4}
+          style={{ backgroundColor: "ghostwhite", borderRadius: "16px" }}
+        >
+          <Grid xs={12} sm={12} md={12} lg={12} xl={12} marginBottom={2}>
+            <Typography variant="h4" fontWeight="bold">
+              Comment
+            </Typography>
+          </Grid>
+          <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
+            {isInOrderedProductIds ? (
+              <Grid container paddingX={4} paddingY={2}>
+                <Grid
+                  container
+                  justifyContent="flex-start"
+                  alignItems="center"
+                  xs={3}
+                  padding={1}
                 >
-                  <Rating
-                    name="hover-feedback"
-                    value={value}
-                    precision={1}
-                    getLabelText={getLabelText}
-                    onChange={(event, newValue) => {
-                      setValue(newValue);
-                    }}
-                    onChangeActive={(event, newHover) => {
-                      setHover(newHover);
-                    }}
-                    emptyIcon={
-                      <StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />
-                    }
-                  />
-                  {value !== null && (
-                    <Box sx={{ ml: 2 }}>
-                      {labels[hover !== -1 ? hover : value]}
-                    </Box>
-                  )}
-                </Box>
-                <Button onClick={rateTheOrderedProduct} variant="contained">
-                  Submit Rating
-                </Button>
-              </Box>
-            </Grid>
-
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-              <Box
-                style={{ backgroundColor: "lightblue" }}
-                sx={{
-                  height: "auto",
-                  width: "100%",
-                  borderRadius: "10px",
-                }}
-              >
-                <h3>ADD Comment</h3>
-                <FormGrid item xs={12}>
-                  <TextField
-                    value={productComment}
-                    id="outlined-basic"
-                    variant="outlined"
-                    multiline
-                    maxRows={4}
-                    fullWidth
-                    onChange={(e) => {
-                      setProductComment(e.target.value);
-                    }}
-                  />
-                </FormGrid>
-                <Button onClick={makeCommentOnProduct} variant="contained">
-                  Submit Comment
-                </Button>
-              </Box>
-            </Grid>
-          </>
-        ) : (
-          <></>
-        )}
-        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-          <Box
-            style={{ backgroundColor: "lightblue" }}
-            sx={{
-              height: "auto",
-              width: "100%",
-              borderRadius: "10px",
-            }}
-          >
-            <h3>Comment</h3>
-            {product.product_commnet &&
-              product.product_commnet.map((item, index) => (
-                <div key={index} style={{ display: "flex" }}>
-                  <Typography key={index} variant="h6" fontWeight="bold">
-                    {item.comment === product.your_comment
-                      ? "YOU"
-                      : item.username}
+                  <Avatar src="/broken-image.jpg" />
+                  <Typography variant="h6" fontWeight="bold">
+                    &nbsp;&nbsp;&nbsp;YOU
                   </Typography>
-                  <Typography>{item.comment}</Typography>
-                </div>
+                </Grid>
+                <Grid
+                  container
+                  xs={9}
+                  padding={2}
+                  style={{ backgroundColor: "#E9ECEF", borderRadius: "10px" }}
+                >
+                  <Grid container alignItems="flex-start">
+                    <Grid container xs={10}>
+                      <Rating
+                        name="hover-feedback"
+                        value={value}
+                        precision={1}
+                        getLabelText={getLabelText}
+                        onChange={(event, newValue) => {
+                          setValue(newValue);
+                        }}
+                        onChangeActive={(event, newHover) => {
+                          setHover(newHover);
+                        }}
+                        readOnly={!isEditOnPost}
+                        emptyIcon={<StarRoundedIcon />}
+                        icon={<StarRoundedIcon />}
+                      />
+                      <Typography variant="subtitle1" fontWeight="bold">
+                        {value !== null && (
+                          <Box sx={{ ml: 2 }}>
+                            {labels[hover !== -1 ? hover : value]}
+                          </Box>
+                        )}
+                      </Typography>
+                      <TextField
+                        value={productComment}
+                        id="outlined-basic"
+                        variant="outlined"
+                        placeholder="Write Comment (Optional)"
+                        multiline
+                        maxRows={4}
+                        fullWidth
+                        onChange={(e) => {
+                          if (e.target.value.length <= 2000) {
+                            setProductComment(e.target.value);
+                          }
+                        }}
+                        InputProps={{
+                          readOnly: !isEditOnPost,
+                          style: {
+                            fontWeight: "bold",
+                          },
+                        }}
+                        style={{ fontWeight: "bold" }}
+                        helperText={`${productComment.length}/2000`}
+                        sx={{
+                          "& .MuiInputBase-root": {
+                            "& .MuiInputBase-input": {
+                              "&::-webkit-scrollbar": {
+                                width: "8px",
+                              },
+                              "&::-webkit-scrollbar-thumb": {
+                                backgroundColor: "#02294F",
+                                borderRadius: "10px",
+                              },
+                              "&::-webkit-scrollbar-track": {
+                                background: "transparent",
+                              },
+                              "&::-webkit-scrollbar-button": {
+                                display: "none",
+                              },
+                              "&": {
+                                scrollbarWidth: "thin",
+                                scrollbarColor: "#02294F transparent",
+                              },
+                            },
+                          },
+                        }}
+                      />
+                      <Typography variant="subtitle2" fontWeight="bold">
+                        {reviewTimeStamp}
+                      </Typography>
+                    </Grid>
+                    <Grid
+                      container
+                      xs={2}
+                      justifyContent="flex-end"
+                      alignItems="flex-start"
+                    >
+                      {!isEditOnPost ? (
+                        <Button
+                          onClick={() => {
+                            setIsEditOnPost(true);
+                          }}
+                          variant="contained"
+                          style={{ backgroundColor: "#02294F" }}
+                        >
+                          <i className="fa-solid fa-pen-to-square"></i>
+                          &nbsp;&nbsp;Edit
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={() => {
+                            setIsEditOnPost(false);
+                            makeReviewOfProduct();
+                          }}
+                          variant="contained"
+                          style={{ backgroundColor: "#02294F" }}
+                        >
+                          <SendIcon />
+                          &nbsp;&nbsp;Post
+                        </Button>
+                      )}
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+            ) : (
+              <></>
+            )}
+            {product.product_reviews &&
+              product.product_reviews.map((item, index) => (
+                <Grid container key={index} paddingX={4} paddingY={2}>
+                  <Grid
+                    container
+                    justifyContent="flex-start"
+                    alignItems="center"
+                    xs={3}
+                    sm={3}
+                    md={3}
+                    lg={3}
+                    xl={3}
+                    padding={1}
+                    direction="row"
+                    // style={{ backgroundColor: "lightblue" }}
+                  >
+                    <Avatar src="/broken-image.jpg" />
+                    <Typography key={index} variant="h6" fontWeight="bold">
+                      &nbsp;&nbsp;&nbsp;
+                      {item.username}
+                    </Typography>
+                  </Grid>
+                  <Grid
+                    container
+                    direction="column"
+                    xs={9}
+                    sm={9}
+                    md={9}
+                    lg={9}
+                    xl={9}
+                    padding={2}
+                    style={{ backgroundColor: "#E9ECEF", borderRadius: "10px" }}
+                  >
+                    <Rating
+                      name="product-rating"
+                      value={parseFloat(product.product_avg_rating)}
+                      precision={0.1} // Set precision to 0.1 to allow fractional part
+                      readOnly
+                      emptyIcon={<StarRoundedIcon />}
+                      icon={<StarRoundedIcon />}
+                    />
+                    <TextField
+                      value={item.comment}
+                      multiline
+                      InputProps={{
+                        readOnly: !isEditOnPost,
+                        style: {
+                          fontWeight: "bold",
+                        },
+                      }}
+                    />
+                    <Typography variant="subtitle2" fontWeight="bold">
+                      {formatTimestamp(item.product_review_timestamp)}
+                    </Typography>
+                  </Grid>
+                </Grid>
               ))}
-          </Box>
+          </Grid>
         </Grid>
       </Grid>
     </>

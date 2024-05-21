@@ -101,46 +101,47 @@ SELECT
     s.seller_city, 
     s.seller_state, 
     s.seller_country, 
-    s.seller_pincode, 
+    s.seller_pincode,
+    (SELECT 
+        json_build_object(
+           'your_rating', product_review_rating,
+           'your_comment', product_comment,
+           'your_review_timestamp', product_review_timestamp
+    ) AS your_reviews
+    FROM 
+        product_review
+    WHERE 
+        product_id = $1 AND user_id = $2), 
 	(SELECT 
 	 json_build_object(
-		 'total_user_response', COUNT(DISTINCT user_id),
-		 'rating_1_count', SUM(CASE WHEN product_review_rating = 1 THEN 1 ELSE 0 END), 
-		 'rating_2_count', SUM(CASE WHEN product_review_rating = 2 THEN 1 ELSE 0 END),
-		 'rating_3_count', SUM(CASE WHEN product_review_rating = 3 THEN 1 ELSE 0 END),
-		 'rating_4_count', SUM(CASE WHEN product_review_rating = 4 THEN 1 ELSE 0 END),
-		 'rating_5_count', SUM(CASE WHEN product_review_rating = 5 THEN 1 ELSE 0 END)
-	 ) AS ratings
+		'total_user_response', COUNT(DISTINCT user_id),
+		'rating_1_count', SUM(CASE WHEN product_review_rating = 1 THEN 1 ELSE 0 END), 
+		'rating_2_count', SUM(CASE WHEN product_review_rating = 2 THEN 1 ELSE 0 END),
+		'rating_3_count', SUM(CASE WHEN product_review_rating = 3 THEN 1 ELSE 0 END),
+		'rating_4_count', SUM(CASE WHEN product_review_rating = 4 THEN 1 ELSE 0 END),
+		'rating_5_count', SUM(CASE WHEN product_review_rating = 5 THEN 1 ELSE 0 END)
+	) AS ratings
 	FROM 
 		product_review
 	WHERE 
 		product_id = $1
 	),
-    (SELECT 
-        product_review_rating AS your_rating 
-    FROM 
-        product_review AS pr 
-    WHERE 
-        pr.product_id = $1
-        AND user_id = $2),
-    (SELECT 
-        product_comment AS your_comment 
-    FROM 
-        product_comment AS pc 
-    WHERE 
-        pc.product_id = $1
-        AND user_id = $2),
     ARRAY_AGG(json_build_object('key', pd.key, 'value', pd.value)) AS product_description,
     (SELECT
-        ARRAY_AGG(json_build_object('comment', pc.product_comment, 'username',  u.username)) AS product_commnet   
+        ARRAY_AGG(json_build_object(
+            'rating', pr.product_review_rating,
+            'comment', pr.product_comment, 
+            'username',  u.username, 
+            'product_review_timestamp',  pr.product_review_timestamp)
+        ) AS product_reviews   
     FROM
-        product_comment AS pc
+        product_review AS pr
     JOIN
         users AS u
     ON
-        pc.user_id = u.id
+        pr.user_id = u.id
     WHERE
-        pc.product_id = $1)
+        pr.product_id = $1 AND user_id <> $2)
 FROM 
     (
         SELECT 
@@ -207,7 +208,7 @@ WHERE o.order_buyer_id = $1
 AND h.has_order_product_id = $2
 `;
 
-const ifProductRatingOfUserExist = `
+const ifProductReviewOfUserExist = `
 SELECT * 
 FROM 
     product_review 
@@ -215,42 +216,24 @@ WHERE
     product_id = $1 AND user_id = $2;
 `;
 
-const updateRating = `
+const updateReview = `
 UPDATE product_review
-SET product_review_rating = $1
-WHERE product_id = $2 AND user_id = $3;
+SET 
+    product_review_rating = $1,
+    product_comment = $2,
+    product_review_timestamp = CURRENT_TIMESTAMP
+WHERE 
+    product_id = $3 AND user_id = $4;
 `;
 
-const createRating = `
+const createReview = `
 INSERT INTO product_review (
     product_id, 
     user_id, 
-    product_review_rating
-)
-VALUES ($1, $2, $3);
-`;
-
-const ifProductCommentOfUserExist = `
-SELECT * 
-FROM 
-    product_comment 
-WHERE 
-    product_id = $1 AND user_id = $2;
-`;
-
-const updateComment = `
-UPDATE product_comment
-SET product_comment = $1
-WHERE product_id = $2 AND user_id = $3;
-`;
-
-const createComment = `
-INSERT INTO product_comment (
-    product_id, 
-    user_id, 
+    product_review_rating,
     product_comment
 )
-VALUES ($1, $2, $3);
+VALUES ($1, $2, $3, $4);
 `;
 
 module.exports = {
@@ -268,10 +251,7 @@ module.exports = {
   createInventory,
   createShipper,
   isProductValid,
-  ifProductRatingOfUserExist,
-  updateRating,
-  createRating,
-  ifProductCommentOfUserExist,
-  updateComment,
-  createComment,
+  ifProductReviewOfUserExist,
+  updateReview,
+  createReview,
 };

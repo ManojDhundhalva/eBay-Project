@@ -7,6 +7,7 @@ import EmojiPicker, { Theme, EmojiStyle, SkinTones } from "emoji-picker-react"; 
 import { Grid, Typography } from "@mui/material";
 import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
 import StarRateRoundedIcon from "@mui/icons-material/StarRateRounded";
+import StarRoundedIcon from '@mui/icons-material/StarRounded';
 
 const ProductRatingGraph = ({ productRatings }) => {
   const [ratings, setRatings] = useState({
@@ -56,11 +57,11 @@ const ProductRatingGraph = ({ productRatings }) => {
     <>
       <Grid
         container
-        xs={4}
-        sm={4}
-        md={4}
-        lg={4}
-        xl={4}
+        xs={6}
+        sm={6}
+        md={6}
+        lg={6}
+        xl={6}
         // style={{ backgroundColor: "lightblue" }}
       >
         {Object.keys(ratings).map((key) => (
@@ -103,7 +104,7 @@ const ProductRatingGraph = ({ productRatings }) => {
                 value={ratings[key] ? ratings[key] : 1}
                 valueLabelDisplay="off"
                 marks={[]}
-                max={ratings[key] ? total : 40}
+                max={ratings[key] ? total : 60}
                 sx={{
                   "& .MuiSlider-thumb": {
                     display: "none",
@@ -115,7 +116,8 @@ const ProductRatingGraph = ({ productRatings }) => {
                   },
                   "& .MuiSlider-rail": {
                     height: 8,
-                    backgroundColor: "#f0f0f0",
+                    backgroundColor: "#E9ECEF",
+                    // backgroundColor: "#f0f0f0",
                   },
                 }}
               />
@@ -141,11 +143,11 @@ const ProductRatingGraph = ({ productRatings }) => {
         container
         justifyContent="center"
         alignItems="center"
-        xs={4}
-        sm={4}
-        md={4}
-        lg={4}
-        xl={4}
+        xs={3}
+        sm={3}
+        md={3}
+        lg={3}
+        xl={3}
         padding={0}
         margin={0}
         // style={{ backgroundColor: "lightpink" }}
@@ -174,7 +176,7 @@ const ProductRatingGraph = ({ productRatings }) => {
             precision={0.1}
             readOnly
             emptyIcon={<StarBorderRoundedIcon fontSize="large" />}
-            icon={<StarRateRoundedIcon fontSize="large" />}
+            icon={<StarRoundedIcon fontSize="large" />}
           />
           <Typography variant="body1" fontWeight="bold">
             {totalValue} star rating
@@ -188,11 +190,11 @@ const ProductRatingGraph = ({ productRatings }) => {
         container
         justifyContent="center"
         alignItems="center"
-        xs={4}
-        sm={4}
-        md={4}
-        lg={4}
-        xl={4}
+        xs={3}
+        sm={3}
+        md={3}
+        lg={3}
+        xl={3}
         // style={{ backgroundColor: "lightblue" }}
       >
         <Grid
