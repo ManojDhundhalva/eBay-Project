@@ -4,6 +4,9 @@ import Box from "@mui/material/Box";
 import { Gauge, gaugeClasses } from "@mui/x-charts/Gauge";
 import Rating from "@mui/material/Rating";
 import EmojiPicker, { Theme, EmojiStyle, SkinTones } from "emoji-picker-react"; // Added SkinTones
+import { Grid, Typography } from "@mui/material";
+import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
+import StarRateRoundedIcon from "@mui/icons-material/StarRateRounded";
 
 const ProductRatingGraph = ({ productRatings }) => {
   const [ratings, setRatings] = useState({
@@ -51,45 +54,118 @@ const ProductRatingGraph = ({ productRatings }) => {
 
   return (
     <>
-      <h2>Buyer's Rating & Reviews</h2>
-      <div style={{ display: "flex" }}>
-        <div>
-          <Box sx={{ width: 300 }} style={{ margin: "2em" }}>
-            {Object.keys(ratings).map((key) => (
-              <div key={key} style={{ display: "flex", alignItems: "center" }}>
-                <div style={{ marginRight: "10px" }}>{key}</div>
-                <Slider
-                  aria-label="Rating"
-                  value={ratings[key]}
-                  valueLabelDisplay="off"
-                  marks={[]}
-                  max={total}
-                  sx={{
-                    "& .MuiSlider-thumb": {
-                      display: "none",
-                    },
-                    "& .MuiSlider-track": {
-                      height: 8,
-                      marginTop: 0,
-                      marginBottom: 0,
-                    },
-                    "& .MuiSlider-rail": {
-                      height: 8,
-                      backgroundColor: "#f0f0f0",
-                    },
-                  }}
-                />
-                <div>{((ratings[key] / (total || 1)) * 100).toFixed(0)}%</div>
-              </div>
-            ))}
-          </Box>
-        </div>
-        <div>
-          <h2>
+      <Grid
+        container
+        xs={4}
+        sm={4}
+        md={4}
+        lg={4}
+        xl={4}
+        // style={{ backgroundColor: "lightblue" }}
+      >
+        {Object.keys(ratings).map((key) => (
+          <>
+            <Grid
+              container
+              justifyContent="center"
+              alignItems="center"
+              xs={2}
+              sm={2}
+              md={2}
+              lg={2}
+              xl={2}
+            >
+              <Typography variant="subtitle1" fontWeight="bold">
+                {key === "one"
+                  ? 1
+                  : key === "two"
+                  ? 2
+                  : key === "three"
+                  ? 3
+                  : key === "four"
+                  ? 4
+                  : 5}{" "}
+                star
+              </Typography>
+            </Grid>
+            <Grid
+              container
+              justifyContent="center"
+              alignItems="center"
+              xs={8}
+              sm={8}
+              md={8}
+              lg={8}
+              xl={8}
+            >
+              <Slider
+                aria-label="Rating"
+                value={ratings[key] ? ratings[key] : 1}
+                valueLabelDisplay="off"
+                marks={[]}
+                max={ratings[key] ? total : 40}
+                sx={{
+                  "& .MuiSlider-thumb": {
+                    display: "none",
+                  },
+                  "& .MuiSlider-track": {
+                    height: 8,
+                    marginTop: 0,
+                    marginBottom: 0,
+                  },
+                  "& .MuiSlider-rail": {
+                    height: 8,
+                    backgroundColor: "#f0f0f0",
+                  },
+                }}
+              />
+            </Grid>
+            <Grid
+              container
+              justifyContent="center"
+              alignItems="center"
+              xs={2}
+              sm={2}
+              md={2}
+              lg={2}
+              xl={2}
+            >
+              <Typography variant="subtitle1" fontWeight="bold">
+                {((ratings[key] / (total || 1)) * 100).toFixed(0)}%
+              </Typography>
+            </Grid>
+          </>
+        ))}
+      </Grid>
+      <Grid
+        container
+        justifyContent="center"
+        alignItems="center"
+        xs={4}
+        sm={4}
+        md={4}
+        lg={4}
+        xl={4}
+        padding={0}
+        margin={0}
+        // style={{ backgroundColor: "lightpink" }}
+      >
+        <Grid
+          container
+          direction="column"
+          justifyContent="center"
+          alignItems="center"
+          xs={12}
+          sm={12}
+          md={12}
+          lg={12}
+          xl={12}
+        >
+          <Typography variant="h2" fontWeight="bold">
             {(totalValue / (productRatings?.total_user_response || 1)).toFixed(
               1
             )}
-          </h2>
+          </Typography>
           <Rating
             name="half-rating"
             value={(
@@ -97,11 +173,38 @@ const ProductRatingGraph = ({ productRatings }) => {
             ).toFixed(1)}
             precision={0.1}
             readOnly
+            emptyIcon={<StarBorderRoundedIcon fontSize="large" />}
+            icon={<StarRateRoundedIcon fontSize="large" />}
           />
-          <div>{totalValue} star rating</div>
-          <div>{productRatings?.total_user_response || 1} Responses</div>
-        </div>
-        <div>
+          <Typography variant="body1" fontWeight="bold">
+            {totalValue} star rating
+          </Typography>
+          <Typography variant="body1" fontWeight="bold">
+            {productRatings?.total_user_response || 1} Responses
+          </Typography>
+        </Grid>
+      </Grid>
+      <Grid
+        container
+        justifyContent="center"
+        alignItems="center"
+        xs={4}
+        sm={4}
+        md={4}
+        lg={4}
+        xl={4}
+        // style={{ backgroundColor: "lightblue" }}
+      >
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          xs={12}
+          sm={12}
+          md={12}
+          lg={12}
+          xl={12}
+        >
           <Gauge
             width={200}
             height={200}
@@ -122,23 +225,26 @@ const ProductRatingGraph = ({ productRatings }) => {
               },
             })}
           />
-          <h4>
+        </Grid>
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          xs={12}
+          sm={12}
+          md={12}
+          lg={12}
+          xl={12}
+        >
+          <Typography variant="subtitle1" fontWeight="bold">
             {(
               (totalValue / ((productRatings?.total_user_response || 1) * 5)) *
               100
             ).toFixed(0)}
             % would recommend
-          </h4>
-        </div>
-        <div>
-          {/* google, apple, facebook, twitter and native. */}
-          {/* <EmojiPicker
-            emojiStyle="facebook"
-            theme={Theme.DARK}
-            // skinTonePicker={SkinTones}
-          /> */}
-        </div>
-      </div>
+          </Typography>
+        </Grid>
+      </Grid>
     </>
   );
 };

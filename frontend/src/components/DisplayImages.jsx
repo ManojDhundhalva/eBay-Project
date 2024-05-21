@@ -46,6 +46,8 @@ const DisplayImages = ({ images }) => {
                 src={image}
                 alt={`Thumbnail ${index}`}
                 style={{
+                  backgroundColor: "#F2F2F2",
+                  objectFit: "contain",
                   width: "100%",
                   height: "auto",
                   borderRadius: "10px",

@@ -30,6 +30,8 @@ import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Link from "@mui/material/Link";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import Stack from "@mui/material/Stack";
+import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
+import CircleIcon from "@mui/icons-material/Circle";
 
 const FormGrid = styled(Grid)(() => ({
   display: "flex",
@@ -239,15 +241,15 @@ function ProductDetails() {
               borderRadius: "16px",
             }}
           >
-            <Grid container item style={{ marginTop: "1em" }}>
-              <Grid item xs={10}>
+            <Grid container paddingRight={4} style={{ marginTop: "1em" }}>
+              <Grid item xs={8}>
                 <h3
-                  textTransform="uppercase"
                   style={{
                     fontWeight: "bold",
                     wordBreak: "break-word",
                     whiteSpace: "normal",
-                    width: "14em",
+                    width: "12em",
+                    textTransform: "uppercase",
                   }}
                 >
                   {product.product_title}
@@ -255,63 +257,65 @@ function ProductDetails() {
               </Grid>
               <Grid
                 item
-                xs={2}
+                xs={4}
                 style={{
-                  marginTop: "1em",
                   fontWeight: "bold",
+                  padding: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-start",
+                  alignItems: "flex-end",
                 }}
               >
                 <Chip
-                  style={{ backgroundColor: "lightgrey", color: "black" }}
+                  style={{
+                    backgroundColor: "lightgrey",
+                    color: "black",
+                    width: "fit-content",
+                    display: "flex",
+                    justifyContent: "flex-end",
+                  }}
                   label={
                     <>
                       <RemoveRedEyeOutlinedIcon /> {product.product_watch_count}
                     </>
                   }
-                  color="primary"
                 />
+                <Typography variant="subtitle2" style={{ fontWeight: "bold" }}>
+                  {formatTimestamp(product.product_timestamp)}
+                </Typography>
               </Grid>
             </Grid>
             {/* <Grid>ID : {window.localStorage.getItem("product-id")}</Grid> */}
             {/* <Grid>Listed On : {formatDate(product.product_timestamp)}</Grid> */}
 
             <Grid item style={{ display: "flex" }}>
-              <Grid
-                xs={12}
-                style={{ display: "flex", justifyContent: "space-between" }}
-              >
-                <Grid xs={12} style={{ display: "flex" }}>
-                  <div>
-                    <Rating
-                      name="product-rating"
-                      value={parseFloat(product.product_avg_rating)}
-                      precision={0.1} // Set precision to 0.1 to allow fractional part
-                      readOnly
-                      emptyIcon={<StarBorderRoundedIcon />}
-                      icon={<StarRateRoundedIcon />}
-                      style={{
-                        "& .MuiSvgIcon-root": {
-                          borderRadius: "50%", // This will make only the star icons rounded
-                        },
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <Typography variant="subtitle2" fontWeight="bold">
-                      &nbsp;&nbsp;&nbsp;{parseFloat(product.product_avg_rating)}
-                    </Typography>
-                  </div>
-                </Grid>
-                <Grid xs={4} style={{ fontWeight: "bold" }}>
-                  {formatTimestamp(product.product_timestamp)}
-                </Grid>
-              </Grid>
+              <div>
+                <Rating
+                  name="product-rating"
+                  value={parseFloat(product.product_avg_rating)}
+                  precision={0.1} // Set precision to 0.1 to allow fractional part
+                  readOnly
+                  emptyIcon={<StarBorderRoundedIcon />}
+                  icon={<StarRateRoundedIcon />}
+                  style={{
+                    "& .MuiSvgIcon-root": {
+                      borderRadius: "50%", // This will make only the star icons rounded
+                    },
+                  }}
+                />
+              </div>
+              <div>
+                <Typography variant="subtitle2" fontWeight="bold">
+                  &nbsp;&nbsp;&nbsp;{parseFloat(product.product_avg_rating)}
+                </Typography>
+              </div>
             </Grid>
             <Grid
               item
               style={{
-                marginTop: "3em",
-                marginBottom: "3em",
+                marginTop: "2em",
+                marginBottom: "2em",
                 display: "flex",
                 alignItems: "flex-end",
               }}
@@ -325,7 +329,7 @@ function ProductDetails() {
               </Typography>
             </Grid>
             <Grid item style={{ marginTop: "1em" }}>
-              <Typography variant="subtitle1">
+              <Typography variant="subtitle1" fontWeight="bold">
                 Quantity :{" "}
                 <Chip
                   label={
@@ -349,17 +353,20 @@ function ProductDetails() {
                 marginTop: "1em",
               }}
             >
-              <Grid item>
+              <Grid>
                 <Typography variant="h5" fontWeight="bold">
                   Category
                 </Typography>
               </Grid>
-              <Grid container item>
+              <Grid style={{ marginTop: "0.5em" }}>
                 <Breadcrumbs aria-label="breadcrumb">
                   <Link
                     separator={<NavigateNextIcon fontSize="small" />}
                     to="/"
-                    style={{ color: "black", cursor: "pointer" }}
+                    style={{
+                      color: "black",
+                      cursor: "pointer",
+                    }}
                   >
                     {product.product_category_name}
                   </Link>
@@ -395,7 +402,7 @@ function ProductDetails() {
                 </Typography>
               </Grid>
               <Grid container item>
-                <Typography variant="subtitle1">
+                <Typography variant="subtitle2">
                   {product.seller_city}, {product.seller_state},{" "}
                   {product.seller_country}, {product.seller_pincode}
                 </Typography>
@@ -406,7 +413,11 @@ function ProductDetails() {
               paddingBottom={2}
               style={{ marginTop: "1em" }}
             >
-              <Stack direction="row" style={{ justifyContent: "space-evenly" }}>
+              <Stack
+                spacing={1}
+                direction="row"
+                style={{ marginTop: 20, justifyContent: "space-evenly" }}
+              >
                 <Grid xs={6} style={{ padding: 4 }}>
                   {product.product_available_quantity ? (
                     !isAddedToCart ? (
@@ -416,6 +427,7 @@ function ProductDetails() {
                           height: "3em",
                           borderRadius: "14px",
                           fontSize: 16,
+                          backgroundColor: "#02294F",
                         }}
                         variant="contained"
                         onClick={() => {
@@ -423,7 +435,8 @@ function ProductDetails() {
                           setIsAddedToCart(true);
                         }}
                       >
-                        <ShoppingCartIcon /> Add To Cart
+                        <ShoppingCartIcon />
+                        &nbsp;&nbsp;&nbsp;Add To Cart
                       </Button>
                     ) : (
                       <Button
@@ -432,6 +445,7 @@ function ProductDetails() {
                           height: "3em",
                           borderRadius: "14px",
                           fontSize: 16,
+                          backgroundColor: "#02294F",
                         }}
                         variant="contained"
                         onClick={() => {
@@ -441,7 +455,8 @@ function ProductDetails() {
                           setIsAddedToCart(false);
                         }}
                       >
-                        <RemoveShoppingCartIcon /> Remove From The Cart
+                        <RemoveShoppingCartIcon />
+                        &nbsp;&nbsp;&nbsp;Remove From The Cart
                       </Button>
                     )
                   ) : (
@@ -466,7 +481,7 @@ function ProductDetails() {
                       }}
                     >
                       <FavoriteBorderIcon />
-                      Add To WishList
+                      &nbsp;&nbsp;&nbsp;Add To WishList
                     </Button>
                   ) : (
                     <Button
@@ -485,7 +500,7 @@ function ProductDetails() {
                       }}
                     >
                       <FavoriteIcon sx={{ color: "red" }} />
-                      ADDED ON WishList
+                      &nbsp;&nbsp;&nbsp;ADDED ON WishList
                     </Button>
                   )}
                 </Grid>
@@ -493,44 +508,68 @@ function ProductDetails() {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-          <Box
-            style={{ backgroundColor: "lightblue" }}
-            sx={{
-              height: "auto",
-              width: "100%",
-              borderRadius: "10px",
-            }}
-          >
+        <Grid
+          xs={12}
+          sm={12}
+          md={12}
+          lg={12}
+          xl={12}
+          margin={4}
+          padding={4}
+          style={{ backgroundColor: "ghostwhite", borderRadius: "16px" }}
+        >
+          <Grid xs={12} sm={12} md={12} lg={12} xl={12} marginBottom={2}>
             <Typography variant="h4" fontWeight="bold">
               Product Description
             </Typography>
+          </Grid>
+          <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
             {product.product_description &&
               product.product_description.map((item, index) => (
-                <div key={index} style={{ display: "flex" }}>
-                  <Typography key={index} variant="h6" fontWeight="bold">
-                    {item.key}
-                  </Typography>
-                  <Typography>{item.value}</Typography>
-                </div>
+                <Grid container key={index} paddingX={4}>
+                  <Grid xs={3} sm={3} md={3} lg={3} xl={3} padding={1}>
+                    <Typography variant="h6" fontWeight="bold">
+                      <CircleIcon fontSize="small" /> {item.key}
+                    </Typography>
+                  </Grid>
+                  <Grid
+                    xs={9}
+                    sm={9}
+                    md={9}
+                    lg={9}
+                    xl={9}
+                    padding={2}
+                    style={{ backgroundColor: "#E9ECEF", borderRadius: "10px" }}
+                  >
+                    <Typography>{item.value}</Typography>
+                  </Grid>
+                </Grid>
               ))}
-          </Box>
+          </Grid>
         </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-          <Box
-            style={{ backgroundColor: "lightblue" }}
-            sx={{
-              height: "auto",
-              width: "100%",
-              borderRadius: "10px",
-            }}
-          >
+        <Grid
+          container
+          xs={12}
+          sm={12}
+          md={12}
+          lg={12}
+          xl={12}
+          margin={4}
+          padding={4}
+          style={{ backgroundColor: "ghostwhite", borderRadius: "16px" }}
+        >
+          <Grid xs={12} sm={12} md={12} lg={12} xl={12} marginBottom={2}>
+            <Typography variant="h4" fontWeight="bold">
+              Buyer's Rating & Reviews
+            </Typography>
+          </Grid>
+          <Grid container xs={12} sm={12} md={12} lg={12} xl={12}>
             {product?.ratings?.total_user_response ? (
               <ProductRatingGraph productRatings={product.ratings} />
             ) : (
               <></>
             )}
-          </Box>
+          </Grid>
         </Grid>
         {isInOrderedProductIds ? (
           <>
