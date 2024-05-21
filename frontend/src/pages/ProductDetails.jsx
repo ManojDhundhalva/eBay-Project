@@ -29,6 +29,7 @@ import StarRateRoundedIcon from "@mui/icons-material/StarRateRounded";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Link from "@mui/material/Link";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import Stack from "@mui/material/Stack";
 
 const FormGrid = styled(Grid)(() => ({
   display: "flex",
@@ -211,7 +212,7 @@ function ProductDetails() {
   return (
     <>
       <Grid container className="mt-5" padding={0}>
-        <Grid xs={12} sm={12} md={7} lg={7} xl={7} className="mt-4">
+        <Grid xs={12} sm={12} md={7} lg={7} xl={7}>
           {product.product_images && (
             <DisplayImages images={product.product_images} />
           )}
@@ -222,29 +223,35 @@ function ProductDetails() {
           md={5}
           lg={5}
           xl={5}
-          margin={0}
+          marginTop={4}
           padding={0}
-          className="mt-4"
+          paddingBottom={2}
+          paddingRight={4}
         >
           <Grid
             paddingLeft={5}
             paddingTop={2}
-            marginRight={2}
             marginLeft={{ xs: 2, sm: 2, md: 0, xl: 0, lg: 0 }}
             style={{
+              width: "100%",
+              height: "100%",
               backgroundColor: "ghostwhite",
-              borderRadius: "10px",
+              borderRadius: "16px",
             }}
           >
             <Grid container item style={{ marginTop: "1em" }}>
               <Grid item xs={10}>
-                <Typography
-                  variant="h3"
-                  fontWeight="bold"
+                <h3
                   textTransform="uppercase"
+                  style={{
+                    fontWeight: "bold",
+                    wordBreak: "break-word",
+                    whiteSpace: "normal",
+                    width: "14em",
+                  }}
                 >
                   {product.product_title}
-                </Typography>
+                </h3>
               </Grid>
               <Grid
                 item
@@ -265,6 +272,9 @@ function ProductDetails() {
                 />
               </Grid>
             </Grid>
+            {/* <Grid>ID : {window.localStorage.getItem("product-id")}</Grid> */}
+            {/* <Grid>Listed On : {formatDate(product.product_timestamp)}</Grid> */}
+
             <Grid item style={{ display: "flex" }}>
               <Grid
                 xs={12}
@@ -297,12 +307,11 @@ function ProductDetails() {
                 </Grid>
               </Grid>
             </Grid>
-            <Grid>ID : {window.localStorage.getItem("product-id")}</Grid>
-            <Grid>Listed On : {formatDate(product.product_timestamp)}</Grid>
             <Grid
               item
               style={{
-                marginTop: "1em",
+                marginTop: "3em",
+                marginBottom: "3em",
                 display: "flex",
                 alignItems: "flex-end",
               }}
@@ -317,7 +326,7 @@ function ProductDetails() {
             </Grid>
             <Grid item style={{ marginTop: "1em" }}>
               <Typography variant="subtitle1">
-                Available Quantity :{" "}
+                Quantity :{" "}
                 <Chip
                   label={
                     product.product_available_quantity
@@ -331,30 +340,40 @@ function ProductDetails() {
                 />
               </Typography>
             </Grid>
-            <Grid marginTop={2} marginBottom={2} padding={0}>
-              <Grid>
-                <Typography variant="h5">Category</Typography>
+            <Grid
+              marginRight={5}
+              padding={2}
+              style={{
+                backgroundColor: "#e9ecef",
+                borderRadius: "16px",
+                marginTop: "1em",
+              }}
+            >
+              <Grid item>
+                <Typography variant="h5" fontWeight="bold">
+                  Category
+                </Typography>
               </Grid>
-              <Grid>
+              <Grid container item>
                 <Breadcrumbs aria-label="breadcrumb">
                   <Link
                     separator={<NavigateNextIcon fontSize="small" />}
                     to="/"
-                    style={{ color: "black" }}
+                    style={{ color: "black", cursor: "pointer" }}
                   >
                     {product.product_category_name}
                   </Link>
                   <Link
                     separator={<NavigateNextIcon fontSize="small" />}
                     to="/"
-                    style={{ color: "black" }}
+                    style={{ color: "black", cursor: "pointer" }}
                   >
                     {product.product_sub_category_name}
                   </Link>
                   <Link
                     separator={<NavigateNextIcon fontSize="small" />}
                     to="/"
-                    style={{ color: "black" }}
+                    style={{ color: "black", cursor: "pointer" }}
                   >
                     {product.product_sub_sub_category_name}
                   </Link>
@@ -364,7 +383,11 @@ function ProductDetails() {
             <Grid
               marginRight={5}
               padding={2}
-              style={{ backgroundColor: "#e9ecef", borderRadius: "16px" }}
+              style={{
+                backgroundColor: "#e9ecef",
+                borderRadius: "16px",
+                marginTop: "1em",
+              }}
             >
               <Grid item>
                 <Typography variant="h5" fontWeight="bold">
@@ -372,79 +395,101 @@ function ProductDetails() {
                 </Typography>
               </Grid>
               <Grid container item>
-                <Grid xs={6} item>
-                  <Typography variant="subtitle1">
-                    City : {product.seller_city}
-                  </Typography>
-                </Grid>
-                <Grid xs={6} item>
-                  <Typography variant="subtitle1">
-                    State : {product.seller_state}
-                  </Typography>
-                </Grid>
-                <Grid xs={6} item>
-                  <Typography variant="subtitle1">
-                    Country : {product.seller_country}
-                  </Typography>
-                </Grid>
-                <Grid xs={6} item>
-                  <Typography variant="subtitle1">
-                    Pincode : {product.seller_pincode}
-                  </Typography>
-                </Grid>
+                <Typography variant="subtitle1">
+                  {product.seller_city}, {product.seller_state},{" "}
+                  {product.seller_country}, {product.seller_pincode}
+                </Typography>
               </Grid>
             </Grid>
-            <Grid item style={{ marginTop: "1em" }}>
-              {product.product_available_quantity ? (
-                !isAddedToCart ? (
-                  <Button
-                    variant="contained"
-                    onClick={() => {
-                      addToCart(window.localStorage.getItem("product-id"));
-                      setIsAddedToCart(true);
-                    }}
-                  >
-                    <ShoppingCartIcon /> Add To Cart
-                  </Button>
-                ) : (
-                  <Button
-                    variant="contained"
-                    onClick={() => {
-                      deleteFromCart(window.localStorage.getItem("product-id"));
-                      setIsAddedToCart(false);
-                    }}
-                  >
-                    <RemoveShoppingCartIcon /> Remove From The Cart
-                  </Button>
-                )
-              ) : (
-                <></>
-              )}
-              {!isAddedToWishList ? (
-                <Button
-                  variant="outlined"
-                  onClick={() => {
-                    addToWishList(window.localStorage.getItem("product-id"));
-                    setIsAddedToWishList(true);
-                  }}
-                >
-                  <FavoriteBorderIcon />
-                  Add To WishList
-                </Button>
-              ) : (
-                <Button
-                  variant="outlined"
-                  onClick={() => {
-                    deleteFromWishList(
-                      window.localStorage.getItem("product-id")
-                    );
-                    setIsAddedToWishList(false);
-                  }}
-                >
-                  <FavoriteIcon sx={{ color: "red" }} />
-                  ADDED ON WishList
-                </Button>
-              )}
+            <Grid
+              marginRight={5}
+              paddingBottom={2}
+              style={{ marginTop: "1em" }}
+            >
+              <Stack direction="row" style={{ justifyContent: "space-evenly" }}>
+                <Grid xs={6} style={{ padding: 4 }}>
+                  {product.product_available_quantity ? (
+                    !isAddedToCart ? (
+                      <Button
+                        style={{
+                          width: "100%",
+                          height: "3em",
+                          borderRadius: "14px",
+                          fontSize: 16,
+                        }}
+                        variant="contained"
+                        onClick={() => {
+                          addToCart(window.localStorage.getItem("product-id"));
+                          setIsAddedToCart(true);
+                        }}
+                      >
+                        <ShoppingCartIcon /> Add To Cart
+                      </Button>
+                    ) : (
+                      <Button
+                        style={{
+                          width: "100%",
+                          height: "3em",
+                          borderRadius: "14px",
+                          fontSize: 16,
+                        }}
+                        variant="contained"
+                        onClick={() => {
+                          deleteFromCart(
+                            window.localStorage.getItem("product-id")
+                          );
+                          setIsAddedToCart(false);
+                        }}
+                      >
+                        <RemoveShoppingCartIcon /> Remove From The Cart
+                      </Button>
+                    )
+                  ) : (
+                    <></>
+                  )}
+                </Grid>
+                <Grid xs={6} style={{ padding: 4 }}>
+                  {!isAddedToWishList ? (
+                    <Button
+                      style={{
+                        width: "100%",
+                        height: "3em",
+                        borderRadius: "14px",
+                        fontSize: 16,
+                      }}
+                      variant="outlined"
+                      onClick={() => {
+                        addToWishList(
+                          window.localStorage.getItem("product-id")
+                        );
+                        setIsAddedToWishList(true);
+                      }}
+                    >
+                      <FavoriteBorderIcon />
+                      Add To WishList
+                    </Button>
+                  ) : (
+                    <Button
+                      style={{
+                        width: "100%",
+                        height: "3em",
+                        borderRadius: "14px",
+                        fontSize: 16,
+                      }}
+                      variant="outlined"
+                      onClick={() => {
+                        deleteFromWishList(
+                          window.localStorage.getItem("product-id")
+                        );
+                        setIsAddedToWishList(false);
+                      }}
+                    >
+                      <FavoriteIcon sx={{ color: "red" }} />
+                      ADDED ON WishList
+                    </Button>
+                  )}
+                </Grid>
+              </Stack>
             </Grid>
           </Grid>
         </Grid>

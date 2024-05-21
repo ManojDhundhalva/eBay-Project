@@ -1,44 +1,30 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import Stack from "@mui/material/Stack";
-import Box from "@mui/material/Box";
-import { styled } from "@mui/material/styles";
-import Button from "@mui/material/Button";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import Grid from "@mui/material/Grid";
 
 const DisplayImages = ({ images }) => {
   const [selectedImg, setSelectedImg] = useState(images[0]);
+  const [hoverImg, setHoverImg] = useState(null);
 
   return (
     <Grid container margin={0} padding={2}>
       <Grid
         container
-        padding={2}
+        paddingLeft={2}
+        paddingTop={2}
+        margin={0}
         xs={12}
-        sm={3}
-        md={3}
-        xl={3}
-        lg={3}
+        sm={2}
+        md={2}
+        xl={2}
+        lg={2}
         sx={{
           borderRadius: "10px",
-          backgroundColor: "ghostwhite",
-          maxHeight: "500px",
+          // backgroundColor: "ghostwhite",
+          maxHeight: "600px",
           overflowX: "scroll",
           whiteSpace: "normal",
           overflowY: "scroll",
-          // "&::-webkit-scrollbar": {
-          //   width: "8px",
-          // },
-          // "&::-webkit-scrollbar-thumb": {
-          //   backgroundColor: "gray",
-          //   borderRadius: "50px",
-          // },
-          // "&::-webkit-scrollbar-thumb:hover": {
-          //   backgroundColor: "darkgray",
-          // },
           "&::-webkit-scrollbar": {
             display: "none",
           },
@@ -55,7 +41,7 @@ const DisplayImages = ({ images }) => {
           }}
         >
           {images.map((image, index) => (
-            <Grid key={index} sx={{ backgroundColor: "lemonchiffon" }}>
+            <Grid key={index}>
               <img
                 src={image}
                 alt={`Thumbnail ${index}`}
@@ -64,9 +50,16 @@ const DisplayImages = ({ images }) => {
                   height: "auto",
                   borderRadius: "10px",
                   cursor: "pointer",
+                  border: selectedImg === image ? "2px solid black" : "none",
                 }}
                 onClick={() => {
                   setSelectedImg(image);
+                }}
+                onMouseEnter={() => {
+                  setHoverImg(image);
+                }}
+                onMouseLeave={() => {
+                  setHoverImg(null);
                 }}
               />
             </Grid>
@@ -75,22 +68,25 @@ const DisplayImages = ({ images }) => {
       </Grid>
       <Grid
         container
-        padding={2}
+        paddingTop={2}
+        paddingLeft={2}
         xs={12}
-        sm={9}
-        md={9}
-        xl={9}
-        lg={9}
+        sm={10}
+        md={10}
+        xl={10}
+        lg={10}
         sx={{ borderRadius: "10px" }}
       >
         {selectedImg && (
           <img
-            src={selectedImg}
+            src={hoverImg || selectedImg}
             alt={`Selected Img`}
             style={{
+              backgroundColor: "#F2F2F2",
+              objectFit: "contain",
               width: "100%",
               height: "auto",
-              borderRadius: "10px",
+              borderRadius: "16px",
               cursor: "pointer",
             }}
           />
