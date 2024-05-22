@@ -98,6 +98,7 @@ LIMIT 10;
 const getProductsDetails = `
 SELECT 
     c.*,
+    us.username,
     s.seller_city, 
     s.seller_state, 
     s.seller_country, 
@@ -160,8 +161,11 @@ JOIN
     product_description AS pd ON c.product_id = pd.product_id
 JOIN 
     seller AS s ON c.product_seller_id = s.seller_user_id
+JOIN 
+    users AS us ON us.id = s.seller_user_id
 GROUP BY 
     c.*,
+    us.username,
     c.product_seller_id,
     c.product_title,
     c.product_price,

@@ -36,6 +36,15 @@ import Avatar from "@mui/material/Avatar";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import SendIcon from "@mui/icons-material/Send";
 import moment from "moment";
+import EmojiPicker, {
+  EmojiClickData,
+  Theme,
+  EmojiStyle,
+  SkinTones,
+} from "emoji-picker-react";
+import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
+import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
+import ClearIcon from "@mui/icons-material/Clear";
 
 const FormGrid = styled(Grid)(() => ({
   display: "flex",
@@ -66,6 +75,10 @@ function ProductDetails() {
   const [productComment, setProductComment] = useState("");
   const [reviewTimeStamp, setReviewTimeStamp] = useState("");
   const [isEditOnPost, setIsEditOnPost] = useState(false);
+  const [isEmojiOn, setIsEmojiOn] = useState(false);
+
+  const [originalRating, setOriginalRating] = useState(1);
+  const [originalComment, setOriginalComment] = useState(1);
 
   const {
     cartList,
@@ -113,7 +126,13 @@ function ProductDetails() {
       setValue(
         data.your_reviews !== null ? data.your_reviews.your_rating : value
       );
+      setOriginalRating(
+        data.your_reviews !== null ? data.your_reviews.your_rating : value
+      );
       setProductComment(
+        data.your_reviews !== null ? data.your_reviews.your_comment : ""
+      );
+      setOriginalComment(
         data.your_reviews !== null ? data.your_reviews.your_comment : ""
       );
       setReviewTimeStamp(
@@ -301,8 +320,8 @@ function ProductDetails() {
                 </Typography>
               </Grid>
             </Grid>
-            {/* <Grid>ID : {window.localStorage.getItem("product-id")}</Grid> */}
-            {/* <Grid>Listed On : {formatDate(product.product_timestamp)}</Grid> */}
+            <Grid>ID : {window.localStorage.getItem("product-id")}</Grid>
+            <Grid>Listed On : {formatDate(product.product_timestamp)}</Grid>
 
             <Grid item style={{ display: "flex" }}>
               <div>
@@ -365,6 +384,44 @@ function ProductDetails() {
                 marginTop: "1em",
               }}
             >
+              <Typography variant="h5" fontWeight="bold">
+                Seller
+              </Typography>
+              <Grid container alignItems="center">
+                <Avatar src="/broken-image.jpg" />
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <Typography
+                  variant="subtitle1"
+                  fontWeight="bold"
+                  style={{ textDecoration: "underline", cursor: "pointer" }}
+                >
+                  {product.username}
+                </Typography>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <Typography
+                  variant="subtitle1"
+                  fontWeight="bold"
+                  style={{ textDecoration: "underline", cursor: "pointer" }}
+                >
+                  see seller's product
+                </Typography>
+              </Grid>
+              <Grid style={{ marginTop: "0.5em" }}>
+                <Typography variant="subtitle2">
+                  Shipping : {product.seller_city}, {product.seller_state},{" "}
+                  {product.seller_country}, {product.seller_pincode}
+                </Typography>
+              </Grid>
+            </Grid>
+            <Grid
+              marginRight={5}
+              padding={2}
+              style={{
+                backgroundColor: "#e9ecef",
+                borderRadius: "16px",
+                marginTop: "1em",
+              }}
+            >
               <Grid>
                 <Typography variant="h5" fontWeight="bold">
                   Category
@@ -397,27 +454,6 @@ function ProductDetails() {
                     {product.product_sub_sub_category_name}
                   </Link>
                 </Breadcrumbs>
-              </Grid>
-            </Grid>
-            <Grid
-              marginRight={5}
-              padding={2}
-              style={{
-                backgroundColor: "#e9ecef",
-                borderRadius: "16px",
-                marginTop: "1em",
-              }}
-            >
-              <Grid item>
-                <Typography variant="h5" fontWeight="bold">
-                  Shipping
-                </Typography>
-              </Grid>
-              <Grid container item>
-                <Typography variant="subtitle2">
-                  {product.seller_city}, {product.seller_state},{" "}
-                  {product.seller_country}, {product.seller_pincode}
-                </Typography>
               </Grid>
             </Grid>
             <Grid
@@ -619,8 +655,12 @@ function ProductDetails() {
                   padding={2}
                   style={{ backgroundColor: "#E9ECEF", borderRadius: "10px" }}
                 >
-                  <Grid container alignItems="flex-start">
-                    <Grid container xs={10}>
+                  <Grid
+                    container
+                    alignItems="flex-start"
+                    style={{ position: "relative" }}
+                  >
+                    <Grid container xs={6}>
                       <Rating
                         name="hover-feedback"
                         value={value}
@@ -636,65 +676,21 @@ function ProductDetails() {
                         emptyIcon={<StarRoundedIcon />}
                         icon={<StarRoundedIcon />}
                       />
-                      <Typography variant="subtitle1" fontWeight="bold">
-                        {value !== null && (
-                          <Box sx={{ ml: 2 }}>
-                            {labels[hover !== -1 ? hover : value]}
-                          </Box>
-                        )}
-                      </Typography>
-                      <TextField
-                        value={productComment}
-                        id="outlined-basic"
-                        variant="outlined"
-                        placeholder="Write Comment (Optional)"
-                        multiline
-                        maxRows={4}
-                        fullWidth
-                        onChange={(e) => {
-                          if (e.target.value.length <= 2000) {
-                            setProductComment(e.target.value);
-                          }
-                        }}
-                        InputProps={{
-                          readOnly: !isEditOnPost,
-                          style: {
-                            fontWeight: "bold",
-                          },
-                        }}
-                        style={{ fontWeight: "bold" }}
-                        helperText={`${productComment.length}/2000`}
-                        sx={{
-                          "& .MuiInputBase-root": {
-                            "& .MuiInputBase-input": {
-                              "&::-webkit-scrollbar": {
-                                width: "8px",
-                              },
-                              "&::-webkit-scrollbar-thumb": {
-                                backgroundColor: "#02294F",
-                                borderRadius: "10px",
-                              },
-                              "&::-webkit-scrollbar-track": {
-                                background: "transparent",
-                              },
-                              "&::-webkit-scrollbar-button": {
-                                display: "none",
-                              },
-                              "&": {
-                                scrollbarWidth: "thin",
-                                scrollbarColor: "#02294F transparent",
-                              },
-                            },
-                          },
-                        }}
-                      />
-                      <Typography variant="subtitle2" fontWeight="bold">
-                        {reviewTimeStamp}
-                      </Typography>
+                      {isEditOnPost ? (
+                        <Typography variant="subtitle1" fontWeight="bold">
+                          {value !== null && (
+                            <Box sx={{ ml: 2 }}>
+                              {labels[hover !== -1 ? hover : value]}
+                            </Box>
+                          )}
+                        </Typography>
+                      ) : (
+                        <></>
+                      )}
                     </Grid>
                     <Grid
                       container
-                      xs={2}
+                      xs={6}
                       justifyContent="flex-end"
                       alignItems="flex-start"
                     >
@@ -702,6 +698,7 @@ function ProductDetails() {
                         <Button
                           onClick={() => {
                             setIsEditOnPost(true);
+                            setIsEmojiOn(false);
                           }}
                           variant="contained"
                           style={{ backgroundColor: "#02294F" }}
@@ -710,17 +707,188 @@ function ProductDetails() {
                           &nbsp;&nbsp;Edit
                         </Button>
                       ) : (
-                        <Button
-                          onClick={() => {
-                            setIsEditOnPost(false);
-                            makeReviewOfProduct();
+                        <>
+                          <Button
+                            onClick={() => {
+                              setIsEditOnPost(false);
+                              setIsEmojiOn(false);
+                              setProductComment(originalComment);
+                              setValue(originalRating);
+                            }}
+                            variant="outlined"
+                            color="error"
+                            style={{
+                              width: "fit-content",
+                              marginRight: 8,
+                            }}
+                          >
+                            <ClearIcon />
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              setIsEditOnPost(false);
+                              setIsEmojiOn(false);
+                              setOriginalComment(productComment);
+                              setOriginalRating(value);
+                              makeReviewOfProduct();
+                            }}
+                            variant="contained"
+                            style={{
+                              backgroundColor: "#02294F",
+                              marginLeft: 2,
+                              marginRight: 2,
+                            }}
+                            startIcon={<SendIcon />}
+                          >
+                            Post
+                          </Button>
+                        </>
+                      )}
+                    </Grid>
+                    <Grid container margin={0} marginTop={1} padding={0}>
+                      {!isEditOnPost ? (
+                        <textarea
+                          value={originalComment}
+                          readOnly={true}
+                          style={{
+                            border: "none",
+                            resize: "none",
+                            background: "transparent",
+                            outline: "none",
+                            width: "100%",
+                            overflow: "hidden",
+                            fontWeight: "bold",
+                            fontFamily: "inherit",
+                            fontSize: "inherit",
                           }}
-                          variant="contained"
-                          style={{ backgroundColor: "#02294F" }}
-                        >
-                          <SendIcon />
-                          &nbsp;&nbsp;Post
-                        </Button>
+                        />
+                      ) : (
+                        <TextField
+                          value={productComment}
+                          id="outlined-basic"
+                          variant="outlined"
+                          placeholder="Write Comment (Optional)"
+                          multiline
+                          maxRows={4}
+                          fullWidth
+                          onChange={(e) => {
+                            if (e.target.value.length <= 2000) {
+                              setProductComment(e.target.value);
+                            }
+                          }}
+                          InputProps={{
+                            readOnly: !isEditOnPost,
+                            style: {
+                              fontWeight: "bold",
+                            },
+                          }}
+                          style={{ fontWeight: "bold" }}
+                          sx={{
+                            "& .MuiInputBase-root": {
+                              "& .MuiInputBase-input": {
+                                "&::-webkit-scrollbar": {
+                                  width: "8px",
+                                },
+                                "&::-webkit-scrollbar-thumb": {
+                                  backgroundColor: "#02294F",
+                                  borderRadius: "10px",
+                                },
+                                "&::-webkit-scrollbar-track": {
+                                  background: "transparent",
+                                },
+                                "&::-webkit-scrollbar-button": {
+                                  display: "none",
+                                },
+                                "&": {
+                                  scrollbarWidth: "thin",
+                                  scrollbarColor: "#02294F transparent",
+                                },
+                              },
+                            },
+                          }}
+                        />
+                      )}
+                      {!isEditOnPost ? (
+                        <Grid container justifyContent="flex-end">
+                          <Typography
+                            variant="body1"
+                            fontWeight="bold"
+                            textAlign="right"
+                          >
+                            {reviewTimeStamp}
+                          </Typography>
+                        </Grid>
+                      ) : (
+                        <Grid container justifyContent="space-between">
+                          <Grid
+                            container
+                            xs={2}
+                            marginY={1}
+                            padding={0}
+                            style={{ position: "relative" }}
+                          >
+                            <Button
+                              onClick={() => {
+                                if (isEditOnPost) {
+                                  setIsEmojiOn(!isEmojiOn);
+                                }
+                              }}
+                              variant="outlined"
+                              style={{
+                                width: "fit-content",
+                                position: "relative",
+                                color: "#02294F",
+                                border: "1px solid #02294F",
+                              }}
+                            >
+                              <SentimentSatisfiedAltIcon />
+                            </Button>
+                            {/* google, apple, facebook, twitter and native. */}
+                            {isEmojiOn && isEditOnPost ? (
+                              <EmojiPicker
+                                // skinTonePicker={SkinTones}
+                                onEmojiClick={(emojiData, event) => {
+                                  setProductComment(
+                                    (prevComment) =>
+                                      prevComment + emojiData.emoji
+                                  );
+                                }}
+                                emojiStyle="facebook"
+                                theme={Theme.DARK}
+                                style={{
+                                  display: "flex",
+                                  position: "absolute",
+                                  top: "46px",
+                                  zIndex: 10,
+                                }}
+                              />
+                            ) : (
+                              <></>
+                            )}
+                          </Grid>
+                          <Grid container xs={10}>
+                            <Grid
+                              container
+                              justifyContent="flex-end"
+                              padding={0}
+                              style={{ position: "relative" }}
+                            >
+                              <Typography variant="body1" fontWeight="bold">
+                                {productComment.length}/2000
+                              </Typography>
+                            </Grid>
+                            <Grid
+                              container
+                              justifyContent="flex-end"
+                              padding={0}
+                              style={{ position: "relative" }}
+                            >
+                              <Typography variant="body1" fontWeight="bold">
+                                {reviewTimeStamp}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                        </Grid>
                       )}
                     </Grid>
                   </Grid>
@@ -764,23 +932,33 @@ function ProductDetails() {
                   >
                     <Rating
                       name="product-rating"
-                      value={parseFloat(product.product_avg_rating)}
+                      value={parseFloat(item.rating)}
                       precision={0.1} // Set precision to 0.1 to allow fractional part
                       readOnly
                       emptyIcon={<StarRoundedIcon />}
                       icon={<StarRoundedIcon />}
                     />
-                    <TextField
+                    <textarea
                       value={item.comment}
-                      multiline
-                      InputProps={{
-                        readOnly: !isEditOnPost,
-                        style: {
-                          fontWeight: "bold",
-                        },
+                      readOnly={true}
+                      style={{
+                        border: "none",
+                        resize: "none",
+                        background: "transparent",
+                        outline: "none",
+                        width: "100%",
+                        overflow: "hidden",
+                        fontWeight: "bold",
+                        fontFamily: "inherit",
+                        fontSize: "inherit",
+                        marginTop: 12,
                       }}
                     />
-                    <Typography variant="subtitle2" fontWeight="bold">
+                    <Typography
+                      variant="body1"
+                      fontWeight="bold"
+                      textAlign="right"
+                    >
                       {formatTimestamp(item.product_review_timestamp)}
                     </Typography>
                   </Grid>

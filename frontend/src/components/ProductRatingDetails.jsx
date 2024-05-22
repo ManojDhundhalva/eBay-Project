@@ -3,7 +3,6 @@ import Slider from "@mui/material/Slider";
 import Box from "@mui/material/Box";
 import { Gauge, gaugeClasses } from "@mui/x-charts/Gauge";
 import Rating from "@mui/material/Rating";
-import EmojiPicker, { Theme, EmojiStyle, SkinTones } from "emoji-picker-react"; // Added SkinTones
 import { Grid, Typography } from "@mui/material";
 import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
 import StarRateRoundedIcon from "@mui/icons-material/StarRateRounded";
