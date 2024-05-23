@@ -51,6 +51,15 @@ import Zoom from "@mui/material/Zoom";
 import Tooltip from "@mui/material/Tooltip";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import ShoppingCartRoundedIcon from "@mui/icons-material/ShoppingCartRounded";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import LinkIcon from "@mui/icons-material/Link";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import Icon from "@mui/material/Icon";
+import { useLocation } from "react-router-dom";
 
 const FormGrid = styled(Grid)(() => ({
   display: "flex",
@@ -85,6 +94,19 @@ function ProductDetails() {
 
   const [originalRating, setOriginalRating] = useState(1);
   const [originalComment, setOriginalComment] = useState(1);
+
+  const [open, setOpen] = React.useState(false);
+  const location = useLocation();
+  const currentURL = window.location.href;
+  const [tooltipText, setTooltipText] = useState("Copy To Clipboard");
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const {
     cartList,
@@ -249,6 +271,19 @@ function ProductDetails() {
     const year = date.getFullYear();
 
     return `${day}/${month}/${year}`;
+  };
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(currentURL);
+      setTooltipText("Copied");
+      setTimeout(() => {
+        setTooltipText("Copy To Clipboard");
+      }, 2000);
+    } catch (error) {
+      console.error("Error copying URL to clipboard:", error);
+      toast.error("Failed to copy URL to clipboard.");
+    }
   };
 
   return (
@@ -420,13 +455,60 @@ function ProductDetails() {
               ) : (
                 <></>
               )}
+              <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+              >
+                <DialogTitle id="alert-dialog-title">
+                  Link <LinkIcon />
+                </DialogTitle>
+                <DialogContent>
+                  <DialogContentText
+                    id="alert-dialog-description"
+                    style={{ display: "flex" }}
+                  >
+                    <Button
+                      variant="outlined"
+                      sx={{ textTransform: "none" }}
+                      style={{
+                        borderRadius: "10px",
+                        width: "40em",
+                        display: "flex",
+                        alignItems: "flex-start",
+                        justifyContent: "flex-start",
+                      }}
+                    >
+                      {currentURL}
+                    </Button>
+                    <Tooltip
+                      TransitionComponent={Zoom}
+                      title={tooltipText}
+                      placement="top"
+                      arrow
+                    >
+                      <IconButton
+                        sx={{ marginX: 2 }}
+                        aria-label="share"
+                        onClick={() => {
+                          copyToClipboard();
+                          handleClickOpen();
+                        }}
+                      >
+                        <ContentCopyIcon color="primary" />
+                      </IconButton>
+                    </Tooltip>
+                  </DialogContentText>
+                </DialogContent>
+              </Dialog>
               <Tooltip
                 TransitionComponent={Zoom}
                 title="Share"
                 placement="bottom"
                 arrow
               >
-                <IconButton aria-label="share">
+                <IconButton aria-label="share" onClick={handleClickOpen}>
                   <ShareIcon color="primary" />
                 </IconButton>
               </Tooltip>

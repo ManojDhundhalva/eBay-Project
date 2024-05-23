@@ -308,8 +308,6 @@ export default function Category() {
 
   return (
     <>
-      <h1>Category</h1>
-      <h1>Category</h1>
       <Grid container spacing={2}>
         <Grid item xs={3} style={{ backgroundColor: "ghostwhite" }}>
           <RichTreeView
