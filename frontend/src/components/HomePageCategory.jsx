@@ -24,7 +24,7 @@ const categories = [
 ];
 
 const ScrollBox = styled(Box)({
-  overflowX: "auto",
+  overflow: "auto",
   whiteSpace: "nowrap",
   "&::-webkit-scrollbar": {
     display: "none", // Hide the scrollbar

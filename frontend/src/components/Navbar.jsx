@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 // import '../CSS/Navbar.css';
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
@@ -12,11 +12,14 @@ import { useNavigate } from "react-router-dom";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import { toast } from "react-hot-toast";
+import Badge from "@mui/material/Badge";
+import { useProduct } from "../context/product";
 
 function Navbar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const { isLoggedIn, setIsLoggedIn, LogOut } = useAuth();
   const navigate = useNavigate();
+  const { cartList, wishList, orderList } = useProduct();
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -36,8 +39,12 @@ function Navbar() {
     zIndex: 4,
   };
 
+  useEffect(() => {
+    console.log("cartList", cartList.length);
+  }, []);
+
   return (
-    <nav className=" navbar navbar-expand-lg p-2" style={navbarStyle}>
+    <nav className="navbar navbar-expand-lg p-2" style={navbarStyle}>
       <div className="container-fluid">
         <Link
           className="navbar-brand"
@@ -99,96 +106,164 @@ function Navbar() {
             >
               <Link
                 className="nav-link active"
+                to="/list-product"
+                style={{
+                  fontFamily: "Quicksand",
+                  transition: "all 0.5s ease",
+                  fontWeight: "bold",
+                }}
+              >
+                List Product
+              </Link>
+            </Button>
+            <Button
+              disableRipple
+              variant="text"
+              style={{ transition: "all 0.5s ease" }}
+              sx={{
+                "&:hover": {
+                  borderBottom: "1px solid #03045e",
+                  borderRadius: "5px",
+                },
+              }}
+            >
+              <Link
+                className="nav-link active"
+                to="/order"
+                style={{
+                  fontFamily: "Quicksand",
+                  transition: "all 0.5s ease",
+                  fontWeight: "bold",
+                }}
+              >
+                <Badge
+                  color="secondary"
+                  badgeContent={orderList.length}
+                  max={999}
+                >
+                  Order
+                </Badge>
+              </Link>
+            </Button>
+            <Button
+              disableRipple
+              variant="text"
+              style={{ transition: "all 0.5s ease" }}
+              sx={{
+                "&:hover": {
+                  borderBottom: "1px solid #03045e",
+                  borderRadius: "5px",
+                },
+              }}
+            >
+              <Link
+                className="nav-link active"
+                to="/wish-list"
+                style={{
+                  fontFamily: "Quicksand",
+                  transition: "all 0.5s ease",
+                  fontWeight: "bold",
+                }}
+              >
+                <Badge
+                  color="secondary"
+                  badgeContent={wishList.length}
+                  max={999}
+                >
+                  WishList
+                </Badge>
+              </Link>
+            </Button>
+            <Button
+              disableRipple
+              variant="text"
+              style={{ transition: "all 0.5s ease" }}
+              sx={{
+                "&:hover": {
+                  borderBottom: "1px solid #03045e",
+                  borderRadius: "5px",
+                },
+              }}
+            >
+              <Link
+                className="nav-link active"
+                to="/category"
+                style={{
+                  fontFamily: "Quicksand",
+                  transition: "all 0.5s ease",
+                  fontWeight: "bold",
+                }}
+              >
+                Category
+              </Link>
+            </Button>
+            <Button
+              disableRipple
+              variant="text"
+              style={{ transition: "all 0.5s ease" }}
+              sx={{
+                "&:hover": {
+                  borderBottom: "1px solid #03045e",
+                  borderRadius: "5px",
+                },
+              }}
+            >
+              <Link
+                className="nav-link active"
+                to="/account"
+                style={{
+                  fontFamily: "Quicksand",
+                  transition: "all 0.5s ease",
+                  fontWeight: "bold",
+                }}
+              >
+                Account
+              </Link>
+            </Button>
+            <Button
+              disableRipple
+              variant="text"
+              style={{ transition: "all 0.5s ease" }}
+              sx={{
+                "&:hover": {
+                  borderBottom: "1px solid #03045e",
+                  borderRadius: "5px",
+                },
+              }}
+            >
+              <Link
+                className="nav-link active"
                 to="/aboutus"
                 style={{ fontFamily: "Quicksand", fontWeight: "bold" }}
               >
                 AboutUS
               </Link>
             </Button>
-            {window.localStorage.getItem("role") === "manager" && (
-              <>
-                <Button
-                  disableRipple
-                  variant="text"
-                  style={{ transition: "all 0.5s ease" }}
-                  sx={{
-                    "&:hover": {
-                      borderBottom: "1px solid #03045e",
-                      borderRadius: "5px",
-                    },
-                  }}
+            <Button
+              disableRipple
+              variant="text"
+              style={{ transition: "all 0.5s ease" }}
+              sx={{
+                "&:hover": {
+                  borderBottom: "1px solid #03045e",
+                  borderRadius: "5px",
+                },
+              }}
+            >
+              <Link
+                className="nav-link active"
+                to="/cart"
+                style={{ fontFamily: "Quicksand" }}
+              >
+                <Badge
+                  color="secondary"
+                  badgeContent={cartList.length}
+                  max={999}
                 >
-                  <Link
-                    className="nav-link active"
-                    to="/queue"
-                    style={{ fontFamily: "Quicksand", fontWeight: "bold" }}
-                  >
-                    Queue
-                  </Link>
-                </Button>
-                <Button
-                  disableRipple
-                  variant="text"
-                  style={{ transition: "all 0.5s ease" }}
-                  sx={{
-                    "&:hover": {
-                      borderBottom: "1px solid #03045e",
-                      borderRadius: "5px",
-                    },
-                  }}
-                >
-                  <Link
-                    className="nav-link active"
-                    to="/received-product"
-                    style={{ fontFamily: "Quicksand", fontWeight: "bold" }}
-                  >
-                    Revied Product
-                  </Link>
-                </Button>
-              </>
-            )}
-            {window.localStorage.getItem("role") === "user" && (
-              <>
-                <Button
-                  disableRipple
-                  variant="text"
-                  style={{ transition: "all 0.5s ease" }}
-                  sx={{
-                    "&:hover": {
-                      borderBottom: "1px solid #03045e",
-                      borderRadius: "5px",
-                    },
-                  }}
-                >
-                  <Link
-                    className="nav-link active"
-                    to="/history-product"
-                    style={{ fontFamily: "Quicksand", fontWeight: "bold" }}
-                  >
-                    List Product
-                  </Link>
-                </Button>
-                <Button
-                  disableRipple
-                  variant="text"
-                  style={{ transition: "all 0.5s ease" }}
-                  sx={{
-                    "&:hover": {
-                      borderBottom: "1px solid #03045e",
-                      borderRadius: "5px",
-                    },
-                  }}
-                >
-                  <Link
-                    className="nav-link active"
-                    to="/cart"
-                    style={{ fontFamily: "Quicksand" }}
-                  >
-                    <ShoppingCartOutlinedIcon />
-                  </Link>
-                </Button>
-              </>
-            )}
+                  <ShoppingCartOutlinedIcon />
+                </Badge>
+              </Link>
+            </Button>
             {isLoggedIn ? (
               <>
                 <IconButton
@@ -241,25 +316,46 @@ function Navbar() {
                 </Menu>
               </>
             ) : (
-              <Button
-                disableRipple
-                variant="outlined"
-                style={{ transition: "all 0.5s ease" }}
-                sx={{
-                  "&:hover": {
-                    borderBottom: "1px solid #03045e",
-                    borderRadius: "5px",
-                  },
-                }}
-              >
-                <Link
-                  className="nav-link"
-                  to="/login"
-                  style={{ fontFamily: "Quicksand" }}
+              <>
+                <Button
+                  disableRipple
+                  variant="outlined"
+                  style={{ transition: "all 0.5s ease" }}
+                  sx={{
+                    "&:hover": {
+                      borderBottom: "1px solid #03045e",
+                      borderRadius: "5px",
+                    },
+                  }}
                 >
-                  LogIn/SignUP
-                </Link>
-              </Button>
+                  <Link
+                    className="nav-link"
+                    to="/login"
+                    style={{ fontFamily: "Quicksand" }}
+                  >
+                    LogIn
+                  </Link>
+                </Button>
+                <Button
+                  disableRipple
+                  variant="outlined"
+                  style={{ transition: "all 0.5s ease" }}
+                  sx={{
+                    "&:hover": {
+                      borderBottom: "1px solid #03045e",
+                      borderRadius: "5px",
+                    },
+                  }}
+                >
+                  <Link
+                    className="nav-link"
+                    to="/register"
+                    style={{ fontFamily: "Quicksand" }}
+                  >
+                    SignUP
+                  </Link>
+                </Button>
+              </>
             )}
           </ul>
         </div>

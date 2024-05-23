@@ -7,20 +7,20 @@ const DisplayImages = ({ images }) => {
   const [hoverImg, setHoverImg] = useState(null);
 
   return (
-    <Grid container margin={0} padding={2}>
+    <Grid container>
       <Grid
         container
-        paddingLeft={2}
-        paddingTop={2}
         margin={0}
+        paddingX={{ xs: 0, sm: 2, md: 2, xl: 2, lg: 2 }}
+        paddingY={{ xs: 2, sm: 0, md: 0, xl: 0, lg: 0 }}
         xs={12}
         sm={2}
         md={2}
         xl={2}
         lg={2}
         sx={{
-          borderRadius: "10px",
           // backgroundColor: "ghostwhite",
+          borderRadius: "10px",
           maxHeight: "600px",
           overflowX: "scroll",
           whiteSpace: "normal",
@@ -70,8 +70,8 @@ const DisplayImages = ({ images }) => {
       </Grid>
       <Grid
         container
-        paddingTop={2}
-        paddingLeft={2}
+        margin={0}
+        padding={0}
         xs={12}
         sm={10}
         md={10}

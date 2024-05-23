@@ -8,16 +8,16 @@ export default function Hero() {
     "https://img.freepik.com/free-photo/cyber-monday-retail-sales_23-2148688493.jpg?size=626&ext=jpg&uid=R149233148&ga=GA1.1.1356918092.1684837164&semt=ais_user_b";
 
   return (
-    <Container maxWidth="xl" style={{ marginTop: 40 }}>
+    <Container maxWidth="xl">
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          height: "72vh",
+          height: "60vh",
           width: "100%",
-          padding: { xs: 1, sm: 2, md: 4 },
+          paddingX: { xs: 1, sm: 2, md: 4 },
           borderRadius: "10px",
         }}
       >

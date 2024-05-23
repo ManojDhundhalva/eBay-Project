@@ -41,7 +41,7 @@ function App() {
         <CssBaseline />
         {(window.localStorage.getItem("role") === "user" ||
           window.localStorage.getItem("role") === null) &&
-          !isHiddenPath && <AppAppBar />}
+          !isHiddenPath && <Navbar />}
         <Routes>
           <Route exact path="/login" element={<Login />} />
           <Route exact path="/register" element={<Register />} />
@@ -70,6 +70,9 @@ function App() {
             <Route exact path="/" element={<ShipperHomePage />} />
           )}
         </Routes>
+        {(window.localStorage.getItem("role") === "user" ||
+          window.localStorage.getItem("role") === null) &&
+          !isHiddenPath && <Footer />}
       </ThemeProvider>
       {/* {!isHiddenPath && <Footer />} */}
     </>

@@ -200,8 +200,6 @@ export default function ListProduct() {
 
   return (
     <>
-      <div className="mt-4">ListProduct</div>
-      <div className="mt-4">ListProduct</div>
       <ThemeProvider theme={LPtheme}>
         <Grid container spacing={3} justifyContent="center">
           <Grid item xs={12} sm={6} md={6} lg={4} xl={4}>
