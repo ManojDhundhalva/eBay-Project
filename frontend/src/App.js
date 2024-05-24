@@ -23,6 +23,7 @@ import OrderDetails from "./pages/OrderDetails";
 import Category from "./pages/Category";
 import Home from "./manager/Home";
 import ShipperHomePage from "./shipper/ShipperHomePage";
+import NotFound from "./pages/NotFound";
 
 function App() {
   const { mode, setMode, toggleColorMode } = useAuth();
@@ -45,6 +46,7 @@ function App() {
         <Routes>
           <Route exact path="/login" element={<Login />} />
           <Route exact path="/register" element={<Register />} />
+          {/* {window.localStorage.getItem("role") === null} */}
           {window.localStorage.getItem("role") === "user" ||
           window.localStorage.getItem("role") === null ? (
             <>
@@ -69,6 +71,7 @@ function App() {
           ) : (
             <Route exact path="/" element={<ShipperHomePage />} />
           )}
+          <Route path="*" element={<NotFound />} />
         </Routes>
         {(window.localStorage.getItem("role") === "user" ||
           window.localStorage.getItem("role") === null) &&

@@ -98,6 +98,9 @@ function ProductDetails() {
   const [open, setOpen] = React.useState(false);
   const location = useLocation();
   const currentURL = window.location.href;
+  const queryParams = new URLSearchParams(location.search);
+  const productIdParams = queryParams.get("id");
+
   const [tooltipText, setTooltipText] = useState("Copy To Clipboard");
 
   const handleClickOpen = () => {
@@ -120,7 +123,7 @@ function ProductDetails() {
   const { LogOut } = useAuth();
 
   useEffect(() => {
-    const productId = window.localStorage.getItem("product-id");
+    const productId = productIdParams;
     if (!productId) {
       navigate(-1);
     } else {
@@ -147,7 +150,7 @@ function ProductDetails() {
           "username"
         )}&role=${window.localStorage.getItem(
           "role"
-        )}&productId=${window.localStorage.getItem("product-id")}`,
+        )}&productId=${productIdParams}`,
         { headers }
       );
       console.log("product", data);
@@ -178,9 +181,7 @@ function ProductDetails() {
   const checkIsAddedToCart = () => {
     setIsAddedToCart(
       cartList.some(
-        (item) =>
-          String(item.product_id) ===
-          String(window.localStorage.getItem("product-id"))
+        (item) => String(item.product_id) === String(productIdParams)
       )
     );
   };
@@ -188,9 +189,7 @@ function ProductDetails() {
   const checkIsAddedToWishList = () => {
     setIsAddedToWishList(
       wishList.some(
-        (item) =>
-          String(item.product_id) ===
-          String(window.localStorage.getItem("product-id"))
+        (item) => String(item.product_id) === String(productIdParams)
       )
     );
   };
@@ -247,7 +246,7 @@ function ProductDetails() {
         {
           product_review_rating: value,
           product_comment: productComment,
-          product_id: window.localStorage.getItem("product-id"),
+          product_id: productIdParams,
         },
         { headers }
       );
@@ -377,141 +376,139 @@ function ProductDetails() {
                 borderRadius: "16px",
               }}
             >
-              {!isAddedToWishList ? (
-                <Tooltip
-                  TransitionComponent={Zoom}
-                  title="Add To WishList"
-                  placement="bottom"
-                  arrow
-                >
-                  <IconButton
-                    aria-label="Add-To-WishList"
-                    onClick={() => {
-                      addToWishList(window.localStorage.getItem("product-id"));
-                      setIsAddedToWishList(true);
-                    }}
-                  >
-                    <FavoriteBorderIcon />
-                  </IconButton>
-                </Tooltip>
-              ) : (
-                <Tooltip
-                  TransitionComponent={Zoom}
-                  title="ADDED ON WishList"
-                  placement="bottom"
-                  arrow
-                >
-                  <IconButton
-                    aria-label="ADDED-ON-WishList"
-                    onClick={() => {
-                      deleteFromWishList(
-                        window.localStorage.getItem("product-id")
-                      );
-                      setIsAddedToWishList(false);
-                    }}
-                  >
-                    <FavoriteIcon sx={{ color: "red" }} />
-                  </IconButton>
-                </Tooltip>
-              )}
-              {product.product_available_quantity ? (
-                !isAddedToCart ? (
+              <Grid style={{ backgroundColor: "white", borderRadius: "10px" }}>
+                {!isAddedToWishList ? (
                   <Tooltip
                     TransitionComponent={Zoom}
-                    title="Add To Cart"
+                    title="Add To WishList"
                     placement="bottom"
                     arrow
                   >
                     <IconButton
-                      aria-label="Add-To-Cart"
+                      aria-label="Add-To-WishList"
                       onClick={() => {
-                        addToCart(window.localStorage.getItem("product-id"));
-                        setIsAddedToCart(true);
+                        addToWishList(productIdParams);
+                        setIsAddedToWishList(true);
                       }}
                     >
-                      <ShoppingCartOutlinedIcon color="primary" />
+                      <FavoriteBorderIcon />
                     </IconButton>
                   </Tooltip>
                 ) : (
                   <Tooltip
                     TransitionComponent={Zoom}
-                    title="Remove From The Cart"
+                    title="ADDED ON WishList"
                     placement="bottom"
                     arrow
                   >
                     <IconButton
-                      aria-label="Remove-From-The-Cart"
+                      aria-label="ADDED-ON-WishList"
                       onClick={() => {
-                        deleteFromCart(
-                          window.localStorage.getItem("product-id")
-                        );
-                        setIsAddedToCart(false);
+                        deleteFromWishList(productIdParams);
+                        setIsAddedToWishList(false);
                       }}
                     >
-                      <ShoppingCartRoundedIcon color="primary" />
+                      <FavoriteIcon sx={{ color: "red" }} />
                     </IconButton>
                   </Tooltip>
-                )
-              ) : (
-                <></>
-              )}
-              <Dialog
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-              >
-                <DialogTitle id="alert-dialog-title">
-                  Link <LinkIcon />
-                </DialogTitle>
-                <DialogContent>
-                  <DialogContentText
-                    id="alert-dialog-description"
-                    style={{ display: "flex" }}
-                  >
-                    <Button
-                      variant="outlined"
-                      sx={{ textTransform: "none" }}
-                      style={{
-                        borderRadius: "10px",
-                        width: "40em",
-                        display: "flex",
-                        alignItems: "flex-start",
-                        justifyContent: "flex-start",
-                      }}
-                    >
-                      {currentURL}
-                    </Button>
+                )}
+                {product.product_available_quantity ? (
+                  !isAddedToCart ? (
                     <Tooltip
                       TransitionComponent={Zoom}
-                      title={tooltipText}
-                      placement="top"
+                      title="Add To Cart"
+                      placement="bottom"
                       arrow
                     >
                       <IconButton
-                        sx={{ marginX: 2 }}
-                        aria-label="share"
+                        aria-label="Add-To-Cart"
                         onClick={() => {
-                          copyToClipboard();
-                          handleClickOpen();
+                          addToCart(productIdParams);
+                          setIsAddedToCart(true);
                         }}
                       >
-                        <ContentCopyIcon color="primary" />
+                        <ShoppingCartOutlinedIcon color="primary" />
                       </IconButton>
                     </Tooltip>
-                  </DialogContentText>
-                </DialogContent>
-              </Dialog>
-              <Tooltip
-                TransitionComponent={Zoom}
-                title="Share"
-                placement="bottom"
-                arrow
-              >
-                <IconButton aria-label="share" onClick={handleClickOpen}>
-                  <ShareIcon color="primary" />
-                </IconButton>
-              </Tooltip>
+                  ) : (
+                    <Tooltip
+                      TransitionComponent={Zoom}
+                      title="Remove From The Cart"
+                      placement="bottom"
+                      arrow
+                    >
+                      <IconButton
+                        aria-label="Remove-From-The-Cart"
+                        onClick={() => {
+                          deleteFromCart(productIdParams);
+                          setIsAddedToCart(false);
+                        }}
+                      >
+                        <ShoppingCartRoundedIcon color="primary" />
+                      </IconButton>
+                    </Tooltip>
+                  )
+                ) : (
+                  <></>
+                )}
+                <Dialog
+                  open={open}
+                  onClose={handleClose}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+                >
+                  <DialogTitle id="alert-dialog-title">
+                    Link <LinkIcon />
+                  </DialogTitle>
+                  <DialogContent>
+                    <DialogContentText
+                      id="alert-dialog-description"
+                      style={{ display: "flex" }}
+                    >
+                      <Button
+                        variant="outlined"
+                        sx={{ textTransform: "none" }}
+                        style={{
+                          borderRadius: "10px",
+                          width: "40em",
+                          display: "flex",
+                          alignItems: "flex-start",
+                          justifyContent: "flex-start",
+                        }}
+                      >
+                        {currentURL}
+                      </Button>
+                      <Tooltip
+                        TransitionComponent={Zoom}
+                        title={tooltipText}
+                        placement="top"
+                        arrow
+                      >
+                        <IconButton
+                          sx={{ marginX: 2 }}
+                          aria-label="share"
+                          onClick={() => {
+                            copyToClipboard();
+                            handleClickOpen();
+                          }}
+                        >
+                          <ContentCopyIcon color="primary" />
+                        </IconButton>
+                      </Tooltip>
+                    </DialogContentText>
+                  </DialogContent>
+                </Dialog>
+                <Tooltip
+                  TransitionComponent={Zoom}
+                  title="Share"
+                  placement="bottom"
+                  arrow
+                >
+                  <IconButton aria-label="share" onClick={handleClickOpen}>
+                    <ShareIcon color="primary" />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
@@ -695,7 +692,7 @@ function ProductDetails() {
                       }}
                       variant="contained"
                       onClick={() => {
-                        addToCart(window.localStorage.getItem("product-id"));
+                        addToCart(productIdParams);
                         setIsAddedToCart(true);
                       }}
                     >
@@ -713,9 +710,7 @@ function ProductDetails() {
                       }}
                       variant="contained"
                       onClick={() => {
-                        deleteFromCart(
-                          window.localStorage.getItem("product-id")
-                        );
+                        deleteFromCart(productIdParams);
                         setIsAddedToCart(false);
                       }}
                     >
@@ -748,7 +743,7 @@ function ProductDetails() {
                     }}
                     variant="outlined"
                     onClick={() => {
-                      addToWishList(window.localStorage.getItem("product-id"));
+                      addToWishList(productIdParams);
                       setIsAddedToWishList(true);
                     }}
                   >
@@ -765,9 +760,7 @@ function ProductDetails() {
                     }}
                     variant="outlined"
                     onClick={() => {
-                      deleteFromWishList(
-                        window.localStorage.getItem("product-id")
-                      );
+                      deleteFromWishList(productIdParams);
                       setIsAddedToWishList(false);
                     }}
                   >
@@ -862,7 +855,7 @@ function ProductDetails() {
                   {product.seller_country}, {product.seller_pincode}
                 </Typography>
                 <Typography variant="subtitle2">
-                  ID : {window.localStorage.getItem("product-id")}{" "}
+                  ID : {productIdParams}{" "}
                 </Typography>
                 <Typography variant="subtitle2">
                   Listed On : {formatDate(product.product_timestamp)}{" "}

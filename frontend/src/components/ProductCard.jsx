@@ -102,8 +102,7 @@ function ProductCard({ product }) {
     <Box
       onClick={() => {
         addWatchCount();
-        window.localStorage.setItem("product-id", product_id);
-        navigate("/product-details");
+        navigate(`/product-details?id=${product_id}`);
       }}
       sx={{
         cursor: "pointer",

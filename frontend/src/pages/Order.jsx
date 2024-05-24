@@ -166,11 +166,9 @@ function Order() {
                                     Order id :{" "}
                                     <span
                                       onClick={() => {
-                                        window.localStorage.setItem(
-                                          "order-id",
-                                          item.order_id
+                                        navigate(
+                                          `/order-details?id=${item.order_id}`
                                         );
-                                        navigate("/order-details");
                                       }}
                                       style={{
                                         textDecoration: "underline",

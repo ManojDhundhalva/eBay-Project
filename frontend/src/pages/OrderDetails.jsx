@@ -23,7 +23,7 @@ import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import Rating from "@mui/material/Rating";
 import { useProduct } from "../context/product";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import moment from "moment";
 
@@ -38,6 +38,9 @@ const steps = [
 function OrderDetails() {
   const navigate = useNavigate();
   const [orderDetails, setOrderDetails] = useState({});
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const orderIdParams = queryParams.get("id");
 
   const getOrder = async () => {
     const headers = {
@@ -50,7 +53,7 @@ function OrderDetails() {
           "username"
         )}&role=${window.localStorage.getItem(
           "role"
-        )}&orderId=${window.localStorage.getItem("order-id")}`,
+        )}&orderId=${orderIdParams}`,
         {
           headers,
         }
@@ -65,7 +68,7 @@ function OrderDetails() {
 
   useEffect(() => {
     if (window.localStorage.getItem("role") === "user") {
-      if (window.localStorage.getItem("order-id") === null) {
+      if (orderIdParams === null) {
         navigate(-1);
       } else {
         getOrder();
@@ -238,11 +241,9 @@ function OrderDetails() {
                                         cursor: "pointer",
                                       }}
                                       onClick={() => {
-                                        window.localStorage.setItem(
-                                          "product-id",
-                                          item.has_order.has_order_product_id
+                                        navigate(
+                                          `/product-details?id=${item.has_order.has_order_product_id}`
                                         );
-                                        navigate("/product-details");
                                       }}
                                     >
                                       {item.has_order.has_order_product_id}
