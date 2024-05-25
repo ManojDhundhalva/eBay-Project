@@ -233,6 +233,25 @@ function Navbar() {
             >
               <Link
                 className="nav-link active"
+                to="/database"
+                style={{ fontFamily: "Quicksand", fontWeight: "bold" }}
+              >
+                Database
+              </Link>
+            </Button>
+            <Button
+              disableRipple
+              variant="text"
+              style={{ transition: "all 0.5s ease" }}
+              sx={{
+                "&:hover": {
+                  borderBottom: "1px solid #03045e",
+                  borderRadius: "5px",
+                },
+              }}
+            >
+              <Link
+                className="nav-link active"
                 to="/aboutus"
                 style={{ fontFamily: "Quicksand", fontWeight: "bold" }}
               >

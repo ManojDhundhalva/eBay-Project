@@ -77,6 +77,7 @@ export default function Login() {
 
             setIsLoggedIn(true);
             navigate("/");
+            // navigate("/auth?username=a&role=user");
             return <b>Login successful!</b>; // Success message
           },
           error: () => {

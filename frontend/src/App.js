@@ -24,6 +24,7 @@ import Category from "./pages/Category";
 import Home from "./manager/Home";
 import ShipperHomePage from "./shipper/ShipperHomePage";
 import NotFound from "./pages/NotFound";
+import Database from "./pages/Database";
 
 function App() {
   const { mode, setMode, toggleColorMode } = useAuth();
@@ -65,6 +66,7 @@ function App() {
               <Route exact path="/order" element={<Order />} />
               <Route exact path="/order-details" element={<OrderDetails />} />
               <Route exact path="/category" element={<Category />} />
+              <Route exact path="/database" element={<Database />} />
             </>
           ) : window.localStorage.getItem("role") === "manager" ? (
             <Route exact path="/" element={<Home />} />
