@@ -122,6 +122,31 @@ GROUP BY
     p.product_avg_rating
 `;
 
+const getAllProducts = `
+SELECT 
+    p.product_id,
+    p.product_title, 
+    p.product_price, 
+    p.product_avg_rating,
+    p.product_watch_count,
+    ARRAY_AGG(pi.product_image) AS product_images 
+FROM 
+    product AS p 
+JOIN 
+    product_image AS pi 
+ON 
+    p.product_id = pi.product_id 
+WHERE 
+    p.product_seller_id <> $1 AND p.product_available_quantity <> 0
+GROUP BY
+    p.product_id,
+    p.product_title,
+    p.product_price,
+    p.product_avg_rating,
+    p.product_watch_count
+LIMIT 10;
+`;
+
 module.exports = {
   getAllCategories,
   getFilteredProducts,
@@ -130,4 +155,5 @@ module.exports = {
   getAllCategoryProduct,
   getAllSubCategoryProduct,
   getAllSubSubCategoryProduct,
+  getAllProducts,
 };

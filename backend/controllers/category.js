@@ -14,6 +14,11 @@ const getAllCategories = async (req, resp) => {
 const getFilteredProducts = async (req, resp) => {
   const { value } = req.body;
   try {
+    if (value === "All Products") {
+      const allProducts = await pool.query(queries.getAllProducts, [req.user.id]);
+      return resp.status(200).json(allProducts.rows);
+    }
+
     const categoryResults = await pool.query(queries.isInCategory, [value]);
     const subCategoryResults = await pool.query(queries.isInSubCategory, [
       value,

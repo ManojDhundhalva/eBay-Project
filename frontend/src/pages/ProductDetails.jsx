@@ -322,10 +322,17 @@ function ProductDetails() {
                 aria-label="breadcrumb"
                 separator={<NavigateNextIcon fontSize="small" />}
               >
-                <Link
-                  to="/"
+                <Typography
+                  onClick={() => {
+                    navigate(
+                      `/category?category=${encodeURIComponent(
+                        product.product_category_name
+                      )}`
+                    );
+                  }}
                   style={{ color: "black", cursor: "pointer" }}
                   sx={{
+                    textDecoration: "underline",
                     textDecorationColor: "grey",
                     "&:hover": {
                       textDecorationColor: "black",
@@ -333,11 +340,20 @@ function ProductDetails() {
                   }}
                 >
                   {product.product_category_name}
-                </Link>
-                <Link
-                  to="/"
+                </Typography>
+                <Typography
+                  onClick={() => {
+                    navigate(
+                      `/category?category=${encodeURIComponent(
+                        product.product_category_name
+                      )}&sub_category=${encodeURIComponent(
+                        product.product_sub_category_name
+                      )}`
+                    );
+                  }}
                   style={{ color: "black", cursor: "pointer" }}
                   sx={{
+                    textDecoration: "underline",
                     textDecorationColor: "grey",
                     "&:hover": {
                       textDecorationColor: "black",
@@ -345,11 +361,22 @@ function ProductDetails() {
                   }}
                 >
                   {product.product_sub_category_name}
-                </Link>
-                <Link
-                  to="/"
+                </Typography>
+                <Typography
+                  onClick={() => {
+                    navigate(
+                      `/category?category=${encodeURIComponent(
+                        product.product_category_name
+                      )}&sub_category=${encodeURIComponent(
+                        product.product_sub_category_name
+                      )}&sub_sub_category=${encodeURIComponent(
+                        product.product_sub_sub_category_name
+                      )}`
+                    );
+                  }}
                   style={{ color: "black", cursor: "pointer" }}
                   sx={{
+                    textDecoration: "underline",
                     textDecorationColor: "grey",
                     "&:hover": {
                       textDecorationColor: "black",
@@ -357,7 +384,7 @@ function ProductDetails() {
                   }}
                 >
                   {product.product_sub_sub_category_name}
-                </Link>
+                </Typography>
               </Breadcrumbs>
             </Grid>
             <Grid

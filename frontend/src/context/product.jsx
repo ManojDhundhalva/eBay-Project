@@ -34,7 +34,7 @@ export const ProductProvider = ({ children }) => {
           headers,
         }
       );
-      console.log(results.data);
+      console.log("categaory", results.data);
       setCategories(results.data);
     } catch (err) {
       // LogOut();
