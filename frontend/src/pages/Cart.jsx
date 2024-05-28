@@ -90,10 +90,13 @@ export default function Cart() {
   return (
     <>
       {!isOrderPlaced ? (
-        <section className="h-100 h-custom" style={{ backgroundColor: "#eee" }}>
+        <section
+          className="h-100 h-custom"
+          style={{ backgroundColor: "#eee", height: "100vh" }}
+        >
           <Grid
             container
-            className="py-5 h-100"
+            className="p-4 h-100"
             justifyContent="center"
             alignItems="center"
           >
@@ -140,7 +143,8 @@ export default function Cart() {
                               </Grid>
                               <Grid item md={3} lg={3} xl={3}>
                                 <Typography
-                                  variant="subtitle2"
+                                  variant="h6"
+                                  // fontWeight="bold"
                                   className="text-muted"
                                   style={{
                                     textDecoration: "underline",
@@ -154,7 +158,7 @@ export default function Cart() {
                                   }}
                                 >
                                   <Link
-                                    to="/product-details"
+                                    to={`/product-details?id=${item.product_id}`}
                                     style={{ color: "black" }}
                                   >
                                     {item.product_title}
@@ -170,7 +174,7 @@ export default function Cart() {
                                   variant="body2"
                                   className="text-black mb-0"
                                 >
-                                  Available Quantity :
+                                  Available Quantity :{" "}
                                   {item.product_available_quantity}
                                 </Typography>
                                 <Typography

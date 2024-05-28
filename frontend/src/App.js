@@ -25,6 +25,7 @@ import Home from "./manager/Home";
 import ShipperHomePage from "./shipper/ShipperHomePage";
 import NotFound from "./pages/NotFound";
 import Database from "./pages/Database";
+import ScrollToTop from "./scrollToTop";
 
 function App() {
   const { mode, setMode, toggleColorMode } = useAuth();
@@ -44,6 +45,7 @@ function App() {
         {(window.localStorage.getItem("role") === "user" ||
           window.localStorage.getItem("role") === null) &&
           !isHiddenPath && <Navbar />}
+        <ScrollToTop />
         <Routes>
           <Route exact path="/login" element={<Login />} />
           <Route exact path="/register" element={<Register />} />

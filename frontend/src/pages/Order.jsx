@@ -121,7 +121,7 @@ function Order() {
       <section className="h-100 h-custom" style={{ backgroundColor: "#eee" }}>
         <Grid
           container
-          className="py-5 h-100"
+          className="p-4 h-100"
           justifyContent="center"
           alignItems="center"
         >

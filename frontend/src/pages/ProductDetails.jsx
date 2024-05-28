@@ -60,6 +60,7 @@ import LinkIcon from "@mui/icons-material/Link";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import Icon from "@mui/material/Icon";
 import { useLocation } from "react-router-dom";
+import { validate as validateUUID } from "uuid";
 
 const FormGrid = styled(Grid)(() => ({
   display: "flex",
@@ -124,8 +125,8 @@ function ProductDetails() {
 
   useEffect(() => {
     const productId = productIdParams;
-    if (!productId) {
-      navigate(-1);
+    if (!validateUUID(productId)) {
+      navigate("/");
     } else {
       setIsInOrderedProductIds(orderedProductIds.includes(productId));
       getProductDetails();
