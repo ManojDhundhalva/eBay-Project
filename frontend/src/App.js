@@ -26,6 +26,7 @@ import ShipperHomePage from "./shipper/ShipperHomePage";
 import NotFound from "./pages/NotFound";
 import Database from "./pages/Database";
 import ScrollToTop from "./scrollToTop";
+import DashBoard from "./pages/DashBoard";
 
 function App() {
   const { mode, setMode, toggleColorMode } = useAuth();
@@ -34,7 +35,7 @@ function App() {
   const defaultTheme = createTheme({ palette: { mode } });
 
   const location = useLocation();
-  const hiddenPaths = ["/login", "/register", "/account"];
+  const hiddenPaths = ["/login", "/register", "/account", "/dashboard"];
   const isHiddenPath = hiddenPaths.includes(location.pathname);
 
   return (
@@ -56,6 +57,7 @@ function App() {
               <Route exact path="/" element={<LandingPage />} />
               <Route exact path="/aboutus" element={<AboutUS />} />
               <Route exact path="/profile" element={<Profile />} />
+              <Route exact path="/dashboard" element={<DashBoard />} />
               <Route exact path="/account" element={<Account />} />
               <Route exact path="/list-product" element={<ListProduct />} />
               <Route
