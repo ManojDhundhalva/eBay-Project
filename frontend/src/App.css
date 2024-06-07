@@ -1,3 +1,7 @@
+#style-1 {
+  overflow-y: scroll;
+}
+
 #style-1::-webkit-scrollbar-track {
   border-radius: 10px;
   background-color: transparent;

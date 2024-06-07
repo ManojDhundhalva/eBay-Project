@@ -1,232 +1,110 @@
 import React from "react";
-import { Grid, Paper, Typography, Box, IconButton } from "@mui/material";
-import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
-import ArrowBackIosNewRoundedIcon from "@mui/icons-material/ArrowBackIosNewRounded";
-import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
-import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+import {
+  Grid,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+} from "@mui/material";
+import PersonIcon from "@mui/icons-material/Person";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
+import { useNavigate } from "react-router-dom";
+import HomeIcon from "@mui/icons-material/Home";
 
-function SideBar({ isOpenSidebar, handleOpen, handleClose }) {
+const Sidebar = ({ selectedComponent, setSelectedComponent }) => {
+  const navigate = useNavigate();
   return (
-    <>
-      <Grid container margin={0} padding={1} sx={{ height: "100vh" }}>
-        <Paper
-          id="style-1"
+    <Grid
+      id="style-1"
+      padding={2}
+      margin={0}
+      sx={{
+        backgroundColor: "lavender",
+        borderRadius: "16px",
+        height: "100%",
+      }}
+    >
+      <Typography variant="h6" noWrap component="div" p={2}>
+        eBay
+      </Typography>
+      <hr />
+      <List id="style-1" sx={{ width: "100%" }}>
+        <ListItem
+          onClick={() => {
+            navigate("/");
+          }}
           sx={{
+            marginY: 1,
             width: "100%",
             height: "100%",
-            overflowY: "scroll",
-            borderRadius: "16px",
-            margin: 0,
-            padding: 0,
+            borderRadius: "10px",
+            cursor: "pointer",
+            "&:hover": {
+              backgroundColor: "ghostwhite",
+            },
           }}
         >
-          {!isOpenSidebar ? (
-            <>
-              <Grid container margin={0} padding={2}>
-                <Paper
-                  sx={{
-                    display: "flex",
-                    width: "100%",
-                    backgroundColor: "transparent",
-                    borderRadius: "10px",
-                    margin: 0,
-                    padding: 0,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      paddingX: 2,
-                      paddingY: 1,
-                    }}
-                  >
-                    <IconButton
-                      aria-label="back"
-                      color="primary"
-                      onClick={handleOpen}
-                    >
-                      <ArrowForwardIosRoundedIcon />
-                    </IconButton>
-                  </Box>
-                </Paper>
-              </Grid>
-              <Grid container margin={0} padding={2}>
-                <Grid container margin={0} padding={0} paddingY={1}>
-                  <Paper
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      width: "100%",
-                      backgroundColor: "transparent",
-                      borderRadius: "10px",
-                      margin: 0,
-                      paddingX: 2,
-                      paddingY: 1,
-                    }}
-                    onClick={handleOpen}
-                  >
-                    <AccountCircleOutlinedIcon fontSize="large" />
-                  </Paper>
-                </Grid>
-                <Grid container margin={0} padding={0} paddingY={1}>
-                  <Paper
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      width: "100%",
-                      backgroundColor: "transparent",
-                      borderRadius: "10px",
-                      margin: 0,
-                      paddingX: 2,
-                      paddingY: 1,
-                    }}
-                    onClick={handleOpen}
-                  >
-                    <AccountCircleOutlinedIcon fontSize="large" />
-                  </Paper>
-                </Grid>
-                <Grid container margin={0} padding={0} paddingY={1}>
-                  <Paper
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      width: "100%",
-                      backgroundColor: "transparent",
-                      borderRadius: "10px",
-                      margin: 0,
-                      paddingX: 2,
-                      paddingY: 1,
-                    }}
-                    onClick={handleOpen}
-                  >
-                    <AccountCircleOutlinedIcon fontSize="large" />
-                  </Paper>
-                </Grid>
-              </Grid>
-            </>
-          ) : (
-            <>
-              <Grid container margin={0} padding={2}>
-                <Paper
-                  sx={{
-                    width: "100%",
-                    backgroundColor: "transparent",
-                    borderRadius: "10px",
-                    margin: 0,
-                    padding: 0,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      paddingX: 2,
-                      paddingY: 1,
-                    }}
-                  >
-                    <Box sx={{ display: "flex" }}>
-                      <Typography variant="h5" fontWeight="bold">
-                        <ShoppingBagOutlinedIcon fontSize="large" />
-                      </Typography>
-                      <Typography variant="h5" fontWeight="bold">
-                        EBay
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <IconButton
-                        aria-label="back"
-                        color="primary"
-                        onClick={handleClose}
-                      >
-                        <ArrowBackIosNewRoundedIcon />
-                      </IconButton>
-                    </Box>
-                  </Box>
-                </Paper>
-              </Grid>
-              <Grid container margin={0} padding={2}>
-                <Grid container margin={0} padding={0} paddingY={1}>
-                  <Paper
-                    sx={{
-                      width: "100%",
-                      backgroundColor: "transparent",
-                      borderRadius: "10px",
-                      margin: 0,
-                      padding: 0,
-                      display: "flex",
-                      alignItems: "center",
-                      paddingX: 2,
-                      paddingY: 1,
-                    }}
-                  >
-                    <Typography variant="h6" fontWeight="bold">
-                      <AccountBalanceWalletOutlinedIcon fontSize="large" />
-                    </Typography>
-                    <Typography variant="h6" fontWeight="bold">
-                      Account
-                    </Typography>
-                  </Paper>
-                </Grid>
-                <Grid container margin={0} padding={0} paddingY={1}>
-                  <Paper
-                    sx={{
-                      width: "100%",
-                      backgroundColor: "transparent",
-                      borderRadius: "10px",
-                      margin: 0,
-                      padding: 0,
-                      display: "flex",
-                      alignItems: "center",
-                      paddingX: 2,
-                      paddingY: 1,
-                    }}
-                  >
-                    <Typography variant="h6" fontWeight="bold">
-                      <ShoppingBagOutlinedIcon fontSize="large" />
-                    </Typography>
-                    <Typography variant="h6" fontWeight="bold">
-                      EBay
-                    </Typography>
-                  </Paper>
-                </Grid>
-                <Grid container margin={0} padding={0} paddingY={1}>
-                  <Paper
-                    sx={{
-                      width: "100%",
-                      backgroundColor: "transparent",
-                      borderRadius: "10px",
-                      margin: 0,
-                      padding: 0,
-                      display: "flex",
-                      alignItems: "center",
-                      paddingX: 2,
-                      paddingY: 1,
-                    }}
-                  >
-                    <Typography variant="h6" fontWeight="bold">
-                      <ShoppingBagOutlinedIcon fontSize="large" />
-                    </Typography>
-                    <Typography variant="h6" fontWeight="bold">
-                      EBay
-                    </Typography>
-                  </Paper>
-                </Grid>
-              </Grid>
-            </>
-          )}
-        </Paper>
-      </Grid>
-    </>
+          <ListItemIcon>
+            <HomeIcon />
+          </ListItemIcon>
+          <ListItemText primary="Home" />
+        </ListItem>
+        <ListItem
+          onClick={() => {
+            setSelectedComponent("ProfileDetails");
+          }}
+          sx={{
+            marginY: 1,
+            width: "100%",
+            height: "100%",
+            borderRadius: "10px",
+            cursor: "pointer",
+            backgroundColor:
+              selectedComponent === "ProfileDetails"
+                ? "lightblue"
+                : "transparent",
+            "&:hover": {
+              backgroundColor:
+                selectedComponent === "ProfileDetails"
+                  ? "lightblue"
+                  : "ghostwhite",
+            },
+          }}
+        >
+          <ListItemIcon>
+            <PersonIcon />
+          </ListItemIcon>
+          <ListItemText primary="Profile" />
+        </ListItem>
+        <ListItem
+          onClick={() => {
+            setSelectedComponent("BankDetails");
+          }}
+          sx={{
+            marginY: 1,
+            width: "100%",
+            height: "100%",
+            borderRadius: "10px",
+            cursor: "pointer",
+            backgroundColor:
+              selectedComponent === "BankDetails" ? "lightblue" : "transparent",
+            "&:hover": {
+              backgroundColor:
+                selectedComponent === "BankDetails"
+                  ? "lightblue"
+                  : "ghostwhite",
+            },
+          }}
+        >
+          <ListItemIcon>
+            <AccountBalanceWalletOutlinedIcon />
+          </ListItemIcon>
+          <ListItemText primary="Account" />
+        </ListItem>
+      </List>
+    </Grid>
   );
-}
+};
 
-export default SideBar;
+export default Sidebar;
