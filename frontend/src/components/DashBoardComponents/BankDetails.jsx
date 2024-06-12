@@ -1,9 +1,736 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import {
+  Grid,
+  Typography,
+  Box,
+  Avatar,
+  Button,
+  TextField,
+  IconButton,
+} from "@mui/material";
+import PhoneIcon from "@mui/icons-material/Phone";
+import HomeWorkRoundedIcon from "@mui/icons-material/HomeWorkRounded";
+import PlaceIcon from "@mui/icons-material/Place";
+import { useAuth } from "../../context/auth";
+import SearchIcon from "@mui/icons-material/Search";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import MyLocationRoundedIcon from "@mui/icons-material/MyLocationRounded";
+import AccountBalanceRoundedIcon from "@mui/icons-material/AccountBalanceRounded";
+import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
+import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import Tooltip from "@mui/material/Tooltip";
+import Zoom from "@mui/material/Zoom";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import FormLabel from "@mui/material/FormLabel";
+import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 
 function BankDetails() {
+  const [accountNumber, setAccountNumber] = useState("");
+  const [accountHolderFirstName, setAccountHolderFirstName] = useState("");
+  const [accountHolderLastName, setAccountHolderLastName] = useState("");
+  const [accountIFSCcode, setAccountIFSCcode] = useState("");
+  const [accountBranch, setAccountBranch] = useState("");
+  const [accountBranchAddress, setAccountBranchAddress] = useState("");
+  const [accountBalance, setAccountBalance] = useState("00.00");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [country, setCountry] = useState("");
+  const [pincode, setPincode] = useState("");
+
+  const [location, setLocation] = useState("");
+  const [latitude, setLatitude] = useState(0.0);
+  const [longitude, setLongitude] = useState(0.0);
+
+  const [editOn, setEditOn] = useState(false);
+  const [isAccount, setIsAccount] = useState(false);
+  const { LogOut } = useAuth();
+
+  const handleAccountNumber = (e) => {
+    const input = e.target.value;
+    if (/^\d*$/.test(input)) {
+      setAccountNumber(input);
+    }
+  };
+
+  const handlePincode = (e) => {
+    const input = e.target.value;
+    if (/^\d*$/.test(input)) {
+      if (input.length <= 6) {
+        setPincode(input);
+      }
+    }
+  };
+
+  const [apiKey, setApiKey] = useState("");
+  useEffect(() => {
+    const fetchApiKey = async () => {
+      try {
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+        };
+        const response = await axios.get(
+          `http://localhost:8000/api/v1/getTomTomApiKey?username=${window.localStorage.getItem(
+            "username"
+          )}&role=${window.localStorage.getItem("role")}`,
+          { headers }
+        );
+        setApiKey(response.data.apiKey);
+      } catch (error) {
+        console.error("Error fetching API key:", error);
+      }
+    };
+    fetchApiKey();
+  }, []);
+
+  useEffect(() => {
+    if (apiKey) {
+      initializeTomTomSearchBox(apiKey);
+    }
+  }, [apiKey]);
+
+  const initializeTomTomSearchBox = (apiKey) => {
+    var options = {
+      searchOptions: {
+        key: apiKey,
+        language: "en-GB",
+        limit: 5,
+        placeholder: "Search for Nearby Location",
+      },
+      autocompleteOptions: {
+        key: apiKey,
+        language: "en-GB",
+      },
+    };
+
+    options.container = "#searchBoxContainer";
+
+    var ttSearchBox = new window.tt.plugins.SearchBox(
+      window.tt.services,
+      options
+    );
+
+    ttSearchBox.on("tomtom.searchbox.resultselected", function (data) {
+      if (data.data?.text !== undefined) {
+        // console.log(data.data.text);
+        setLocation(data.data.text);
+      }
+      if (data.data.result.address?.country !== undefined) {
+        // console.log(data.data.result.address.country);
+        setCountry(data.data.result.address.country);
+      }
+      if (data.data.result.address?.countrySubdivision !== undefined) {
+        // console.log(data.data.result.address.countrySubdivision);
+        setState(data.data.result.address.countrySubdivision);
+      }
+      if (data.data.result.address?.countrySecondarySubdivision !== undefined) {
+        // console.log(data.data.result.address.countrySecondarySubdivision);
+        setCity(data.data.result.address.countrySecondarySubdivision);
+      }
+      if (data.data.result.address?.postalCode !== undefined) {
+        // console.log(data.data.result.address.postalCode);
+        setPincode(data.data.result.address.postalCode);
+      } else {
+        setPincode("");
+      }
+      if (
+        data.data.result.position?.lat !== undefined &&
+        data.data.result.position?.lng !== undefined
+      ) {
+        setLatitude(data.data.result.position.lat);
+        setLongitude(data.data.result.position.lng);
+      } else {
+        console.log("Position data is not available:", data);
+      }
+    });
+
+    var searchBoxHTML = ttSearchBox.getSearchBoxHTML();
+    document.getElementById("searchBoxContainer").appendChild(searchBoxHTML);
+  };
+
+  // Event handler for TextField change
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    // Update state based on the name of the input field
+    switch (name) {
+      case "account-number":
+        setAccountNumber(value);
+        break;
+      case "first-name":
+        setAccountHolderFirstName(value);
+        break;
+      case "last-name":
+        setAccountHolderLastName(value);
+        break;
+      case "IFSC-code":
+        setAccountIFSCcode(value);
+        break;
+      case "branch-name":
+        setAccountBranch(value);
+        break;
+      case "address":
+        setAccountBranchAddress(value);
+        break;
+      case "zip":
+        setPincode(value);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleEdit = () => {
+    setEditOn(!editOn);
+  };
+
+  const updateAccount = async () => {
+    if (
+      accountNumber === "" ||
+      accountHolderFirstName === "" ||
+      accountHolderLastName === "" ||
+      accountIFSCcode === "" ||
+      accountBranch === "" ||
+      accountBranchAddress === "" ||
+      latitude === "" ||
+      longitude === "" ||
+      city === "" ||
+      state === "" ||
+      country === "" ||
+      pincode === "" ||
+      accountNumber.length >= 255 ||
+      accountHolderFirstName.length >= 255 ||
+      accountHolderLastName.length >= 255 ||
+      accountIFSCcode.length >= 16 ||
+      accountBranch.length >= 255 ||
+      accountBranchAddress.length >= 65536
+    ) {
+      return;
+    }
+
+    const headers = {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${window.localStorage.getItem("token")}`,
+    };
+
+    try {
+      const response = await axios.post(
+        `http://localhost:8000/api/v1/bank-details?username=${window.localStorage.getItem(
+          "username"
+        )}&role=${window.localStorage.getItem("role")}`,
+        {
+          account_number: accountNumber,
+          account_holder_first_name: accountHolderFirstName,
+          account_holder_last_name: accountHolderLastName,
+          account_IFSC_code: accountIFSCcode,
+          account_branch: accountBranch,
+          account_branch_address: accountBranchAddress,
+          seller_latitude: latitude,
+          seller_longitude: longitude,
+          seller_location: location,
+          seller_city: city,
+          seller_state: state,
+          seller_country: country,
+          seller_pincode: pincode,
+        },
+        { headers }
+      );
+
+      if (response.status === 201) {
+        // Account already exists
+        toast.error(<b>Account already exists</b>);
+        setEditOn(true);
+      } else {
+        toast.success(<b>Account updated successfully!</b>);
+      }
+    } catch (err) {
+      // LogOut();
+      console.log("Error updating profile:", err);
+      toast.error(<b>Failed to update account. Please try again later.</b>);
+    }
+  };
+
+  const getAccount = async () => {
+    const headers = {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${window.localStorage.getItem("token")}`,
+    };
+
+    try {
+      const results = await axios.get(
+        `http://localhost:8000/api/v1/bank-details?username=${window.localStorage.getItem(
+          "username"
+        )}&role=${window.localStorage.getItem("role")}`,
+        {
+          headers,
+        }
+      );
+
+      if (results.status === 200) {
+        const data = results.data;
+
+        setAccountBalance(data.account_balance);
+        setAccountNumber(data.account_number);
+        setAccountHolderFirstName(data.account_holder_first_name);
+        setAccountHolderLastName(data.account_holder_last_name);
+        setAccountIFSCcode(data.account_ifsc_code);
+        setAccountBranch(data.account_branch);
+        setAccountBranchAddress(data.account_branch_address);
+        setLatitude(data.seller_coordinates.x);
+        setLongitude(data.seller_coordinates.y);
+        setLocation(data.seller_location);
+        setPincode(data.seller_pincode);
+        setCity(data.seller_city);
+        setState(data.seller_state);
+        setCountry(data.seller_country);
+      } else {
+        console.error("Failed to fetch account details");
+      }
+    } catch (err) {
+      // LogOut();
+      console.error("Error fetching profile:", err);
+    }
+  };
+
+  useEffect(() => {
+    getAccount();
+  }, []);
+
   return (
     <>
-      <div>BankDetails</div>
+      <Grid container padding={2} margin={0}>
+        <Grid xs={12} item padding={2} margin={0}>
+          <Box sx={{ backgroundColor: "white", borderRadius: "20px", p: 2 }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Typography variant="h6" noWrap component="div">
+                Seller Info
+              </Typography>
+              {editOn ? (
+                <Grid>
+                  <Tooltip title="Cancel" TransitionComponent={Zoom} arrow>
+                    <IconButton
+                      aria-label="save"
+                      color="#ADD8E6"
+                      onClick={() => {
+                        handleEdit();
+                        // updateAccount();
+                      }}
+                      sx={{ backgroundColor: "#fae0e4", color: "red" }}
+                    >
+                      <CloseRoundedIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Save" TransitionComponent={Zoom} arrow>
+                    <IconButton
+                      aria-label="save"
+                      color="#ADD8E6"
+                      onClick={() => {
+                        handleEdit();
+                        // updateAccount();
+                      }}
+                      sx={{ backgroundColor: "lavender", color: "#023E8A" }}
+                    >
+                      <SaveRoundedIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+              ) : (
+                <Tooltip title="Edit" TransitionComponent={Zoom} arrow>
+                  <IconButton
+                    aria-label="edit"
+                    color="#ADD8E6"
+                    onClick={handleEdit}
+                    sx={{ backgroundColor: "lavender", color: "#023E8A" }}
+                  >
+                    <EditRoundedIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
+            </Box>
+            <hr />
+            <Grid
+              container
+              paddingX={3}
+              paddingY={1}
+              margin={0}
+              alignItems="center"
+            >
+              <Grid>
+                <Avatar
+                  sx={{ backgroundColor: "lightblue", width: 60, height: 60 }}
+                >
+                  <PlaceIcon fontSize="large" sx={{ color: "#023e8a" }} />
+                </Avatar>
+              </Grid>
+              <Grid padding={3}>
+                <Typography variant="h6" noWrap component="div">
+                  {location === "" ? "N/A" : location}
+                </Typography>
+              </Grid>
+              <Grid container margin={0} padding={2}>
+                <Grid item margin={0} padding={2} xs={12}>
+                  <FormLabel
+                    htmlFor="location"
+                    required
+                    sx={{ display: editOn ? "block" : "none" }}
+                  >
+                    <PlaceOutlinedIcon sx={{ color: "#0077b6" }} /> Location
+                  </FormLabel>
+                  <Grid
+                    sx={{ display: editOn ? "block" : "none" }}
+                    id="searchBoxContainer"
+                  ></Grid>
+                  <TextField
+                    value={location}
+                    id="search"
+                    label="location"
+                    variant="outlined"
+                    fullWidth
+                    size="small"
+                    InputProps={{
+                      readOnly: true,
+                      startAdornment: <SearchIcon style={{ color: "blue" }} />,
+                    }}
+                    sx={{
+                      display: !editOn ? "block" : "none",
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 25,
+                        fontWeight: "bold",
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid container item margin={0} padding={2} xs={6}>
+                  <TextField
+                    value={latitude}
+                    id="latitude"
+                    label="latitude"
+                    variant="outlined"
+                    fullWidth
+                    size="small"
+                    InputProps={{
+                      readOnly: true,
+                      startAdornment: (
+                        <MyLocationRoundedIcon sx={{ color: "#0077b6" }} />
+                      ),
+                    }}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 25,
+                        fontWeight: "bold",
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid container item margin={0} padding={2} xs={6}>
+                  <TextField
+                    value={longitude}
+                    id="longitude"
+                    label="longitude"
+                    variant="outlined"
+                    fullWidth
+                    size="small"
+                    InputProps={{
+                      readOnly: true,
+                      startAdornment: (
+                        <MyLocationRoundedIcon style={{ color: "#0077b6" }} />
+                      ),
+                    }}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 25,
+                        fontWeight: "bold",
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid item margin={0} padding={2} xs={6}>
+                  <TextField
+                    value={pincode}
+                    onChange={handlePincode}
+                    id="pincode"
+                    label="pincode"
+                    placeholder="e.g. 345622"
+                    variant="outlined"
+                    fullWidth
+                    size="small"
+                    InputProps={{
+                      readOnly: !editOn,
+                    }}
+                    error={pincode === ""}
+                    helperText={
+                      pincode === "" ? "This field cannot be empty" : ""
+                    }
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 25,
+                        fontWeight: "bold",
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid item margin={0} padding={2} xs={6}>
+                  <TextField
+                    value={city}
+                    id="city"
+                    label="city"
+                    variant="outlined"
+                    fullWidth
+                    size="small"
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 25,
+                        fontWeight: "bold",
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid item margin={0} padding={2} xs={6}>
+                  <TextField
+                    value={state}
+                    id="state"
+                    label="state"
+                    variant="outlined"
+                    fullWidth
+                    size="small"
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 25,
+                        fontWeight: "bold",
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid item margin={0} padding={2} xs={6}>
+                  <TextField
+                    value={country}
+                    id="country"
+                    label="country"
+                    variant="outlined"
+                    fullWidth
+                    size="small"
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 25,
+                        fontWeight: "bold",
+                      },
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+          </Box>
+        </Grid>
+        <Grid xs={12} item padding={2} margin={0}>
+          <Box sx={{ backgroundColor: "white", borderRadius: "20px", p: 2 }}>
+            <Typography variant="h6" noWrap component="div">
+              Bank Info
+            </Typography>
+            <hr />
+            <Grid
+              container
+              paddingX={3}
+              paddingY={1}
+              margin={0}
+              alignItems="center"
+            >
+              <Grid>
+                <Avatar
+                  sx={{ backgroundColor: "lightblue", width: 60, height: 60 }}
+                >
+                  <AccountBalanceRoundedIcon
+                    fontSize="large"
+                    sx={{ color: "#023e8a" }}
+                  />
+                </Avatar>
+              </Grid>
+              <Grid padding={3}>
+                <Typography variant="h6" noWrap component="div">
+                  {accountHolderFirstName} {accountHolderLastName}
+                </Typography>
+              </Grid>
+              <Grid container margin={0} padding={2}>
+                <Grid item margin={0} padding={2} xs={6}>
+                  <TextField
+                    value={accountHolderFirstName}
+                    onChange={(e) => {
+                      setAccountHolderFirstName(e.target.value);
+                    }}
+                    id="first-name"
+                    label="First Name"
+                    placeholder="e.g. Manoj"
+                    variant="outlined"
+                    fullWidth
+                    size="small"
+                    InputProps={{
+                      readOnly: !editOn,
+                    }}
+                    error={accountHolderFirstName === ""}
+                    helperText={
+                      accountHolderFirstName === ""
+                        ? "This field cannot be empty"
+                        : ""
+                    }
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 25,
+                        fontWeight: "bold",
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid container item margin={0} padding={2} xs={6}>
+                  <TextField
+                    value={accountHolderLastName}
+                    onChange={(e) => {
+                      setAccountHolderLastName(e.target.value);
+                    }}
+                    id="last-name"
+                    label="Last Name"
+                    placeholder="e.g. Dhundhalva"
+                    variant="outlined"
+                    fullWidth
+                    size="small"
+                    InputProps={{
+                      readOnly: !editOn,
+                    }}
+                    error={accountHolderLastName === ""}
+                    helperText={
+                      accountHolderLastName === ""
+                        ? "This field cannot be empty"
+                        : ""
+                    }
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 25,
+                        fontWeight: "bold",
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid container item margin={0} padding={2} xs={6}>
+                  <TextField
+                    value={accountBranch}
+                    onChange={(e) => {
+                      setAccountBranch(e.target.value);
+                    }}
+                    id="account-branch"
+                    label="Account Branch"
+                    placeholder="e.g. Bharuch"
+                    variant="outlined"
+                    fullWidth
+                    size="small"
+                    InputProps={{
+                      readOnly: !editOn,
+                    }}
+                    error={accountBranch === ""}
+                    helperText={
+                      accountBranch === "" ? "This field cannot be empty" : ""
+                    }
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 25,
+                        fontWeight: "bold",
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid item margin={0} padding={2} xs={6}>
+                  <TextField
+                    value={accountIFSCcode}
+                    onChange={(e) => {
+                      setAccountIFSCcode(e.target.value);
+                    }}
+                    id="IFSC-code"
+                    label="IFSC code"
+                    variant="outlined"
+                    placeholder="ISCRH343"
+                    fullWidth
+                    size="small"
+                    InputProps={{
+                      readOnly: !editOn,
+                    }}
+                    error={accountIFSCcode === ""}
+                    helperText={
+                      accountIFSCcode === "" ? "This field cannot be empty" : ""
+                    }
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 25,
+                        fontWeight: "bold",
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid item margin={0} padding={2} xs={6}>
+                  <TextField
+                    value={accountNumber}
+                    onChange={handleAccountNumber}
+                    id="account-number"
+                    label="Account Number"
+                    placeholder="e.g. 1234567890"
+                    variant="outlined"
+                    fullWidth
+                    size="small"
+                    InputProps={{
+                      readOnly: !editOn,
+                    }}
+                    error={accountNumber === ""}
+                    helperText={
+                      accountNumber === "" ? "This field cannot be empty" : ""
+                    }
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 25,
+                        fontWeight: "bold",
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid item margin={0} padding={2} xs={12}>
+                  <TextField
+                    value={accountBranchAddress}
+                    onChange={(e) => {
+                      setAccountBranchAddress(e.target.value);
+                    }}
+                    id="account-branch-address"
+                    label="Account Branch Address"
+                    placeholder="e.g. Bharuch, Gujarat"
+                    variant="outlined"
+                    fullWidth
+                    size="small"
+                    InputProps={{
+                      readOnly: !editOn,
+                    }}
+                    error={accountBranchAddress === ""}
+                    helperText={
+                      accountBranchAddress === ""
+                        ? "This field cannot be empty"
+                        : ""
+                    }
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 25,
+                        fontWeight: "bold",
+                      },
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+          </Box>
+        </Grid>
+      </Grid>
     </>
   );
 }

@@ -8,14 +8,17 @@ import {
   TextField,
 } from "@mui/material";
 import PhoneIcon from "@mui/icons-material/Phone";
+import HomeWorkRoundedIcon from "@mui/icons-material/HomeWorkRounded";
 
 function ProfileDetails() {
   const ImgUrl =
     "https://img.freepik.com/free-vector/isolated-young-handsome-man-different-poses-white-background-illustration_632498-859.jpg?size=626&ext=jpg&ga=GA1.1.61947746.1703400710&semt=ais_user";
 
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [location, setLocation] = useState("N/A");
+
   const handlePhoneNumber = (e) => {
-    const input = e.target.value;
+    const input = e.target.value.replace("+91 ", "");
     if (/^\d*$/.test(input) && input.length <= 10) {
       setPhoneNumber(input);
     }
@@ -25,7 +28,7 @@ function ProfileDetails() {
     <>
       <Grid container padding={2} margin={0}>
         <Grid xs={12} item padding={2} margin={0}>
-          <Box sx={{ backgroundColor: "white", borderRadius: "16px", p: 2 }}>
+          <Box sx={{ backgroundColor: "white", borderRadius: "20px", p: 2 }}>
             <Grid container padding={0} margin={0}>
               <Grid xs={3} padding={3} margin={0}>
                 <Avatar
@@ -124,12 +127,18 @@ function ProfileDetails() {
           </Box>
         </Grid>
         <Grid xs={6} item padding={2} margin={0}>
-          <Box sx={{ backgroundColor: "white", borderRadius: "16px", p: 2 }}>
+          <Box sx={{ backgroundColor: "white", borderRadius: "20px", p: 2 }}>
             <Typography variant="h6" noWrap component="div">
               Contact Info
             </Typography>
             <hr />
-            <Grid container padding={3} margin={0} alignItems="center">
+            <Grid
+              container
+              paddingX={3}
+              paddingY={1}
+              margin={0}
+              alignItems="center"
+            >
               <Grid>
                 <Avatar
                   sx={{ backgroundColor: "lightblue", width: 60, height: 60 }}
@@ -139,15 +148,15 @@ function ProfileDetails() {
               </Grid>
               <Grid padding={3}>
                 <Typography variant="h6" noWrap component="div">
-                  +91 1234567890
+                  +91 123456789{phoneNumber}
                 </Typography>
               </Grid>
             </Grid>
             <Grid padding={2} margin={0}>
               <TextField
-                value={"+91 | " + phoneNumber}
+                value={`+91 ${phoneNumber}`}
                 onChange={handlePhoneNumber}
-                id="phone-nunber"
+                id="phone-number"
                 label="Phone Number"
                 variant="outlined"
                 fullWidth
@@ -162,12 +171,75 @@ function ProfileDetails() {
             </Grid>
           </Box>
         </Grid>
-        <Grid xs={6} item padding={2} margin={0}>
-          <Box sx={{ backgroundColor: "white", borderRadius: "16px" }}>
-            <Typography variant="h6" noWrap component="div" p={2}>
+        <Grid
+          xs={6}
+          item
+          padding={2}
+          margin={0}
+          sx={{ width: "100%", height: "100%" }}
+        >
+          <Box
+            sx={{
+              backgroundColor: "white",
+              borderRadius: "20px",
+              p: 2,
+              width: "100%",
+              height: "100%",
+            }}
+          >
+            <Typography variant="h6" noWrap component="div">
               Address
-              <hr />
             </Typography>
+            <hr />
+            <Grid
+              container
+              paddingX={3}
+              paddingY={1}
+              margin={0}
+              alignItems="center"
+            >
+              <Grid>
+                <Avatar
+                  sx={{ backgroundColor: "lightblue", width: 60, height: 60 }}
+                >
+                  <HomeWorkRoundedIcon
+                    fontSize="large"
+                    sx={{ color: "#023e8a" }}
+                  />
+                </Avatar>
+              </Grid>
+              <Grid padding={3}>
+                <Typography
+                  variant="h6"
+                  noWrap
+                  component="div"
+                  sx={{ width: "40vh", wordBreak: "break-all" }}
+                >
+                  {location}
+                </Typography>
+              </Grid>
+            </Grid>
+            <Grid
+              padding={2}
+              margin={0}
+              sx={{ visibility: "hidden", width: "100%", height: "100%" }}
+            >
+              <TextField
+                value={`+91 ${phoneNumber}`}
+                onChange={handlePhoneNumber}
+                id="phone-number"
+                label="Phone Number"
+                variant="outlined"
+                fullWidth
+                size="small"
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 25,
+                    fontWeight: "bold",
+                  },
+                }}
+              />
+            </Grid>
           </Box>
         </Grid>
       </Grid>
