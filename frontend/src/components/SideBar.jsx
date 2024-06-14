@@ -11,6 +11,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import { useNavigate } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
+import QueryStatsIcon from "@mui/icons-material/QueryStats";
 
 const Sidebar = ({ selectedComponent, setSelectedComponent }) => {
   const navigate = useNavigate();
@@ -101,6 +102,29 @@ const Sidebar = ({ selectedComponent, setSelectedComponent }) => {
             <AccountBalanceWalletOutlinedIcon />
           </ListItemIcon>
           <ListItemText primary="Account" />
+        </ListItem>
+        <ListItem
+          onClick={() => {
+            setSelectedComponent("Stats");
+          }}
+          sx={{
+            marginY: 1,
+            width: "100%",
+            height: "100%",
+            borderRadius: "10px",
+            cursor: "pointer",
+            backgroundColor:
+              selectedComponent === "Stats" ? "lightblue" : "transparent",
+            "&:hover": {
+              backgroundColor:
+                selectedComponent === "Stats" ? "lightblue" : "ghostwhite",
+            },
+          }}
+        >
+          <ListItemIcon>
+            <QueryStatsIcon />
+          </ListItemIcon>
+          <ListItemText primary="Stats" />
         </ListItem>
       </List>
     </Grid>

@@ -43,9 +43,21 @@ function BankDetails() {
   const [latitude, setLatitude] = useState(0.0);
   const [longitude, setLongitude] = useState(0.0);
 
+  const [justVerify, setJustVerify] = useState(false);
   const [editOn, setEditOn] = useState(false);
-  const [isAccount, setIsAccount] = useState(false);
-  const { LogOut } = useAuth();
+  const { validateUser, LogOut } = useAuth();
+
+  const [originalPincode, setOriginalPincode] = useState("");
+  const [originalLocation, setOriginalLocation] = useState("");
+  const [originalAccountNumber, setOriginalAccountNumber] = useState("");
+  const [originalAccountHolderFirstName, setOriginalAccountHolderFirstName] =
+    useState("");
+  const [originalAccountHolderLastName, setOriginalAccountHolderLastName] =
+    useState("");
+  const [originalAccountIFSCcode, setOriginalAccountIFSCcode] = useState("");
+  const [originalAccountBranch, setOriginalAccountBranch] = useState("");
+  const [originalAccountBranchAddress, setOriginalAccountBranchAddress] =
+    useState("");
 
   const handleAccountNumber = (e) => {
     const input = e.target.value;
@@ -114,23 +126,18 @@ function BankDetails() {
 
     ttSearchBox.on("tomtom.searchbox.resultselected", function (data) {
       if (data.data?.text !== undefined) {
-        // console.log(data.data.text);
         setLocation(data.data.text);
       }
       if (data.data.result.address?.country !== undefined) {
-        // console.log(data.data.result.address.country);
         setCountry(data.data.result.address.country);
       }
       if (data.data.result.address?.countrySubdivision !== undefined) {
-        // console.log(data.data.result.address.countrySubdivision);
         setState(data.data.result.address.countrySubdivision);
       }
       if (data.data.result.address?.countrySecondarySubdivision !== undefined) {
-        // console.log(data.data.result.address.countrySecondarySubdivision);
         setCity(data.data.result.address.countrySecondarySubdivision);
       }
       if (data.data.result.address?.postalCode !== undefined) {
-        // console.log(data.data.result.address.postalCode);
         setPincode(data.data.result.address.postalCode);
       } else {
         setPincode("");
@@ -150,42 +157,8 @@ function BankDetails() {
     document.getElementById("searchBoxContainer").appendChild(searchBoxHTML);
   };
 
-  // Event handler for TextField change
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    // Update state based on the name of the input field
-    switch (name) {
-      case "account-number":
-        setAccountNumber(value);
-        break;
-      case "first-name":
-        setAccountHolderFirstName(value);
-        break;
-      case "last-name":
-        setAccountHolderLastName(value);
-        break;
-      case "IFSC-code":
-        setAccountIFSCcode(value);
-        break;
-      case "branch-name":
-        setAccountBranch(value);
-        break;
-      case "address":
-        setAccountBranchAddress(value);
-        break;
-      case "zip":
-        setPincode(value);
-        break;
-      default:
-        break;
-    }
-  };
-
-  const handleEdit = () => {
-    setEditOn(!editOn);
-  };
-
   const updateAccount = async () => {
+    setJustVerify(true);
     if (
       accountNumber === "" ||
       accountHolderFirstName === "" ||
@@ -206,6 +179,7 @@ function BankDetails() {
       accountBranch.length >= 255 ||
       accountBranchAddress.length >= 65536
     ) {
+      toast.error(<b>Please, Complete All required details.</b>);
       return;
     }
 
@@ -240,9 +214,18 @@ function BankDetails() {
       if (response.status === 201) {
         // Account already exists
         toast.error(<b>Account already exists</b>);
-        setEditOn(true);
       } else {
         toast.success(<b>Account updated successfully!</b>);
+        setOriginalPincode(pincode);
+        setOriginalLocation(location);
+        setOriginalAccountBranch(accountBranch);
+        setOriginalAccountBranchAddress(accountBranchAddress);
+        setOriginalAccountHolderFirstName(accountHolderFirstName);
+        setOriginalAccountHolderLastName(accountHolderLastName);
+        setOriginalAccountIFSCcode(accountIFSCcode);
+        setOriginalAccountNumber(accountNumber);
+        setEditOn(false);
+        setJustVerify(false);
       }
     } catch (err) {
       // LogOut();
@@ -269,23 +252,50 @@ function BankDetails() {
 
       if (results.status === 200) {
         const data = results.data;
+        console.log(results.data);
 
         setAccountBalance(data.account_balance);
+
         setAccountNumber(data.account_number);
+        setOriginalAccountNumber(data.account_number);
+
         setAccountHolderFirstName(data.account_holder_first_name);
+        setOriginalAccountHolderFirstName(data.account_holder_first_name);
+
         setAccountHolderLastName(data.account_holder_last_name);
+        setOriginalAccountHolderLastName(data.account_holder_last_name);
+
         setAccountIFSCcode(data.account_ifsc_code);
+        setOriginalAccountIFSCcode(data.account_ifsc_code);
+
         setAccountBranch(data.account_branch);
+        setOriginalAccountBranch(data.account_branch);
+
         setAccountBranchAddress(data.account_branch_address);
+        setOriginalAccountBranchAddress(data.account_branch_address);
+
+        setLocation(data.seller_location);
+        setOriginalLocation(data.seller_location);
+
+        setPincode(data.seller_pincode);
+        setOriginalPincode(data.seller_pincode);
+
         setLatitude(data.seller_coordinates.x);
         setLongitude(data.seller_coordinates.y);
-        setLocation(data.seller_location);
-        setPincode(data.seller_pincode);
         setCity(data.seller_city);
         setState(data.seller_state);
         setCountry(data.seller_country);
       } else {
-        console.error("Failed to fetch account details");
+        setEditOn(true);
+
+        setLocation("N/A");
+        setOriginalLocation("N/A");
+
+        setLatitude("  --");
+        setLongitude("  --");
+        setCity("--");
+        setState("--");
+        setCountry("--");
       }
     } catch (err) {
       // LogOut();
@@ -295,6 +305,10 @@ function BankDetails() {
 
   useEffect(() => {
     getAccount();
+  }, []);
+
+  useEffect(() => {
+    validateUser();
   }, []);
 
   return (
@@ -310,13 +324,23 @@ function BankDetails() {
                 <Grid>
                   <Tooltip title="Cancel" TransitionComponent={Zoom} arrow>
                     <IconButton
-                      aria-label="save"
+                      aria-label="Cancel"
                       color="#ADD8E6"
                       onClick={() => {
-                        handleEdit();
-                        // updateAccount();
+                        setEditOn(false);
+                        setJustVerify(false);
+                        setPincode(originalPincode);
+                        setLocation(originalLocation);
+                        setAccountNumber(originalAccountNumber);
+                        setAccountHolderFirstName(
+                          originalAccountHolderFirstName
+                        );
+                        setAccountHolderLastName(originalAccountHolderLastName);
+                        setAccountIFSCcode(originalAccountIFSCcode);
+                        setAccountBranch(originalAccountBranch);
+                        setAccountBranchAddress(originalAccountBranchAddress);
                       }}
-                      sx={{ backgroundColor: "#fae0e4", color: "red" }}
+                      sx={{ backgroundColor: "#fae0e4", color: "red", mx: 1 }}
                     >
                       <CloseRoundedIcon />
                     </IconButton>
@@ -326,8 +350,7 @@ function BankDetails() {
                       aria-label="save"
                       color="#ADD8E6"
                       onClick={() => {
-                        handleEdit();
-                        // updateAccount();
+                        updateAccount();
                       }}
                       sx={{ backgroundColor: "lavender", color: "#023E8A" }}
                     >
@@ -340,7 +363,9 @@ function BankDetails() {
                   <IconButton
                     aria-label="edit"
                     color="#ADD8E6"
-                    onClick={handleEdit}
+                    onClick={() => {
+                      setEditOn(true);
+                    }}
                     sx={{ backgroundColor: "lavender", color: "#023E8A" }}
                   >
                     <EditRoundedIcon />
@@ -454,13 +479,16 @@ function BankDetails() {
                     placeholder="e.g. 345622"
                     variant="outlined"
                     fullWidth
+                    required
                     size="small"
                     InputProps={{
                       readOnly: !editOn,
                     }}
-                    error={pincode === ""}
+                    error={justVerify && pincode === ""}
                     helperText={
-                      pincode === "" ? "This field cannot be empty" : ""
+                      justVerify && pincode === ""
+                        ? "This field cannot be empty"
+                        : ""
                     }
                     sx={{
                       "& .MuiOutlinedInput-root": {
@@ -555,8 +583,8 @@ function BankDetails() {
                 </Avatar>
               </Grid>
               <Grid padding={3}>
-                <Typography variant="h6" noWrap component="div">
-                  {accountHolderFirstName} {accountHolderLastName}
+                <Typography variant="h5" fontWeight="bold">
+                  &#8377; {accountBalance}
                 </Typography>
               </Grid>
               <Grid container margin={0} padding={2}>
@@ -571,13 +599,14 @@ function BankDetails() {
                     placeholder="e.g. Manoj"
                     variant="outlined"
                     fullWidth
+                    required
                     size="small"
                     InputProps={{
                       readOnly: !editOn,
                     }}
-                    error={accountHolderFirstName === ""}
+                    error={justVerify && accountHolderFirstName === ""}
                     helperText={
-                      accountHolderFirstName === ""
+                      justVerify && accountHolderFirstName === ""
                         ? "This field cannot be empty"
                         : ""
                     }
@@ -600,13 +629,14 @@ function BankDetails() {
                     placeholder="e.g. Dhundhalva"
                     variant="outlined"
                     fullWidth
+                    required
                     size="small"
                     InputProps={{
                       readOnly: !editOn,
                     }}
-                    error={accountHolderLastName === ""}
+                    error={justVerify && accountHolderLastName === ""}
                     helperText={
-                      accountHolderLastName === ""
+                      justVerify && accountHolderLastName === ""
                         ? "This field cannot be empty"
                         : ""
                     }
@@ -629,13 +659,16 @@ function BankDetails() {
                     placeholder="e.g. Bharuch"
                     variant="outlined"
                     fullWidth
+                    required
                     size="small"
                     InputProps={{
                       readOnly: !editOn,
                     }}
-                    error={accountBranch === ""}
+                    error={justVerify && accountBranch === ""}
                     helperText={
-                      accountBranch === "" ? "This field cannot be empty" : ""
+                      justVerify && accountBranch === ""
+                        ? "This field cannot be empty"
+                        : ""
                     }
                     sx={{
                       "& .MuiOutlinedInput-root": {
@@ -656,13 +689,16 @@ function BankDetails() {
                     variant="outlined"
                     placeholder="ISCRH343"
                     fullWidth
+                    required
                     size="small"
                     InputProps={{
                       readOnly: !editOn,
                     }}
-                    error={accountIFSCcode === ""}
+                    error={justVerify && accountIFSCcode === ""}
                     helperText={
-                      accountIFSCcode === "" ? "This field cannot be empty" : ""
+                      justVerify && accountIFSCcode === ""
+                        ? "This field cannot be empty"
+                        : ""
                     }
                     sx={{
                       "& .MuiOutlinedInput-root": {
@@ -681,13 +717,16 @@ function BankDetails() {
                     placeholder="e.g. 1234567890"
                     variant="outlined"
                     fullWidth
+                    required
                     size="small"
                     InputProps={{
                       readOnly: !editOn,
                     }}
-                    error={accountNumber === ""}
+                    error={justVerify && accountNumber === ""}
                     helperText={
-                      accountNumber === "" ? "This field cannot be empty" : ""
+                      justVerify && accountNumber === ""
+                        ? "This field cannot be empty"
+                        : ""
                     }
                     sx={{
                       "& .MuiOutlinedInput-root": {
@@ -708,13 +747,14 @@ function BankDetails() {
                     placeholder="e.g. Bharuch, Gujarat"
                     variant="outlined"
                     fullWidth
+                    required
                     size="small"
                     InputProps={{
                       readOnly: !editOn,
                     }}
-                    error={accountBranchAddress === ""}
+                    error={justVerify && accountBranchAddress === ""}
                     helperText={
-                      accountBranchAddress === ""
+                      justVerify && accountBranchAddress === ""
                         ? "This field cannot be empty"
                         : ""
                     }

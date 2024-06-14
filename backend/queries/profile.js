@@ -1,6 +1,17 @@
 const getProfileByUserId = `
-SELECT firstname, lastname, username, emailid, role, phone_number 
-FROM users WHERE id = $1
+SELECT 
+    firstname, 
+    lastname, 
+    username, 
+    emailid, 
+    role, 
+    phone_number,
+    s.seller_location
+FROM 
+    users AS u
+LEFT JOIN 
+    seller AS s ON s.seller_user_id = u.id
+WHERE id = $1;
 `;
 
 const updateProfileByUserId = `

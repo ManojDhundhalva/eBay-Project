@@ -4,6 +4,7 @@ import SideBar from "../components/SideBar";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import ProfileDetails from "../components/DashBoardComponents/ProfileDetails";
 import BankDetails from "../components/DashBoardComponents/BankDetails";
+import Stats from "../components/DashBoardComponents/Stats";
 import { useNavigate } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 
@@ -47,6 +48,7 @@ function DashBoard() {
         >
           {selectedComponent === "BankDetails" && <BankDetails />}
           {selectedComponent === "ProfileDetails" && <ProfileDetails />}
+          {selectedComponent === "Stats" && <Stats />}
         </Grid>
       </Grid>
     </Grid>

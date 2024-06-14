@@ -6,10 +6,7 @@ import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AboutUS from "./pages/AboutUs";
-import Profile from "./pages/Profile";
 import LandingPage from "./LandingPage";
-import Account from "./pages/Account";
-import AppAppBar from "./components/AppAppBar";
 import { useAuth } from "./context/auth";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import getLPTheme from "./getLPTheme";
@@ -56,9 +53,7 @@ function App() {
             <>
               <Route exact path="/" element={<LandingPage />} />
               <Route exact path="/aboutus" element={<AboutUS />} />
-              <Route exact path="/profile" element={<Profile />} />
               <Route exact path="/dashboard" element={<DashBoard />} />
-              <Route exact path="/account" element={<Account />} />
               <Route exact path="/list-product" element={<ListProduct />} />
               <Route
                 exact

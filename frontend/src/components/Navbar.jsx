@@ -233,29 +233,6 @@ function Navbar() {
             >
               <Link
                 className="nav-link active"
-                to="/account"
-                style={{
-                  fontFamily: "Quicksand",
-                  transition: "all 0.5s ease",
-                  fontWeight: "bold",
-                }}
-              >
-                Account
-              </Link>
-            </Button>
-            <Button
-              disableRipple
-              variant="text"
-              style={{ transition: "all 0.5s ease" }}
-              sx={{
-                "&:hover": {
-                  borderBottom: "1px solid #03045e",
-                  borderRadius: "5px",
-                },
-              }}
-            >
-              <Link
-                className="nav-link active"
                 to="/database"
                 style={{ fontFamily: "Quicksand", fontWeight: "bold" }}
               >
@@ -341,7 +318,7 @@ function Navbar() {
                     onClick={handleClose}
                     style={{ fontFamily: "Quicksand", fontWeight: "bold" }}
                   >
-                    <Link className="nav-link" to="/profile">
+                    <Link className="nav-link" to="/dashboard">
                       Profile
                     </Link>
                   </MenuItem>
