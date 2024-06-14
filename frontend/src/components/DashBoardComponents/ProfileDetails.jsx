@@ -7,6 +7,9 @@ import {
   Button,
   TextField,
   IconButton,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import PhoneIcon from "@mui/icons-material/Phone";
 import HomeWorkRoundedIcon from "@mui/icons-material/HomeWorkRounded";
@@ -18,6 +21,7 @@ import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 function ProfileDetails() {
   const ImgUrl =
@@ -153,7 +157,21 @@ function ProfileDetails() {
               </Typography>
               {editOn ? (
                 <Grid padding={0} margin={0}>
-                  <Tooltip title="Cancel" TransitionComponent={Zoom} arrow>
+                  <Tooltip
+                    title="Cancel"
+                    TransitionComponent={Zoom}
+                    arrow
+                    componentsProps={{
+                      tooltip: {
+                        sx: {
+                          bgcolor: "common.black",
+                          "& .MuiTooltip-arrow": {
+                            color: "common.black",
+                          },
+                        },
+                      },
+                    }}
+                  >
                     <IconButton
                       aria-label="Cancel"
                       color="#ADD8E6"
@@ -168,7 +186,21 @@ function ProfileDetails() {
                       <CloseRoundedIcon />
                     </IconButton>
                   </Tooltip>
-                  <Tooltip title="Save" TransitionComponent={Zoom} arrow>
+                  <Tooltip
+                    title="Save"
+                    TransitionComponent={Zoom}
+                    arrow
+                    componentsProps={{
+                      tooltip: {
+                        sx: {
+                          bgcolor: "common.black",
+                          "& .MuiTooltip-arrow": {
+                            color: "common.black",
+                          },
+                        },
+                      },
+                    }}
+                  >
                     <IconButton
                       aria-label="save"
                       color="#ADD8E6"
@@ -182,7 +214,21 @@ function ProfileDetails() {
                   </Tooltip>
                 </Grid>
               ) : (
-                <Tooltip title="Edit" TransitionComponent={Zoom} arrow>
+                <Tooltip
+                  title="Edit"
+                  TransitionComponent={Zoom}
+                  arrow
+                  componentsProps={{
+                    tooltip: {
+                      sx: {
+                        bgcolor: "common.black",
+                        "& .MuiTooltip-arrow": {
+                          color: "common.black",
+                        },
+                      },
+                    },
+                  }}
+                >
                   <IconButton
                     aria-label="edit"
                     color="#ADD8E6"
@@ -198,7 +244,7 @@ function ProfileDetails() {
             </Box>
             <hr />
             <Grid container padding={0} margin={0}>
-              <Grid xs={3} padding={3} margin={0}>
+              <Grid xs={3} padding={3} margin={0} sx={{ position: "relative" }}>
                 <Avatar
                   alt="user"
                   src={ImgUrl}
@@ -209,6 +255,20 @@ function ProfileDetails() {
                     border: "1px solid gray",
                   }}
                 />
+                {/* <IconButton
+                  aria-label="edit"
+                  color="#ADD8E6"
+                  sx={{
+                    backgroundColor: "lavender",
+                    color: "#023E8A",
+                    position: "absolute",
+                    bottom: 25,
+                    right: 84,
+                    zIndex: 999,
+                  }}
+                >
+                  <EditRoundedIcon />
+                </IconButton> */}
               </Grid>
               <Grid container xs={9} padding={0} margin={0} alignItems="center">
                 <Grid sx={{ width: "100%" }}>
@@ -392,6 +452,43 @@ function ProfileDetails() {
               </Grid>
             </Grid>
           </Box>
+        </Grid>
+        <Grid
+          container
+          xs={12}
+          item
+          padding={2}
+          margin={0}
+          justifyContent="center"
+        >
+          <Button
+            // onClick={LogOut}
+            sx={{
+              userSelect: "none",
+              borderRadius: "16px",
+              fontWeight: "bold",
+            }}
+            startIcon={<LogoutIcon color="error" />}
+            variant="outlined"
+            size="large"
+            color="error"
+          >
+            LogOut
+          </Button>
+          <Button
+            variant="contained"
+            // onClick={LogOut}
+            sx={{
+              userSelect: "none",
+              borderRadius: "16px",
+              fontWeight: "bold",
+            }}
+            startIcon={<LogoutIcon sx={{ color: "white" }} />}
+            size="large"
+            color="error"
+          >
+            LogOut
+          </Button>
         </Grid>
       </Grid>
     </>

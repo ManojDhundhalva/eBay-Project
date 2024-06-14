@@ -327,7 +327,6 @@ function Navbar() {
                     onClick={() => {
                       handleClose();
                       LogOut();
-                      toast.success("Logout successful!");
                     }}
                   >
                     Logout
