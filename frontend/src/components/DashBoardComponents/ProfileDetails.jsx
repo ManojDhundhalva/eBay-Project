@@ -462,22 +462,8 @@ function ProfileDetails() {
           justifyContent="center"
         >
           <Button
-            // onClick={LogOut}
-            sx={{
-              userSelect: "none",
-              borderRadius: "16px",
-              fontWeight: "bold",
-            }}
-            startIcon={<LogoutIcon color="error" />}
-            variant="outlined"
-            size="large"
-            color="error"
-          >
-            LogOut
-          </Button>
-          <Button
             variant="contained"
-            // onClick={LogOut}
+            onClick={LogOut}
             sx={{
               userSelect: "none",
               borderRadius: "16px",

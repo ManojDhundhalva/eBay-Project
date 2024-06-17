@@ -1,4 +1,5 @@
 import "./App.css";
+import { Grid } from "@mui/material";
 import React from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
@@ -38,47 +39,60 @@ function App() {
   return (
     <>
       {/* {!isHiddenPath && <Navbar />} */}
-      <ThemeProvider theme={LPtheme}>
-        <CssBaseline />
-        {(window.localStorage.getItem("role") === "user" ||
-          window.localStorage.getItem("role") === null) &&
-          !isHiddenPath && <Navbar />}
-        <ScrollToTop />
-        <Routes>
-          <Route exact path="/login" element={<Login />} />
-          <Route exact path="/register" element={<Register />} />
-          {/* {window.localStorage.getItem("role") === null} */}
-          {window.localStorage.getItem("role") === "user" ||
-          window.localStorage.getItem("role") === null ? (
-            <>
-              <Route exact path="/" element={<LandingPage />} />
-              <Route exact path="/aboutus" element={<AboutUS />} />
-              <Route exact path="/dashboard" element={<DashBoard />} />
-              <Route exact path="/list-product" element={<ListProduct />} />
-              <Route
-                exact
-                path="/product-details"
-                element={<ProductDetails />}
-              />
-              <Route exact path="/cart" element={<Cart />} />
-              <Route exact path="/wish-list" element={<WishList />} />
-              <Route exact path="/order" element={<Order />} />
-              <Route exact path="/order-details" element={<OrderDetails />} />
-              <Route exact path="/category" element={<Category />} />
-              <Route exact path="/database" element={<Database />} />
-            </>
-          ) : window.localStorage.getItem("role") === "manager" ? (
-            <Route exact path="/" element={<Home />} />
-          ) : (
-            <Route exact path="/" element={<ShipperHomePage />} />
-          )}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        {(window.localStorage.getItem("role") === "user" ||
-          window.localStorage.getItem("role") === null) &&
-          !isHiddenPath && <Footer />}
-      </ThemeProvider>
-      {/* {!isHiddenPath && <Footer />} */}
+      <Grid margin={0} paddingX={1}>
+        <Grid
+          id="style-1"
+          margin={0}
+          padding={0}
+          sx={{ width: "100%", height: "100vh" }}
+        >
+          <ThemeProvider theme={LPtheme}>
+            <CssBaseline />
+            {(window.localStorage.getItem("role") === "user" ||
+              window.localStorage.getItem("role") === null) &&
+              !isHiddenPath && <Navbar />}
+            <ScrollToTop />
+            <Routes>
+              <Route exact path="/login" element={<Login />} />
+              <Route exact path="/register" element={<Register />} />
+              {/* {window.localStorage.getItem("role") === null} */}
+              {window.localStorage.getItem("role") === "user" ||
+              window.localStorage.getItem("role") === null ? (
+                <>
+                  <Route exact path="/" element={<LandingPage />} />
+                  <Route exact path="/aboutus" element={<AboutUS />} />
+                  <Route exact path="/dashboard" element={<DashBoard />} />
+                  <Route exact path="/list-product" element={<ListProduct />} />
+                  <Route
+                    exact
+                    path="/product-details"
+                    element={<ProductDetails />}
+                  />
+                  <Route exact path="/cart" element={<Cart />} />
+                  <Route exact path="/wish-list" element={<WishList />} />
+                  <Route exact path="/order" element={<Order />} />
+                  <Route
+                    exact
+                    path="/order-details"
+                    element={<OrderDetails />}
+                  />
+                  <Route exact path="/category" element={<Category />} />
+                  <Route exact path="/database" element={<Database />} />
+                </>
+              ) : window.localStorage.getItem("role") === "manager" ? (
+                <Route exact path="/" element={<Home />} />
+              ) : (
+                <Route exact path="/" element={<ShipperHomePage />} />
+              )}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            {(window.localStorage.getItem("role") === "user" ||
+              window.localStorage.getItem("role") === null) &&
+              !isHiddenPath && <Footer />}
+          </ThemeProvider>
+          {/* {!isHiddenPath && <Footer />} */}
+        </Grid>
+      </Grid>
     </>
   );
 }
