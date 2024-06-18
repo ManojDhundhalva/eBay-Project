@@ -33,7 +33,13 @@ function App() {
   const defaultTheme = createTheme({ palette: { mode } });
 
   const location = useLocation();
-  const hiddenPaths = ["/login", "/register", "/account", "/dashboard"];
+  const hiddenPaths = [
+    "/login",
+    "/register",
+    "/account",
+    "/dashboard",
+    "/cart",
+  ];
   const isHiddenPath = hiddenPaths.includes(location.pathname);
 
   return (

@@ -24,6 +24,8 @@ export default function ListProduct() {
   const [selectedImg, setSelectedImg] = useState(ImgUrl);
   const [hoverImg, setHoverImg] = useState(null);
 
+  const [justVerify, setJustVerify] = useState(false);
+
   const [productTitle, setProductTitle] = useState("");
   const [productPrice, setProductPrice] = useState("");
   const [productQuantity, setProductQuantity] = useState("");
@@ -157,7 +159,7 @@ export default function ListProduct() {
 
       setCategory("");
       setSubCategory("");
-      setSubSubCategory("")
+      setSubSubCategory("");
 
       // Display success toast
       toast.success("Product listed successfully!");
@@ -176,7 +178,7 @@ export default function ListProduct() {
         toast("Please Create Account First!", {
           icon: "😊",
         });
-        navigate("/account");
+        navigate("/dashboard");
       }
     }
   }, [isAddedBankAccount]);
@@ -281,7 +283,7 @@ export default function ListProduct() {
           <Grid margin={0} padding={1}>
             <h1>List Product</h1>
           </Grid>
-          <Grid margin={0} padding={1}>
+          <Grid margin={0} paddingX={1} paddingY={2}>
             <TextField
               value={productTitle}
               onChange={(e) => setProductTitle(e.target.value)}
@@ -291,9 +293,14 @@ export default function ListProduct() {
               fullWidth
               required
               size="small"
-              error={productTitle === "" || productTitle.length >= 1024}
+              error={
+                justVerify &&
+                (productTitle === "" || productTitle.length >= 1024)
+              }
               helperText={
-                productTitle === "" ? "This field cannot be empty" : ""
+                justVerify && productTitle === ""
+                  ? "This field cannot be empty"
+                  : ""
               }
               sx={{
                 "& .MuiOutlinedInput-root": {
@@ -303,26 +310,31 @@ export default function ListProduct() {
               }}
             />
           </Grid>
-          <Grid margin={0} padding={1}>
+          <Grid margin={0} paddingX={1} paddingY={2}>
             <TextField
               value={productPrice}
               id="product-price"
               label="Product Price"
-              type="number"
               placeholder="e.g. 100.58"
               variant="outlined"
+              type="text"
               fullWidth
               required
               size="small"
               onChange={(e) => {
-                const inputPrice = parseFloat(e.target.value);
-                if (!isNaN(inputPrice) && inputPrice > 0) {
-                  setProductPrice(inputPrice);
+                const input = e.target.value;
+                const regex = /^\d{0,8}(\.\d{0,2})?$/;
+                if (regex.test(input)) {
+                  setProductPrice(input);
                 }
               }}
-              error={productPrice === "" || productPrice.length > 10}
+              error={
+                justVerify && (productPrice === "" || productPrice.length > 10)
+              }
               helperText={
-                productPrice === "" ? "This field cannot be empty" : ""
+                justVerify && productPrice === ""
+                  ? "This field cannot be empty"
+                  : ""
               }
               sx={{
                 "& .MuiOutlinedInput-root": {
@@ -332,26 +344,27 @@ export default function ListProduct() {
               }}
             />
           </Grid>
-          <Grid margin={0} padding={1}>
+          <Grid margin={0} paddingX={1} paddingY={2}>
             <TextField
               value={productQuantity}
               id="product-quantity"
               label="Product Quantity"
-              type="number"
               placeholder="e.g. 10"
               variant="outlined"
               fullWidth
               required
               size="small"
               onChange={(e) => {
-                const inputQuantity = parseFloat(e.target.value);
-                if (!isNaN(inputQuantity) && inputQuantity > 0) {
-                  setProductQuantity(inputQuantity);
+                const input = e.target.value;
+                if (/^\d*$/.test(input)) {
+                  setProductQuantity(input);
                 }
               }}
-              error={productQuantity === ""}
+              error={justVerify && productQuantity === ""}
               helperText={
-                productQuantity === "" ? "This field cannot be empty" : ""
+                justVerify && productQuantity === ""
+                  ? "This field cannot be empty"
+                  : ""
               }
               sx={{
                 "& .MuiOutlinedInput-root": {
@@ -361,7 +374,7 @@ export default function ListProduct() {
               }}
             />
           </Grid>
-          <Grid margin={0} padding={1}>
+          <Grid margin={0} paddingX={1} paddingY={2}>
             <TextField
               value={`+91 ${phoneNumber}`}
               onChange={handlePhoneNumber}
@@ -372,9 +385,13 @@ export default function ListProduct() {
               fullWidth
               required
               size="small"
-              error={phoneNumber === "" || phoneNumber.length !== 10}
+              error={
+                justVerify && (phoneNumber === "" || phoneNumber.length !== 10)
+              }
               helperText={
-                phoneNumber === "" ? "This field cannot be empty." : ""
+                justVerify && phoneNumber === ""
+                  ? "This field cannot be empty."
+                  : ""
               }
               sx={{
                 "& .MuiOutlinedInput-root": {

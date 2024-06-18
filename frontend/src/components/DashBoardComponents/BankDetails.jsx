@@ -430,7 +430,7 @@ function BankDetails() {
                   <TextField
                     value={latitude}
                     id="latitude"
-                    label="latitude"
+                    label="Latitude"
                     variant="outlined"
                     fullWidth
                     size="small"
@@ -452,7 +452,7 @@ function BankDetails() {
                   <TextField
                     value={longitude}
                     id="longitude"
-                    label="longitude"
+                    label="Longitude"
                     variant="outlined"
                     fullWidth
                     size="small"

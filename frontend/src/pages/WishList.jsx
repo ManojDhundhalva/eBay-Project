@@ -18,7 +18,6 @@ import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
 import RemoveIcon from "@mui/icons-material/Remove";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
-import Checkout from "../components/PlaceOrder/Checkout";
 import { useProduct } from "../context/product";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
