@@ -17,6 +17,25 @@
   background-color: #555;
 }
 
+#style-2 {
+  overflow-x: scroll;
+}
+
+#style-2::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background-color: transparent;
+}
+
+#style-2::-webkit-scrollbar {
+  height: 8px;
+  background-color: transparent;
+}
+
+#style-2::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #555;
+}
+
 .App {
   text-align: center;
 }

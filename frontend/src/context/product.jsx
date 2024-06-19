@@ -77,7 +77,6 @@ export const ProductProvider = ({ children }) => {
           headers,
         }
       );
-      // console.log(results.data);
       setOrderList(results.data);
 
       const productIdsSet = new Set();

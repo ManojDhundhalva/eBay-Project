@@ -135,7 +135,7 @@ function UserDetails({
   return (
     <>
       <Grid container item margin={0} padding={0}>
-        <Grid xs={6} item margin={0} padding={2}>
+        <Grid xs={6} item margin={0} paddingX={1}>
           <TextField
             value={buyerFirstName}
             onChange={(e) => {
@@ -149,9 +149,9 @@ function UserDetails({
             required
             size="small"
             error={buyerFirstName === ""}
-            helperText={
-              buyerFirstName === "" ? "This field cannot be empty" : ""
-            }
+            // helperText={
+            //   buyerFirstName === "" ? "This field cannot be empty" : ""
+            // }
             sx={{
               "& .MuiOutlinedInput-root": {
                 borderRadius: 25,
@@ -160,7 +160,7 @@ function UserDetails({
             }}
           />
         </Grid>
-        <Grid xs={6} item margin={0} padding={1}>
+        <Grid xs={6} item margin={0} paddingX={1}>
           <TextField
             value={buyerLastName}
             onChange={(e) => {
@@ -174,9 +174,9 @@ function UserDetails({
             required
             size="small"
             error={buyerLastName === ""}
-            helperText={
-              buyerLastName === "" ? "This field cannot be empty" : ""
-            }
+            // helperText={
+            //   buyerLastName === "" ? "This field cannot be empty" : ""
+            // }
             sx={{
               "& .MuiOutlinedInput-root": {
                 borderRadius: 25,
@@ -185,7 +185,7 @@ function UserDetails({
             }}
           />
         </Grid>
-        <Grid xs={12} item margin={0} paddingX={2} paddingBottom={4}>
+        <Grid xs={12} item margin={0} paddingX={2} paddingY={4}>
           <Grid sx={{ display: "flex", alignItems: "center" }}>
             <IconButton aria-label="fingerprint">
               <LocationOnRoundedIcon
@@ -199,7 +199,7 @@ function UserDetails({
           </Grid>
           <Grid id="searchBoxContainer"></Grid>
         </Grid>
-        <Grid xs={3} item margin={0} padding={1}>
+        <Grid xs={3} item margin={0} paddingX={1} paddingY={2}>
           <TextField
             value={latitude}
             id="latitude"
@@ -222,7 +222,7 @@ function UserDetails({
             }}
           />
         </Grid>
-        <Grid xs={3} item margin={0} padding={1}>
+        <Grid xs={3} item margin={0} paddingX={1} paddingY={2}>
           <TextField
             value={longitude}
             onChange={(e) => {
@@ -248,7 +248,7 @@ function UserDetails({
             }}
           />
         </Grid>
-        <Grid xs={6} item margin={0} padding={1}>
+        <Grid xs={6} item margin={0} paddingX={1} paddingY={2}>
           <TextField
             value={phoneNumber}
             onChange={handlePhoneNumber}
@@ -260,7 +260,7 @@ function UserDetails({
             required
             size="small"
             error={phoneNumber === ""}
-            helperText={phoneNumber === "" ? "This field cannot be empty" : ""}
+            // helperText={phoneNumber === "" ? "This field cannot be empty" : ""}
             sx={{
               "& .MuiOutlinedInput-root": {
                 borderRadius: 25,
@@ -269,7 +269,7 @@ function UserDetails({
             }}
           />
         </Grid>
-        <Grid xs={6} item margin={0} padding={1}>
+        <Grid xs={6} item margin={0} paddingX={1} paddingY={2}>
           <TextField
             value={pincode}
             onChange={handlePincode}
@@ -281,7 +281,7 @@ function UserDetails({
             required
             size="small"
             error={pincode === ""}
-            helperText={pincode === "" ? "This field cannot be empty" : ""}
+            // helperText={pincode === "" ? "This field cannot be empty" : ""}
             sx={{
               "& .MuiOutlinedInput-root": {
                 borderRadius: 25,
@@ -290,7 +290,7 @@ function UserDetails({
             }}
           />
         </Grid>
-        <Grid xs={6} item margin={0} padding={1}>
+        <Grid xs={6} item margin={0} paddingX={1} paddingY={2}>
           <TextField
             value={city}
             id="city"
@@ -310,7 +310,7 @@ function UserDetails({
             }}
           />
         </Grid>
-        <Grid xs={6} item margin={0} padding={1}>
+        <Grid xs={6} item margin={0} paddingX={1} paddingY={2}>
           <TextField
             value={state}
             id="state"
@@ -330,7 +330,7 @@ function UserDetails({
             }}
           />
         </Grid>
-        <Grid xs={6} item margin={0} padding={1}>
+        <Grid xs={6} item margin={0} paddingX={1} paddingY={2}>
           <TextField
             value={country}
             id="country"

@@ -39,6 +39,7 @@ function App() {
     "/account",
     "/dashboard",
     "/cart",
+    "/order-details",
   ];
   const isHiddenPath = hiddenPaths.includes(location.pathname);
 
