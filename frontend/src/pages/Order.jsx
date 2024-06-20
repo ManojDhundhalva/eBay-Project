@@ -114,21 +114,21 @@ function Order() {
     orderList.forEach((order) => {
       let step = 0;
       if (
-        order.products.every(
+        order.products?.every(
           (product) => product.has_order.shipping_status_order_placed !== null
         )
       ) {
         step = 1;
       }
       if (
-        order.products.every(
+        order.products?.every(
           (product) => product.has_order.shipping_status_order_shipped !== null
         )
       ) {
         step = 2;
       }
       if (
-        order.products.every(
+        order.products?.every(
           (product) =>
             product.has_order.shipping_status_reached_at_buyers_inventory !==
             null
@@ -137,7 +137,7 @@ function Order() {
         step = 3;
       }
       if (
-        order.products.every(
+        order.products?.every(
           (product) =>
             product.has_order.shipping_status_out_for_delivery !== null
         )
@@ -145,7 +145,7 @@ function Order() {
         step = 4;
       }
       if (
-        order.products.every(
+        order.products?.every(
           (product) => product.has_order.shipping_status_delivered !== null
         )
       ) {
@@ -345,7 +345,7 @@ function Order() {
           </Grid>
           <Grid margin={0} paddingX={4} paddingY={2}>
             <hr className="my-4" />
-            {myOrderList.map((item, index) => (
+            {myOrderList?.map((item, index) => (
               <>
                 <Grid
                   padding={2}
@@ -479,7 +479,7 @@ function Order() {
                       activeStep={orderStepOfOrderId[item.order_id]}
                       alternativeLabel
                     >
-                      {steps.map((label, index) => (
+                      {steps?.map((label, index) => (
                         <Step key={index}>
                           <StepLabel
                             StepIconComponent={
@@ -510,7 +510,7 @@ function Order() {
                         "rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px",
                     }}
                   >
-                    {item.products.map((product, index) => (
+                    {item.products?.map((product, index) => (
                       <>
                         <Grid
                           key={index}

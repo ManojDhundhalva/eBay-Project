@@ -13,6 +13,11 @@ function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+function getDistanceCostByProductId(data, productId) {
+  const product = data.find((item) => item.productId === productId);
+  return product ? product : null; // Return distanceCost or null if not found
+}
+
 const makePayment = async (req, resp) => {
   const { payment_amount, payment_type } = req.body;
   try {
@@ -46,8 +51,7 @@ const makeOrder = async (req, resp) => {
     order_shipping_address_city,
     order_shipping_address_pincode,
     order_shipping_address_mobile_number,
-    has_order_distance,
-    has_order_distance_charge,
+    distances,
     has_order_eBay_charge,
   } = req.body;
 
@@ -73,13 +77,17 @@ const makeOrder = async (req, resp) => {
 
     for (const product of productList) {
       const tracking_id = uuidv4();
+      const { distanceKM, distanceCost } = getDistanceCostByProductId(
+        distances,
+        product.product_id
+      );
       const results1 = await pool.query(queries.makeHasOrder, [
         tracking_id,
         orderUniqueID,
         prdouctQuanties[product.product_id],
         product.product_id,
-        has_order_distance,
-        has_order_distance_charge,
+        distanceKM,
+        distanceCost,
         has_order_eBay_charge,
       ]);
 

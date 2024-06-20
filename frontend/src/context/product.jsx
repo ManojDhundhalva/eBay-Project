@@ -34,7 +34,6 @@ export const ProductProvider = ({ children }) => {
           headers,
         }
       );
-      console.log("categaory", results.data);
       setCategories(results.data);
     } catch (err) {
       // LogOut();
@@ -106,6 +105,7 @@ export const ProductProvider = ({ children }) => {
           headers,
         }
       );
+      console.log("cartList", results.data);
       setCartList(results.data);
     } catch (err) {
       // LogOut();

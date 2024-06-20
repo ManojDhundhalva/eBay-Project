@@ -78,40 +78,40 @@ function OrderPlace({
     }
   };
 
-  const [uniqueCities, setUniqueCities] = useState([]);
+  // const [uniqueCities, setUniqueCities] = useState([]);
 
   // Function to update unique cities whenever products change
-  useEffect(() => {
-    const updateUniqueCities = () => {
-      // Use reduce to filter out unique combinations of seller_city, latitude, and longitude
-      const uniqueCitiesArray = cartList.reduce((unique, product) => {
-        // Check if a product with the same seller_city, latitude, and longitude already exists
-        const existingProduct = unique.find(
-          (p) =>
-            p.seller_city === product.seller_city &&
-            p.latitude === product.latitude &&
-            p.longitude === product.longitude
-        );
+  // useEffect(() => {
+  //   const updateUniqueCities = () => {
+  //     // Use reduce to filter out unique combinations of seller_city, latitude, and longitude
+  //     const uniqueCitiesArray = cartList.reduce((unique, product) => {
+  //       // Check if a product with the same seller_city, latitude, and longitude already exists
+  //       const existingProduct = unique.find(
+  //         (p) =>
+  //           p.seller_city === product.seller_city &&
+  //           p.latitude === product.latitude &&
+  //           p.longitude === product.longitude
+  //       );
 
-        // If not, add the product to the unique array
-        if (!existingProduct) {
-          unique.push({
-            seller_city: product.seller_city,
-            latitude: product.latitude,
-            longitude: product.longitude,
-          });
-        }
+  //       // If not, add the product to the unique array
+  //       if (!existingProduct) {
+  //         unique.push({
+  //           seller_city: product.seller_city,
+  //           latitude: product.latitude,
+  //           longitude: product.longitude,
+  //         });
+  //       }
 
-        return unique;
-      }, []);
+  //       return unique;
+  //     }, []);
 
-      // Set the state of uniqueCities
-      setUniqueCities(uniqueCitiesArray);
-    };
+  //     // Set the state of uniqueCities
+  //     setUniqueCities(uniqueCitiesArray);
+  //   };
 
-    // Call the update function
-    updateUniqueCities();
-  }, [cartList]);
+  //   // Call the update function
+  //   updateUniqueCities();
+  // }, [cartList]);
 
   // useEffect(() => {
   //   console.log(uniqueCities);
@@ -134,7 +134,7 @@ function OrderPlace({
 
     const lat1 = latitude;
     const lon1 = longitude;
-    const { latitude: lat2, longitude: lon2, seller_city } = dest;
+    const { latitude: lat2, longitude: lon2, seller_city, product_id } = dest;
 
     // Convert latitude and longitude from degrees to radians
     const dLat = (lat2 - lat1) * (Math.PI / 180);
@@ -153,14 +153,18 @@ function OrderPlace({
     const calculatedDistance = R * c;
 
     return {
+      productId: product_id,
       sourceCity: seller_city,
       destinationCity: location,
       distanceKM: calculatedDistance.toFixed(2),
+      distanceCost: Number(
+        calculatedDistance * (process.env.REACT_APP_SHIPPING_CHARGES / 100)
+      ).toFixed(2),
     };
   };
 
   const handleCalculateDistance = () => {
-    const distancesArray = uniqueCities.map((dest) => calculateDistance(dest));
+    const distancesArray = cartList.map((dest) => calculateDistance(dest));
     setDistances(distancesArray);
   };
 
@@ -240,10 +244,7 @@ function OrderPlace({
               order_shipping_address_city: city,
               order_shipping_address_pincode: pincode,
               order_shipping_address_mobile_number: phoneNumber,
-              has_order_distance: totalDistanceKM.toFixed(2),
-              has_order_distance_charge: Number(
-                totalDistanceKM * (process.env.REACT_APP_SHIPPING_CHARGES / 100)
-              ).toFixed(2),
+              distances,
               has_order_eBay_charge: Number(
                 process.env.REACT_APP_EBAY_CHARGES
               ).toFixed(2),
