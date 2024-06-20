@@ -12,11 +12,13 @@ function HorizontalSlider({ images, id }) {
       margin={0}
       padding={1}
       sx={{
-        backgroundColor: "#f2ebfb",
+        backgroundColor: "lavender",
         borderRadius: "20px",
         overflowX: "auto",
         overflowY: "hidden",
         whiteSpace: "nowrap",
+        boxShadow:
+          "rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px",
       }}
     >
       {images.map((image, index) => (
@@ -50,6 +52,8 @@ function HorizontalSlider({ images, id }) {
                 backgroundColor: "#F2F2F2",
                 borderRadius: "16px",
                 cursor: "pointer",
+                boxShadow:
+                  "rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px",
               }}
             />
           </Grid>

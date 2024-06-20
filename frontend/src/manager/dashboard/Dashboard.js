@@ -24,7 +24,6 @@ import AccountDetails from "./AccountDetails";
 import Stats from "./Stats";
 import { useAuth } from "../../context/auth";
 import getLPTheme from "../../getLPTheme";
-import ToggleColorMode from "../../components/ToggleColorMode";
 import AllProducts from "./AllProducts";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import HomePage from "./HomePage";
@@ -85,7 +84,6 @@ const Drawer = styled(MuiDrawer, {
 export default function Dashboard() {
   const navigate = useNavigate();
   const [currentlyAt, setCurrentlyAt] = React.useState("Home Page");
-  const { mode, toggleColorMode } = useAuth();
 
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
@@ -220,11 +218,7 @@ export default function Dashboard() {
                 <ListItemIcon>
                   <ContrastIcon />
                 </ListItemIcon>
-                <ListItemText primary={`Mode : ${mode}`} />
-                <ToggleColorMode
-                  mode={mode}
-                  toggleColorMode={toggleColorMode}
-                />
+                <ListItemText primary={`Mode : mode`} />
               </ListItemButton>
             </React.Fragment>
             <Divider sx={{ my: 1 }} />

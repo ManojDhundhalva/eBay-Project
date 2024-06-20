@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   Button,
-  Card,
-  CardContent,
-  CardMedia,
   Grid,
   MenuItem,
   Select,
@@ -11,27 +8,20 @@ import {
   Typography,
   FormControl,
   InputLabel,
+  Stepper,
+  Step,
+  StepLabel,
+  Tooltip,
+  Zoom,
 } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import Tooltip from "@mui/material/Tooltip";
-import Zoom from "@mui/material/Zoom";
-import LocalMallIcon from "@mui/icons-material/LocalMall";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import { styled } from "@mui/material/styles";
-import ButtonBase from "@mui/material/ButtonBase";
-import Box from "@mui/material/Box";
-import Stepper from "@mui/material/Stepper";
-import Step from "@mui/material/Step";
-import StepLabel from "@mui/material/StepLabel";
-import { useProduct } from "../context/product";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import CircleIcon from "@mui/icons-material/Circle";
 import CircleOutlinedIcon from "@mui/icons-material/CircleOutlined";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
-import HorizontalSilder from "../components/HorizontalSilder";
 import axios from "axios";
 
+const ImgUrl = `https://t3.ftcdn.net/jpg/05/15/95/32/360_F_515953296_4OTDJFNzT9YmriBZwR688gsWzLFSyc1u.webp`;
 const steps = [
   "Order placed",
   "Order shipped",
@@ -180,6 +170,7 @@ function Order() {
           headers,
         }
       );
+      console.log("results.data", results.data);
       setOrderList(results.data);
       setMyOrderList(sortByTimeNewestFirst(results.data));
     } catch (err) {
@@ -199,10 +190,10 @@ function Order() {
           margin={0}
           padding={0}
           sx={{
-            backgroundColor: "lavender",
+            backgroundColor: "ghostwhite",
             width: "100%",
             height: "100%",
-            borderRadius: "20px",
+            borderRadius: "30px",
           }}
         >
           <Grid
@@ -359,11 +350,22 @@ function Order() {
                 <Grid
                   padding={2}
                   key={index}
-                  sx={{ backgroundColor: "ghostwhite", borderRadius: "20px" }}
+                  sx={{
+                    backgroundColor: "ghostwhite",
+                    borderRadius: "30px",
+                    boxShadow:
+                      "rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px",
+                    // boxShadow: "rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px",
+                  }}
                 >
                   <Grid
                     padding={4}
-                    sx={{ backgroundColor: "lightblue", borderRadius: "16px" }}
+                    sx={{
+                      backgroundColor: "lavender",
+                      borderRadius: "16px",
+                      boxShadow:
+                        "rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px",
+                    }}
                   >
                     <Grid
                       padding={2}
@@ -378,93 +380,94 @@ function Order() {
                         &#x20b9; {Number(item.payment_amount).toFixed(2)}
                       </Typography>
                       {orderStepOfOrderId[item.order_id] < 5 ? (
-                        <Chip label={"Pending"} color="primary" />
+                        <Chip
+                          label={"Pending"}
+                          sx={{ backgroundColor: "#023e8a", color: "white" }}
+                        />
                       ) : (
-                        <Chip label={"Completed"} color="success" />
+                        <Chip
+                          label={"Completed"}
+                          sx={{ backgroundColor: "#036666", color: "white" }}
+                        />
                       )}
                     </Grid>
                     <Grid container padding={2} margin={0}>
-                      <Grid
-                        xs={2}
-                        justifyContent="flex-start"
-                        alignItems="center"
-                        sx={{ display: "flex" }}
-                      >
-                        <Typography fontWeight="bold">Order id:</Typography>
+                      <Grid xs={2} container alignItems="center">
+                        <Typography fontWeight="bold">Order id</Typography>
                       </Grid>
-                      <Grid xs={10}>
-                        <Tooltip
-                          title="See Details"
-                          onClick={() => {
-                            navigate(`/order-details?id=${item.order_id}`);
-                          }}
-                          TransitionComponent={Zoom}
-                          arrow
-                          placement="top"
-                          componentsProps={{
-                            tooltip: {
-                              sx: {
-                                bgcolor: "common.black",
-                                "& .MuiTooltip-arrow": {
-                                  color: "common.black",
+                      <Grid container xs={10} alignItems="center">
+                        <Typography fontWeight="bold">:&nbsp;&nbsp;</Typography>
+                        <Typography fontWeight="bold" sx={{ color: "#495057" }}>
+                          <Tooltip
+                            title="See Details"
+                            onClick={() => {
+                              navigate(`/order-details?id=${item.order_id}`);
+                            }}
+                            TransitionComponent={Zoom}
+                            arrow
+                            placement="top"
+                            componentsProps={{
+                              tooltip: {
+                                sx: {
+                                  bgcolor: "common.black",
+                                  "& .MuiTooltip-arrow": {
+                                    color: "common.black",
+                                  },
                                 },
                               },
-                            },
-                          }}
-                        >
-                          <Button
-                            variant="text"
-                            sx={{
-                              color: "black",
-                              textDecoration: "underline",
-                              fontWeight: "bold",
-                              fontSize: 16,
                             }}
                           >
-                            {item.order_id}
-                          </Button>
-                        </Tooltip>
-                      </Grid>
-                      <Grid
-                        xs={2}
-                        justifyContent="flex-start"
-                        alignItems="center"
-                        sx={{ display: "flex" }}
-                      >
-                        <Typography fontWeight="bold">
-                          Shipping address :
+                            <Button
+                              variant="text"
+                              sx={{
+                                color: "black",
+                                textDecoration: "underline",
+                                fontWeight: "bold",
+                                fontSize: 16,
+                              }}
+                            >
+                              {item.order_id}
+                            </Button>
+                          </Tooltip>
                         </Typography>
                       </Grid>
-                      <Grid xs={10}>
-                        <Typography>{item.order_shipping_location}</Typography>
-                      </Grid>
-                      <Grid
-                        xs={2}
-                        justifyContent="flex-start"
-                        alignItems="center"
-                        sx={{ display: "flex" }}
-                      >
+                      <Grid xs={2} container alignItems="center">
                         <Typography fontWeight="bold">
-                          Contact Number :
+                          Shipping address
                         </Typography>
                       </Grid>
-                      <Grid xs={10}>
-                        <Typography>
+                      <Grid xs={10} container alignItems="center">
+                        <Typography fontWeight="bold">:</Typography>
+                        <Typography
+                          fontWeight="bold"
+                          sx={{ px: 2, color: "#495057" }}
+                        >
+                          {item.order_shipping_location}
+                        </Typography>
+                      </Grid>
+                      <Grid xs={2} container alignItems="center">
+                        <Typography fontWeight="bold">
+                          Contact Number
+                        </Typography>
+                      </Grid>
+                      <Grid xs={10} container alignItems="center">
+                        <Typography fontWeight="bold">:</Typography>
+                        <Typography
+                          fontWeight="bold"
+                          sx={{ px: 2, color: "#495057" }}
+                        >
                           (+91) {item.order_shipping_address_mobile_number}
                         </Typography>
                       </Grid>
-                      <Grid
-                        xs={2}
-                        justifyContent="flex-start"
-                        alignItems="center"
-                        sx={{ display: "flex" }}
-                      >
-                        <Typography fontWeight="bold">
-                          Ordered Date :
-                        </Typography>
+                      <Grid xs={2} container alignItems="center">
+                        <Typography fontWeight="bold">Ordered Date</Typography>
                       </Grid>
-                      <Grid xs={10}>
-                        <Typography>
+                      <Grid xs={10} container alignItems="center">
+                        <Typography fontWeight="bold">:</Typography>
+                        <Typography
+                          fontWeight="bold"
+                          sx={{ px: 2, color: "#495057" }}
+                        >
                           {new Date(item.order_timestamp).toLocaleDateString()}{" "}
                           ({formatTimestamp(item.order_timestamp)})
                         </Typography>
@@ -493,10 +496,61 @@ function Order() {
                       ))}
                     </Stepper>
                   </Grid>
-                  <HorizontalSilder
-                    images={item.products[0].product_image}
-                    id={item.products[0].has_order.has_order_product_id}
-                  />
+                  <Grid
+                    id="style-2"
+                    margin={0}
+                    padding={1}
+                    sx={{
+                      backgroundColor: "lavender",
+                      borderRadius: "20px",
+                      overflowX: "auto",
+                      overflowY: "hidden",
+                      whiteSpace: "nowrap",
+                      boxShadow:
+                        "rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px",
+                    }}
+                  >
+                    {item.products.map((product, index) => (
+                      <>
+                        <Grid
+                          key={index}
+                          padding={1}
+                          margin={0}
+                          sx={{
+                            display: "inline-block",
+                            transition: "transform 0.15s ease",
+                            "&:hover": {
+                              transform: "scale(1.05)",
+                            },
+                          }}
+                        >
+                          <img
+                            src={product.product_image[0]}
+                            alt="product_image"
+                            onClick={() => {
+                              navigate(
+                                `/product-details?id=${product.has_order.has_order_product_id}`
+                              );
+                            }}
+                            onError={(e) => {
+                              e.target.src = ImgUrl;
+                            }}
+                            style={{
+                              width: 200,
+                              height: 200,
+                              display: "inline-block",
+                              objectFit: "contain",
+                              backgroundColor: "#F2F2F2",
+                              borderRadius: "16px",
+                              cursor: "pointer",
+                              boxShadow:
+                                "rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px",
+                            }}
+                          />
+                        </Grid>
+                      </>
+                    ))}
+                  </Grid>
                 </Grid>
                 <Grid>
                   <hr className="my-5" />
@@ -527,159 +581,6 @@ function Order() {
           </Grid>
         </Grid>
       </Grid>
-      {/* <section className="h-100 h-custom" style={{ backgroundColor: "#eee" }}>
-        <Grid
-          container
-          className="p-4 h-100"
-          justifyContent="center"
-          alignItems="center"
-        >
-          <Grid item xs={12}>
-            <Card
-              className="card-registration card-registration-2"
-              sx={{ borderRadius: "15px" }}
-            >
-              <CardContent className="p-0">
-                <Grid container className="g-0">
-                  <Grid item lg={12}>
-                    <div className="p-5">
-                      <div className="d-flex justify-content-between align-items-center mb-5">
-                        <Typography
-                          variant="h4"
-                          className="fw-bold mb-0 text-black"
-                        >
-                          Order List
-                        </Typography>
-                        <Typography variant="body1" className="mb-0 text-muted">
-                          {orderList.length} items
-                        </Typography>
-                      </div>
-                      <hr className="my-4" />
-                      {orderList.map((item, index) => (
-                        <React.Fragment key={index}>
-                          <Grid
-                            container
-                            spacing={2}
-                            alignItems="center"
-                            className="mb-4"
-                            justifyContent="space-between"
-                          >
-                            <Grid item xs={12} sm={8} container>
-                              <Grid item>
-                                <Grid item xs sx={{ textAlign: "left" }}>
-                                  <Typography
-                                    gutterBottom
-                                    variant="subtitle1"
-                                    component="div"
-                                  >
-                                    Order id :{" "}
-                                    <span
-                                      onClick={() => {
-                                        navigate(
-                                          `/order-details?id=${item.order_id}`
-                                        );
-                                      }}
-                                      style={{
-                                        textDecoration: "underline",
-                                        cursor: "pointer",
-                                      }}
-                                    >
-                                      {item.order_id}
-                                    </span>
-                                  </Typography>
-                                  <Typography variant="body2" gutterBottom>
-                                    Shipping address :{" "}
-                                    {item.order_shipping_location}
-                                  </Typography>
-                                  <Typography variant="body2" gutterBottom>
-                                    Contact Number : (+91)
-                                    {item.order_shipping_address_mobile_number}
-                                  </Typography>
-                                  <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                  >
-                                    Ordered Date :{" "}
-                                    {new Date(
-                                      item.order_timestamp
-                                    ).toLocaleDateString()}{" "}
-                                    ({formatTimestamp(item.order_timestamp)})
-                                  </Typography>
-                                  <Typography
-                                    variant="subtitle1"
-                                    component="div"
-                                  >
-                                    &#x20b9;{" "}
-                                    {Number(item.payment_amount).toFixed(2)}
-                                  </Typography>
-                                </Grid>
-                              </Grid>
-                            </Grid>
-                            {item.products.map((image, index) => (
-                              <Grid key={index} item md={2} lg={2} xl={2}>
-                                <CardMedia
-                                  width={50}
-                                  height={100}
-                                  component="img"
-                                  src={image.product_image[0]}
-                                  alt="Product Image"
-                                  className="rounded-3"
-                                />
-                              </Grid>
-                            ))}
-                          </Grid>
-                          <Grid item xs={12}>
-                            <Box sx={{ width: "100%" }}>
-                              <Stepper
-                                activeStep={orderStepOfOrderId[item.order_id]}
-                                alternativeLabel
-                              >
-                                {steps.map((label) => (
-                                  <Step key={label}>
-                                    <StepLabel>{label}</StepLabel>
-                                  </Step>
-                                ))}
-                              </Stepper>
-                            </Box>
-                          </Grid>
-                          <hr className="my-4" />
-                        </React.Fragment>
-                      ))}
-                      <Grid
-                        container
-                        justifyContent="flex-start"
-                        padding={2}
-                        margin={0}
-                      >
-                        <Button
-                          variant="contained"
-                          onClick={() => {
-                            navigate(-1);
-                          }}
-                          sx={{
-                            minWidth: "10%",
-
-                            borderRadius: "16px",
-                            fontWeight: "bold",
-                            backgroundColor: "#03045e",
-                            "&:hover": {
-                              backgroundColor: "#032174",
-                            },
-                          }}
-                          startIcon={<ArrowBack sx={{ color: "white" }} />}
-                          size="large"
-                        >
-                          Back
-                        </Button>
-                      </Grid>
-                    </div>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      </section> */}
     </>
   );
 }
