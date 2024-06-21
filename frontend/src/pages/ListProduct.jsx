@@ -205,7 +205,7 @@ export default function ListProduct() {
             }}
           >
             {imageInputs.map((image, index) => (
-              <Grid margin={0} paddingY={1} key={index}>
+              <Grid margin={0} paddingBottom={1} key={index}>
                 <img
                   src={image}
                   alt={`Thumbnail ${index}`}

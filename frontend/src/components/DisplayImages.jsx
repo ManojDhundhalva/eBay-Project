@@ -1,93 +1,148 @@
-import React, { useState } from "react";
-import Stack from "@mui/material/Stack";
-import Grid from "@mui/material/Grid";
+import React, { useState, useRef } from "react";
+import { Grid, IconButton, useMediaQuery } from "@mui/material";
+import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
+import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
+
+const ImgUrl =
+  "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg";
 
 const DisplayImages = ({ images }) => {
-  const [selectedImg, setSelectedImg] = useState(images[0]);
+  const [selectedImgIndex, setSelectedImgIndex] = useState(0);
   const [hoverImg, setHoverImg] = useState(null);
+  const scrollBoxRef = useRef(null);
+
+  const isSmallScreen = useMediaQuery("(max-width:600px)");
+
+  const nextImage = () => {
+    setSelectedImgIndex((prevIndex) =>
+      prevIndex === images.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const prevImage = () => {
+    setSelectedImgIndex((prevIndex) =>
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    );
+  };
 
   return (
     <Grid container>
       <Grid
-        container
-        margin={0}
-        paddingX={{ xs: 0, sm: 2, md: 2, xl: 2, lg: 2 }}
-        paddingY={{ xs: 2, sm: 0, md: 0, xl: 0, lg: 0 }}
         xs={12}
-        sm={2}
-        md={2}
-        xl={2}
-        lg={2}
+        sm={12}
+        md={12}
+        xl={1.5}
+        lg={1.5}
+        paddingY={2}
+        margin={0}
+        ref={scrollBoxRef}
         sx={{
-          // backgroundColor: "ghostwhite",
-          borderRadius: "10px",
-          maxHeight: "600px",
-          overflowX: "scroll",
-          whiteSpace: "normal",
-          overflowY: "scroll",
-          "&::-webkit-scrollbar": {
-            display: "none",
+          display: "flex",
+          justifyContent: "flex-start",
+          alignItems: "center",
+          flexDirection: {
+            xs: "row",
+            sm: "row",
+            md: "row",
+            xl: "column",
+            lg: "column",
           },
-          "-ms-overflow-style": "none",
-          "scrollbar-width": "none",
+          overflowX: "auto",
+          whiteSpace: "nowrap",
+          "&::-webkit-scrollbar": {
+            display: "none", // Hide scrollbar in webkit browsers (Chrome, Safari)
+          },
+          "-ms-overflow-style": "none", // Hide scrollbar in IE and Edge
+          "scrollbar-width": "none", // Hide scrollbar in Firefox
         }}
       >
-        <Stack
-          height={{ xs: "auto", sm: 800 }}
-          spacing={2}
-          direction={{
-            xs: "row",
-            sm: "column",
-          }}
-        >
-          {images.map((image, index) => (
-            <Grid key={index}>
-              <img
-                src={image}
-                alt={`Thumbnail ${index}`}
-                style={{
-                  backgroundColor: "#F2F2F2",
-                  objectFit: "contain",
-                  width: "100%",
-                  height: "auto",
-                  borderRadius: "10px",
-                  cursor: "pointer",
-                  border: selectedImg === image ? "2px solid black" : "none",
-                }}
-                onClick={() => {
-                  setSelectedImg(image);
-                }}
-                onMouseEnter={() => {
-                  setHoverImg(image);
-                }}
-                onMouseLeave={() => {
-                  setHoverImg(null);
-                }}
-              />
-            </Grid>
-          ))}
-        </Stack>
+        {images.map((image, index) => (
+          <Grid key={index} margin={0} sx={{ padding: "4px" }}>
+            <img
+              src={image}
+              alt={`Thumbnail ${index}`}
+              style={{
+                userSelect: "none",
+                backgroundColor: "#F2F2F2",
+                objectFit: "contain",
+                width: isSmallScreen ? 60 : 100,
+                height: isSmallScreen ? 60 : 100,
+                borderRadius: "10px",
+                cursor: "pointer",
+                border: selectedImgIndex === index ? "2px solid black" : "none",
+              }}
+              onError={(e) => {
+                e.target.src = ImgUrl;
+              }}
+              onClick={() => {
+                setSelectedImgIndex(index);
+              }}
+              onMouseEnter={() => {
+                setHoverImg(image);
+              }}
+              onMouseLeave={() => {
+                setHoverImg(null);
+              }}
+            />
+          </Grid>
+        ))}
       </Grid>
       <Grid
-        container
-        margin={0}
-        padding={0}
+        padding={2}
         xs={12}
-        sm={10}
-        md={10}
-        xl={10}
-        lg={10}
-        sx={{ borderRadius: "10px" }}
+        sm={10.5}
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          position: "relative",
+        }}
       >
-        {selectedImg && (
+        <IconButton
+          onClick={prevImage}
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: isSmallScreen ? "2%" : 20,
+            transform: "translateY(-50%)",
+            zIndex: 2,
+            color: "#032174",
+            backgroundColor: "white",
+          }}
+          aria-label="left"
+        >
+          <ArrowBackIosRoundedIcon fontSize="large" />
+        </IconButton>
+        <IconButton
+          onClick={nextImage}
+          sx={{
+            position: "absolute",
+            top: "50%",
+            right: isSmallScreen ? "2%" : 20,
+            transform: "translateY(-50%)",
+            zIndex: 2,
+            color: "#032174",
+            backgroundColor: "white",
+          }}
+          aria-label="right"
+        >
+          <ArrowForwardIosRoundedIcon fontSize="large" />
+        </IconButton>
+        {images.length > 0 && (
           <img
-            src={hoverImg || selectedImg}
-            alt={`Selected Img`}
+            src={hoverImg || images[selectedImgIndex]}
+            alt="Selected"
+            onError={(e) => {
+              e.target.src = ImgUrl;
+            }}
             style={{
+              width: "100%",
+              maxInlineSize: "100%",
+              blockSize: "auto",
+              aspectRatio: 6 / 5,
+              userSelect: "none",
               backgroundColor: "#F2F2F2",
               objectFit: "contain",
-              width: "100%",
-              height: "auto",
               borderRadius: "16px",
               cursor: "pointer",
             }}

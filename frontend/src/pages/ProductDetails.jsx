@@ -288,7 +288,7 @@ function ProductDetails() {
 
   return (
     <>
-      <Grid container paddingX={4}>
+      <Grid container paddingX={2}>
         <Grid xs={12} sm={12} md={12} lg={12} xl={12} paddingX={2}>
           <Grid
             container
@@ -540,12 +540,12 @@ function ProductDetails() {
             </Grid>
           </Grid>
         </Grid>
-        <Grid xs={12} sm={12} md={7} lg={7} xl={7} padding={2}>
+        <Grid xs={12} sm={12} md={7} lg={7} xl={7} paddingX={2}>
           {product.product_images && (
             <DisplayImages images={product.product_images} />
           )}
         </Grid>
-        <Grid xs={12} sm={12} md={5} lg={5} xl={5} padding={2}>
+        <Grid xs={12} sm={12} md={5} lg={5} xl={5} padding={2} paddingLeft={0}>
           <Grid
             padding={4}
             style={{
