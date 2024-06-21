@@ -79,8 +79,8 @@ export const ProductProvider = ({ children }) => {
       setOrderList(results.data);
 
       const productIdsSet = new Set();
-      results.data.forEach((cart) => {
-        cart.products.forEach((product) => {
+      results?.data?.forEach((cart) => {
+        cart?.products?.forEach((product) => {
           productIdsSet.add(product.has_order.has_order_product_id);
         });
       });

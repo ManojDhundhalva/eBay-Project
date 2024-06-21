@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import { alpha } from "@mui/material/styles";
-import IconButton from "@mui/material/IconButton";
+import { useNavigate } from "react-router-dom";
+import { Grid, Chip, IconButton, Typography, Rating } from "@mui/material";
+
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import Rating from "@mui/material/Rating";
-import { useNavigate } from "react-router-dom";
-import { useProduct } from "../context/product";
-import axios from "axios";
-import { useAuth } from "../context/auth";
-import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
-import StarRateRoundedIcon from "@mui/icons-material/StarRateRounded";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
-import Chip from "@mui/material/Chip";
+import StarRoundedIcon from "@mui/icons-material/StarRounded";
+
+import { useAuth } from "../context/auth";
+import { useProduct } from "../context/product";
+import axios from "axios";
+
+const ImgUrl = `https://t3.ftcdn.net/jpg/05/15/95/32/360_F_515953296_4OTDJFNzT9YmriBZwR688gsWzLFSyc1u.webp`;
 
 function ProductCard({ product }) {
   const {
@@ -99,164 +97,170 @@ function ProductCard({ product }) {
   }, []);
 
   return (
-    <Box
-      onClick={() => {
-        addWatchCount();
-        navigate(`/product-details?id=${product_id}`);
-      }}
-      sx={{
-        cursor: "pointer",
-        mt: { xs: 4, sm: 6 },
-        alignSelf: "center",
-        width: "34vh", // Adjust width for responsiveness
-        height: "42vh",
-        position: "relative",
-        display: "flex",
-        flexDirection: "column",
-        backgroundSize: "cover",
-        borderRadius: "10px",
-        transition: "all 0.2s",
-        "&:hover": {
-          transform: "scale(1.05)",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-        },
-        "&:hover img": {
-          transform: "scale(1.01)",
-        },
-      }}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-    >
-      <Box
+    <>
+      <Grid
+        margin={0}
+        padding={0}
+        onClick={() => {
+          addWatchCount();
+          navigate(`/product-details?id=${product_id}`);
+        }}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
         sx={{
-          overflow: "hidden",
-          borderRadius: "10px",
-          width: "34vh",
-          height: "38vh",
-          position: "relative",
-          transition: "all 0.2s ease",
+          userSelect: "none",
+          width: 250,
+          backgroundColor: "white",
+          borderRadius: "14px",
+          transition: "all 0.1s ease",
+          boxShadow:
+            "rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px",
+          "&:hover": {
+            transform: "scale(1.02)",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+          },
         }}
       >
-        <img
-          src={product_images[0]}
-          alt={product_title}
-          style={{
-            width: "34vh",
-            height: "38vh",
-            borderRadius: "10px",
-            objectFit: "cover",
-            position: "relative",
-          }}
-        />
-      </Box>
-      {isHovering && (
-        <Chip
-          label={
-            <>
-              <RemoveRedEyeOutlinedIcon fontSize="small" />{" "}
-              <span style={{ fontWeight: "bold" }}>{product_watch_count}</span>
-            </>
-          }
-          sx={{
-            position: "absolute",
-            top: "7px",
-            right: "7px",
-            zIndex: 1,
-            backgroundColor: "white",
-            transition: "all 0.10s",
-          }}
-        />
-      )}
-      {isHovering && (
-        <Box
-          sx={{
-            backgroundColor: "white",
-            borderRadius: "10px",
-            position: "absolute",
-            paddingX: "5px",
-            paddingY: "9px",
-            top: "13vh",
-            right: "7px",
-            transition: "all 0.2s ease", // Add transition for smooth sliding effect
-            display: "flex",
-            flexDirection: "column",
-          }}
+        <Grid
+          container
+          margin={0}
+          padding={0}
+          alignItems="center"
+          justifyContent="center"
+          sx={{ position: "relative" }}
         >
-          <IconButton
-            sx={{
-              color: isAddedToWishList ? "red" : "black",
-              backgroundColor: "white",
-              borderRadius: "50%",
-              "&:hover": {
-                color: isAddedToWishList ? "red" : "black",
-              },
+          <img
+            src={product_images[0]}
+            alt="product_image"
+            onError={(e) => {
+              e.target.src = ImgUrl;
             }}
-            onClick={(event) => {
-              event.stopPropagation();
-              handleFavoriteToggle();
-            }}
-          >
-            {isAddedToWishList ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-          </IconButton>
-          <IconButton
-            sx={{
-              color: isAddedToCartList ? "#023e8a" : "black",
-              backgroundColor: "white",
-              borderRadius: "50%",
-              "&:hover": {
-                color: isAddedToCartList ? "#023e8a" : "black",
-              },
-            }}
-            onClick={(event) => {
-              event.stopPropagation();
-              handleCartToggle();
-            }}
-          >
-            {isAddedToCartList ? (
-              <ShoppingCartIcon />
-            ) : (
-              <ShoppingCartOutlinedIcon />
-            )}
-          </IconButton>
-        </Box>
-      )}
-      <Box
-        p={2}
-        flexGrow={1}
-        bgcolor="background.paper"
-        display="flex"
-        flexDirection="column"
-        justifyContent="space-between"
-      >
-        <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography variant="h5" gutterBottom noWrap>
-            {product_title}
-          </Typography>
-          <Typography variant="body1" gutterBottom fontWeight="bold">
-            ₹{product_price}
-          </Typography>
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", fontWeight: "bold" }}>
-          <Rating
-            name="product-rating"
-            value={parseFloat(product_avg_rating)}
-            precision={0.1} // Set precision to 0.1 to allow fractional part
-            readOnly
-            emptyIcon={<StarBorderRoundedIcon />}
-            icon={<StarRateRoundedIcon />}
             style={{
-              "& .MuiSvgIcon-root": {
-                borderRadius: "50%", // This will make only the star icons rounded
-              },
+              width: "100%",
+              height: 250,
+              display: "inline-block",
+              objectFit: "contain",
+              backgroundColor: "#F2F2F2",
+              borderTopLeftRadius: "12px",
+              borderTopRightRadius: "12px",
+              cursor: "pointer",
             }}
           />
-          <Typography variant="body1" style={{ fontWeight: "bold" }}>
-            &nbsp; &nbsp;
-            {parseFloat(product_avg_rating)}
-          </Typography>
-        </Box>
-      </Box>
-    </Box>
+          {isHovering && (
+            <Grid
+              padding={0}
+              margin={0}
+              sx={{ position: "absolute", top: 0, right: 0 }}
+            >
+              <Chip
+                sx={{
+                  p: 1,
+                  m: 1,
+                  fontWeight: "bold",
+                  backgroundColor: "white",
+                }}
+                icon={<RemoveRedEyeOutlinedIcon />}
+                label={product_watch_count}
+              />
+            </Grid>
+          )}
+          {isHovering && (
+            <Grid
+              paddingY={1}
+              paddingX={0.5}
+              margin={1}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                flexDirection: "column",
+                position: "absolute",
+                top: "50%",
+                right: 0,
+                transform: "translateY(-50%)",
+                backgroundColor: "white",
+                borderRadius: "10px",
+              }}
+            >
+              <Grid padding={0} margin={0}>
+                <IconButton
+                  sx={{
+                    backgroundColor: "white",
+                  }}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleFavoriteToggle();
+                  }}
+                >
+                  {isAddedToWishList ? (
+                    <FavoriteIcon sx={{ color: "#FF0000" }} />
+                  ) : (
+                    <FavoriteBorderIcon sx={{ color: "#FF0000" }} />
+                  )}
+                </IconButton>
+              </Grid>
+              <Grid padding={0} margin={0}>
+                <IconButton
+                  sx={{
+                    backgroundColor: "white",
+                  }}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleCartToggle();
+                  }}
+                >
+                  {isAddedToCartList ? (
+                    <ShoppingCartIcon sx={{ color: "#03045E" }} />
+                  ) : (
+                    <ShoppingCartOutlinedIcon sx={{ color: "#03045E" }} />
+                  )}
+                </IconButton>
+              </Grid>
+            </Grid>
+          )}
+        </Grid>
+        <Grid margin={0} paddingX={2}>
+          <Grid
+            container
+            margin={0}
+            paddingTop={1}
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Typography
+              fontSize={17}
+              fontWeight="bold"
+              sx={{
+                width: 250,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {product_title}
+            </Typography>
+          </Grid>
+          <Grid container margin={0} padding={0} alignItems="center">
+            <Rating
+              name="product-rating"
+              value={product_avg_rating}
+              precision={0.1}
+              readOnly
+              emptyIcon={<StarRoundedIcon />}
+              icon={<StarRoundedIcon />}
+            />
+            <Typography sx={{ px: 1 }} fontWeight="bold">
+              {product_avg_rating}
+            </Typography>
+          </Grid>
+          <Grid container margin={0} paddingY={1} alignItems="center">
+            <Typography variant="h6" fontWeight="bold">
+              ₹{product_price}
+            </Typography>
+          </Grid>
+        </Grid>
+      </Grid>
+    </>
   );
 }
 

@@ -860,7 +860,12 @@ function OrderDetails() {
                           <Grid container xs={8}>
                             <Typography fontWeight="bold">:</Typography>
                             <Typography fontWeight="bold" sx={{ px: 2 }}>
-                              &#x20b9; {item.product.product_price}
+                              &#x20b9; {item.product.product_price} (
+                              {item.has_order.has_order_product_quantity} item
+                              {item.has_order.has_order_product_quantity > 1
+                                ? "s"
+                                : ""}
+                              )
                             </Typography>
                           </Grid>
                           <Grid xs={12}>

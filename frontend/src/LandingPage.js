@@ -8,6 +8,8 @@ import Hero from "./components/Hero";
 import DisplayProduct from "./components/DisplayProduct";
 import HomePageCategory from "./components/HomePageCategory";
 import AboutUs from "./pages/AboutUs";
+import MostWatched from "./components/HomePageCategory/MostWatched";
+import { Grid } from "@mui/material";
 
 function ToggleCustomTheme({ showCustomTheme, toggleCustomTheme }) {
   return (
@@ -56,6 +58,9 @@ export default function LandingPage() {
     <>
       <Hero />
       <HomePageCategory />
+      <Grid margin={0} padding={2}>
+        <MostWatched />
+      </Grid>
       <DisplayProduct />
     </>
   );
