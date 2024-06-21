@@ -159,7 +159,12 @@ function ProductCard({ product }) {
                   fontWeight: "bold",
                   backgroundColor: "white",
                 }}
-                icon={<RemoveRedEyeOutlinedIcon />}
+                icon={
+                  <RemoveRedEyeOutlinedIcon
+                    color="primary"
+                    sx={{ color: "#003554" }}
+                  />
+                }
                 label={product_watch_count}
               />
             </Grid>

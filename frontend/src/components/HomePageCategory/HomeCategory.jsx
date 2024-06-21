@@ -1,49 +1,35 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Grid, Typography, IconButton, Button, Skeleton } from "@mui/material";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
-import { useAuth } from "../../context/auth";
-import ProductCard from "../ProductCard";
+import CategoryCard from "../CategoryCard";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-function MostWatched() {
-  const [allProduct, setAllProduct] = useState([]);
+const image2 =
+  "https://cdn.pixabay.com/photo/2021/10/11/23/49/app-6702045_1280.png";
+
+function HomeCategory() {
   const scrollBoxRef = useRef(null);
-  const { LogOut } = useAuth();
+  const [categories, setCategories] = useState([]);
+  const navigate = useNavigate();
 
-  const scrollLeft = () => {
-    if (scrollBoxRef.current) {
-      scrollBoxRef.current.scrollBy({
-        left: -300,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  const scrollRight = () => {
-    if (scrollBoxRef.current) {
-      scrollBoxRef.current.scrollBy({
-        left: 300,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  const getAllProducts = async () => {
+  const getAllCategories = async () => {
     const headers = {
       "Content-Type": "application/json",
       authorization: `Bearer ${window.localStorage.getItem("token")}`,
     };
     try {
       const results = await axios.get(
-        `http://localhost:8000/api/v1/product?username=${window.localStorage.getItem(
+        `http://localhost:8000/api/v1/category/category-only?username=${window.localStorage.getItem(
           "username"
         )}&role=${window.localStorage.getItem("role")}`,
         {
           headers,
         }
       );
-      setAllProduct(results.data);
+      console.log("dsfkdsnfj", results.data);
+      setCategories(results.data);
     } catch (err) {
       // LogOut();
       console.error("Error fetching profile:", err);
@@ -51,13 +37,24 @@ function MostWatched() {
   };
 
   useEffect(() => {
-    if (window.localStorage.getItem("role") === "user") {
-      getAllProducts();
-    }
+    getAllCategories();
   }, []);
+
+  const scrollLeft = () => {
+    if (scrollBoxRef.current) {
+      scrollBoxRef.current.scrollBy({ left: -300, behavior: "smooth" });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollBoxRef.current) {
+      scrollBoxRef.current.scrollBy({ left: 300, behavior: "smooth" });
+    }
+  };
+
   return (
     <>
-      <Grid container margin={0} padding={0}>
+      <Grid container margin={0} padding={0} sx={{ userSelect: "none" }}>
         <Grid
           xs={12}
           container
@@ -67,9 +64,12 @@ function MostWatched() {
           alignItems="center"
         >
           <Typography variant="h5" fontWeight="bold">
-            Most Watched
+            Categories
           </Typography>
           <Button
+            onClick={() => {
+              navigate("/category");
+            }}
             variant="text"
             size="small"
             sx={{
@@ -149,7 +149,7 @@ function MostWatched() {
               "scrollbar-width": "none", // Hide scrollbar in Firefox
             }}
           >
-            {allProduct.length === 0
+            {categories.length === 0
               ? Array.from({ length: 10 }).map((_, index) => (
                   <Grid
                     key={index}
@@ -167,40 +167,19 @@ function MostWatched() {
                     />
                   </Grid>
                 ))
-              : allProduct.map((data, index) => (
-                  <Grid margin={0} padding={2} sx={{ display: "inline-block" }}>
-                    <ProductCard key={index} product={data} />
+              : categories.map((item, index) => (
+                  <Grid
+                    key={index}
+                    margin={0}
+                    padding={0}
+                    sx={{ display: "inline-block" }}
+                  >
+                    <CategoryCard
+                      image={image2}
+                      category={item.category_name}
+                    />
                   </Grid>
                 ))}
-            {allProduct.map((data, index) => (
-              <Grid
-                margin={0}
-                paddingRight={2}
-                sx={{ display: "inline-block" }}
-              >
-                <ProductCard key={index} product={data} />
-              </Grid>
-            ))}
-            {allProduct.map((data, index) => (
-              <Grid
-                margin={0}
-                padding={1}
-                paddingRight={2}
-                sx={{ display: "inline-block" }}
-              >
-                <ProductCard key={index} product={data} />
-              </Grid>
-            ))}
-            {allProduct.map((data, index) => (
-              <Grid
-                margin={0}
-                padding={1}
-                paddingRight={2}
-                sx={{ display: "inline-block" }}
-              >
-                <ProductCard key={index} product={data} />
-              </Grid>
-            ))}
           </Grid>
         </Grid>
       </Grid>
@@ -208,4 +187,4 @@ function MostWatched() {
   );
 }
 
-export default MostWatched;
+export default HomeCategory;

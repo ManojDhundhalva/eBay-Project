@@ -6,7 +6,7 @@ import { useAuth } from "../../context/auth";
 import ProductCard from "../ProductCard";
 import axios from "axios";
 
-function MostWatched() {
+function MostPopularSeller() {
   const [allProduct, setAllProduct] = useState([]);
   const scrollBoxRef = useRef(null);
   const { LogOut } = useAuth();
@@ -67,7 +67,7 @@ function MostWatched() {
           alignItems="center"
         >
           <Typography variant="h5" fontWeight="bold">
-            Most Watched
+            Most Popular Seller's Product
           </Typography>
           <Button
             variant="text"
@@ -173,9 +173,14 @@ function MostWatched() {
                   </Grid>
                 ))}
             {allProduct.map((data, index) => (
+              <Grid margin={0} padding={2} sx={{ display: "inline-block" }}>
+                <ProductCard key={index} product={data} />
+              </Grid>
+            ))}
+            {allProduct.map((data, index) => (
               <Grid
                 margin={0}
-                paddingRight={2}
+                padding={2}
                 sx={{ display: "inline-block" }}
               >
                 <ProductCard key={index} product={data} />
@@ -184,18 +189,7 @@ function MostWatched() {
             {allProduct.map((data, index) => (
               <Grid
                 margin={0}
-                padding={1}
-                paddingRight={2}
-                sx={{ display: "inline-block" }}
-              >
-                <ProductCard key={index} product={data} />
-              </Grid>
-            ))}
-            {allProduct.map((data, index) => (
-              <Grid
-                margin={0}
-                padding={1}
-                paddingRight={2}
+                padding={2}
                 sx={{ display: "inline-block" }}
               >
                 <ProductCard key={index} product={data} />
@@ -208,4 +202,4 @@ function MostWatched() {
   );
 }
 
-export default MostWatched;
+export default MostPopularSeller;

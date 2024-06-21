@@ -147,6 +147,10 @@ GROUP BY
 LIMIT 10;
 `;
 
+const getCategoriesOnly = `
+SELECT DISTINCT category_name FROM category_has_sub_category;
+`;
+
 module.exports = {
   getAllCategories,
   getFilteredProducts,
@@ -156,4 +160,5 @@ module.exports = {
   getAllSubCategoryProduct,
   getAllSubSubCategoryProduct,
   getAllProducts,
+  getCategoriesOnly,
 };
