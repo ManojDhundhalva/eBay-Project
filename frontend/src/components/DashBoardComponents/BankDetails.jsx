@@ -4,12 +4,11 @@ import {
   Typography,
   Box,
   Avatar,
-  Button,
+  Rating,
   TextField,
   IconButton,
 } from "@mui/material";
-import PhoneIcon from "@mui/icons-material/Phone";
-import HomeWorkRoundedIcon from "@mui/icons-material/HomeWorkRounded";
+import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import PlaceIcon from "@mui/icons-material/Place";
 import { useAuth } from "../../context/auth";
 import SearchIcon from "@mui/icons-material/Search";
@@ -38,6 +37,7 @@ function BankDetails() {
   const [state, setState] = useState("");
   const [country, setCountry] = useState("");
   const [pincode, setPincode] = useState("");
+  const [sellerRating, setSellerRating] = useState("");
 
   const [location, setLocation] = useState("");
   const [latitude, setLatitude] = useState(0.0);
@@ -285,6 +285,7 @@ function BankDetails() {
         setCity(data.seller_city);
         setState(data.seller_state);
         setCountry(data.seller_country);
+        setSellerRating(data.seller_avg_rating);
       } else {
         setEditOn(true);
 
@@ -317,9 +318,24 @@ function BankDetails() {
         <Grid xs={12} item padding={2} margin={0}>
           <Box sx={{ backgroundColor: "white", borderRadius: "20px", p: 2 }}>
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography variant="h6" noWrap component="div">
-                Seller Info
-              </Typography>
+              <Grid container margin={0} padding={0} alignItems="center">
+                <Typography variant="h6" noWrap component="div">
+                  Seller Info
+                </Typography>
+                <Grid container margin={0} padding={0} alignItems="center">
+                  <Rating
+                    name="product-rating"
+                    value={Number(sellerRating)}
+                    precision={0.1}
+                    readOnly
+                    emptyIcon={<StarRoundedIcon />}
+                    icon={<StarRoundedIcon />}
+                  />
+                  <Typography sx={{ px: 1 }} fontWeight="bold">
+                    {sellerRating}
+                  </Typography>
+                </Grid>
+              </Grid>
               {editOn ? (
                 <Grid>
                   <Tooltip title="Cancel" TransitionComponent={Zoom} arrow>

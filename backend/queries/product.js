@@ -240,6 +240,93 @@ INSERT INTO product_review (
 VALUES ($1, $2, $3, $4);
 `;
 
+const getMostWatchedProducts = `
+SELECT 
+    p.product_id,
+    p.product_title, 
+    p.product_price, 
+    p.product_avg_rating,
+    p.product_watch_count,
+    ARRAY_AGG(pi.product_image) AS product_images 
+FROM 
+    product AS p 
+JOIN 
+    product_image AS pi 
+ON 
+    p.product_id = pi.product_id 
+WHERE 
+    p.product_seller_id <> $1 AND p.product_available_quantity <> 0
+GROUP BY
+    p.product_id,
+    p.product_title,
+    p.product_price,
+    p.product_avg_rating,
+    p.product_watch_count
+ORDER BY
+    p.product_watch_count DESC
+LIMIT 10;
+`;
+
+const getMostRatedProducts = `
+SELECT 
+    p.product_id,
+    p.product_title, 
+    p.product_price, 
+    p.product_avg_rating,
+    p.product_watch_count,
+    ARRAY_AGG(pi.product_image) AS product_images 
+FROM 
+    product AS p 
+JOIN 
+    product_image AS pi 
+ON 
+    p.product_id = pi.product_id 
+WHERE 
+    p.product_seller_id <> $1 AND p.product_available_quantity <> 0
+GROUP BY
+    p.product_id,
+    p.product_title,
+    p.product_price,
+    p.product_avg_rating,
+    p.product_watch_count
+ORDER BY
+    p.product_avg_rating DESC
+LIMIT 10;
+`;
+
+const getMostPopularSellerProducts = `
+SELECT 
+    p.product_id,
+    p.product_title, 
+    p.product_price, 
+    p.product_avg_rating,
+    p.product_watch_count,
+    p.product_timestamp,
+    ARRAY_AGG(pi.product_image) AS product_images 
+FROM 
+    product AS p
+JOIN
+    seller AS s
+ON
+    p.product_seller_id = s.seller_user_id
+JOIN 
+    product_image AS pi 
+ON 
+    p.product_id = pi.product_id 
+WHERE 
+    p.product_seller_id <> $1 AND p.product_available_quantity <> 0
+GROUP BY
+    p.product_id,
+    p.product_title,
+    p.product_price,
+    p.product_avg_rating,
+    p.product_watch_count,
+    s.seller_avg_rating
+ORDER BY
+    s.seller_avg_rating DESC
+LIMIT 10;
+`;
+
 module.exports = {
   listProduct,
   addImage,
@@ -258,4 +345,7 @@ module.exports = {
   ifProductReviewOfUserExist,
   updateReview,
   createReview,
+  getMostWatchedProducts,
+  getMostRatedProducts,
+  getMostPopularSellerProducts,
 };

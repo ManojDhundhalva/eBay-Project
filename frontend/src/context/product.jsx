@@ -14,6 +14,7 @@ export const ProductProvider = ({ children }) => {
   const [orderedProductIds, setOrderedProductIds] = useState([]);
 
   const [categories, setCategories] = useState([]);
+  const [categoriesSort, setCategoriesSort] = useState("Most Watched");
 
   const [selectedCategoryHome, setSelectedCategoryHome] = useState("");
 
@@ -270,6 +271,8 @@ export const ProductProvider = ({ children }) => {
         categories,
         selectedCategoryHome,
         setSelectedCategoryHome,
+        categoriesSort,
+        setCategoriesSort,
       }}
     >
       {children}

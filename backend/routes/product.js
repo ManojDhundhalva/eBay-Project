@@ -11,5 +11,8 @@ router.get("/product-details", verifyTokenAndAuthorizationUser, controller.getPr
 router.post("/list-product", verifyTokenAndAuthorizationUser, controller.listProduct);
 router.post("/watch-product", verifyTokenAndAuthorizationUser, controller.watchProduct);
 router.post("/review-product", verifyTokenAndAuthorizationUser, controller.reviewTheProduct);
+router.get("/most-watched", verifyTokenAndAuthorizationUser, controller.getMostWatchedProducts);
+router.get("/most-rated", verifyTokenAndAuthorizationUser, controller.getMostRatedProducts);
+router.get("/most-popular-seller", verifyTokenAndAuthorizationUser, controller.getMostPopularSellerProducts);
 
 module.exports = router;

@@ -1,24 +1,55 @@
 import React, { useState, useEffect } from "react";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
-import Typography from "@mui/material/Typography";
-import Link from "@mui/material/Link";
-import Stack from "@mui/material/Stack";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useProduct } from "../context/product";
+import {
+  Grid,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Box,
+  Breadcrumbs,
+  Typography,
+  Chip,
+  Select,
+} from "@mui/material";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import RadioButtonUncheckedOutlinedIcon from "@mui/icons-material/RadioButtonUncheckedOutlined";
-import axios from "axios";
 import ProductCard from "../components/ProductCard";
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
-import Chip from "@mui/material/Chip";
-import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
+
+const sortByTimeNewestFirst = (data) => {
+  return data.sort((a, b) => {
+    const dateA = new Date(a.product_timestamp);
+    const dateB = new Date(b.product_timestamp);
+    return dateB - dateA;
+  });
+};
+
+const sortByTimeOldestFirst = (data) => {
+  return data.sort((a, b) => {
+    const dateA = new Date(a.product_timestamp);
+    const dateB = new Date(b.product_timestamp);
+    return dateA - dateB;
+  });
+};
+
+const sortByMostWatched = (data) => {
+  return data.sort((a, b) => b.product_watch_count - a.product_watch_count);
+};
+
+const sortByMostRated = (data) => {
+  return data.sort((a, b) => b.product_avg_rating - a.product_avg_rating);
+};
+
+const sortByMostPopularSeller = (data) => {
+  return data.sort((a, b) => b.seller_avg_rating - a.seller_avg_rating);
+};
 
 export default function Category() {
-  const { categories } = useProduct();
+  const { categories, categoriesSort, setCategoriesSort } = useProduct();
   const [products, setProducts] = useState([]);
-  const [selectedValue, setSelectedValue] = useState("");
   const [firstValue, setFirstValue] = useState("");
   const [secondValue, setSecondValue] = useState("");
   const [thirdValue, setThirdValue] = useState("");
@@ -27,8 +58,6 @@ export default function Category() {
   const queryParams = new URLSearchParams(location.search);
 
   const handleItemClick = async (value) => {
-    setSelectedValue(value);
-
     const headers = {
       "Content-Type": "application/json",
       authorization: `Bearer ${window.localStorage.getItem("token")}`,
@@ -41,7 +70,19 @@ export default function Category() {
         { value },
         { headers }
       );
-      setProducts(results.data);
+      console.log(value, "setProducts", results.data);
+      if (categoriesSort === "Newest First") {
+        setProducts(sortByTimeNewestFirst(results.data));
+      } else if (categoriesSort === "Oldest First") {
+        setProducts(sortByTimeOldestFirst(results.data));
+      } else if (categoriesSort === "Most Rated") {
+        setProducts(sortByMostRated(results.data));
+      } else if (categoriesSort === "Most Popular Seller") {
+        setProducts(sortByMostPopularSeller(results.data));
+      } else {
+        setProducts(sortByMostWatched(results.data));
+      }
+
     } catch (err) {
       console.log("Error -> ", err);
     }
@@ -260,6 +301,92 @@ export default function Category() {
         lg={9}
         // sx={{ background: "lightpink" }}
       >
+        <Grid
+          container
+          xs={12}
+          sm={12}
+          md={12}
+          xl={12}
+          lg={12}
+          padding={1}
+          margin={0}
+          sx={{ backgroundColor: "ghostwhite", borderRadius: "10px" }}
+        >
+          <FormControl size="small" sx={{ mx: 1 }}>
+            <InputLabel id="sort-label">Sort</InputLabel>
+            <Select
+              labelId="sort-label-label"
+              id="sort-label"
+              value={categoriesSort}
+              label="Sort"
+              onChange={(e) => {
+                setCategoriesSort(e.target.value);
+              }}
+              MenuProps={{
+                sx: {
+                  "& .MuiPaper-root": {
+                    "&::-webkit-scrollbar": {
+                      width: "8px",
+                    },
+                    "&::-webkit-scrollbar-thumb": {
+                      backgroundColor: "#888",
+                      borderRadius: "4px",
+                    },
+                    "&::-webkit-scrollbar-thumb:hover": {
+                      backgroundColor: "#555",
+                    },
+                  },
+                },
+              }}
+              sx={{
+                minWidth: "200px",
+                borderRadius: 25,
+                fontWeight: "bold",
+              }}
+            >
+              <MenuItem
+                value="Newest First"
+                onClick={() => {
+                  setProducts(sortByTimeNewestFirst(products));
+                }}
+              >
+                Newest First
+              </MenuItem>
+              <MenuItem
+                value="Oldest First"
+                onClick={() => {
+                  setProducts(sortByTimeOldestFirst(products));
+                }}
+              >
+                Oldest First
+              </MenuItem>
+              <MenuItem
+                value="Most Watched"
+                onClick={() => {
+                  setProducts(sortByMostWatched(products));
+                }}
+              >
+                Most Watched
+              </MenuItem>
+              <MenuItem
+                value="Most Rated"
+                onClick={() => {
+                  setProducts(sortByMostRated(products));
+                }}
+              >
+                Most Rated
+              </MenuItem>
+              <MenuItem
+                value="Most Popular Seller"
+                onClick={() => {
+                  setProducts(sortByMostPopularSeller(products));
+                }}
+              >
+                Most Popular Seller
+              </MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
         <Grid
           container
           xs={12}

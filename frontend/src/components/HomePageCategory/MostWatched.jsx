@@ -4,12 +4,16 @@ import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import { useAuth } from "../../context/auth";
 import ProductCard from "../ProductCard";
+import { useProduct } from "../../context/product";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function MostWatched() {
   const [allProduct, setAllProduct] = useState([]);
+  const { setCategoriesSort } = useProduct();
   const scrollBoxRef = useRef(null);
   const { LogOut } = useAuth();
+  const navigate = useNavigate();
 
   const scrollLeft = () => {
     if (scrollBoxRef.current) {
@@ -29,14 +33,14 @@ function MostWatched() {
     }
   };
 
-  const getAllProducts = async () => {
+  const getMostWatchedProducts = async () => {
     const headers = {
       "Content-Type": "application/json",
       authorization: `Bearer ${window.localStorage.getItem("token")}`,
     };
     try {
       const results = await axios.get(
-        `http://localhost:8000/api/v1/product?username=${window.localStorage.getItem(
+        `http://localhost:8000/api/v1/product/most-watched?username=${window.localStorage.getItem(
           "username"
         )}&role=${window.localStorage.getItem("role")}`,
         {
@@ -52,7 +56,7 @@ function MostWatched() {
 
   useEffect(() => {
     if (window.localStorage.getItem("role") === "user") {
-      getAllProducts();
+      getMostWatchedProducts();
     }
   }, []);
   return (
@@ -71,6 +75,10 @@ function MostWatched() {
             Most Watched
           </Typography>
           <Button
+            onClick={() => {
+              setCategoriesSort("Most Watched");
+              navigate("/category");
+            }}
             variant="text"
             size="small"
             sx={{

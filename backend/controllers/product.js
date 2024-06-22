@@ -238,10 +238,48 @@ const watchProduct = async (req, resp) => {
   }
 };
 
+const getMostWatchedProducts = async (req, resp) => {
+  try {
+    const results = await pool.query(queries.getMostWatchedProducts, [
+      req.user.id,
+    ]);
+    return resp.status(200).json(results.rows);
+  } catch (err) {
+    console.log("Error listing product: ", err);
+    return resp.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const getMostRatedProducts = async (req, resp) => {
+  try {
+    const results = await pool.query(queries.getMostRatedProducts, [
+      req.user.id,
+    ]);
+    return resp.status(200).json(results.rows);
+  } catch (err) {
+    console.log("Error listing product: ", err);
+    return resp.status(500).json({ message: "Internal Server Error" });
+  }
+};
+const getMostPopularSellerProducts = async (req, resp) => {
+  try {
+    const results = await pool.query(queries.getMostPopularSellerProducts, [
+      req.user.id,
+    ]);
+    return resp.status(200).json(results.rows);
+  } catch (err) {
+    console.log("Error listing product: ", err);
+    return resp.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   listProduct,
   getAllProducts,
   getProductsDetails,
   reviewTheProduct,
   watchProduct,
+  getMostWatchedProducts,
+  getMostRatedProducts,
+  getMostPopularSellerProducts,
 };

@@ -56,9 +56,16 @@ SELECT
     p.product_title, 
     p.product_price, 
     p.product_avg_rating,
+    p.product_watch_count,
+    p.product_timestamp,
+    s.seller_avg_rating,
     ARRAY_AGG(pi.product_image) AS product_images 
 FROM 
     product AS p 
+JOIN
+    seller AS s
+ON
+    p.product_seller_id = s.seller_user_id
 JOIN 
     product_image AS pi 
 ON 
@@ -71,7 +78,9 @@ GROUP BY
     p.product_id,
     p.product_title,
     p.product_price,
-    p.product_avg_rating
+    p.product_avg_rating,
+    p.product_watch_count,
+    s.seller_avg_rating
 `;
 
 const getAllSubCategoryProduct = `
@@ -80,9 +89,16 @@ SELECT
     p.product_title, 
     p.product_price, 
     p.product_avg_rating,
-    ARRAY_AGG(pi.product_image) AS product_images 
+    p.product_watch_count,
+    p.product_timestamp,
+    s.seller_avg_rating,
+    ARRAY_AGG(pi.product_image) AS product_images  
 FROM 
     product AS p 
+JOIN
+    seller AS s
+ON
+    p.product_seller_id = s.seller_user_id
 JOIN 
     product_image AS pi 
 ON 
@@ -95,7 +111,9 @@ GROUP BY
     p.product_id,
     p.product_title,
     p.product_price,
-    p.product_avg_rating
+    p.product_avg_rating,
+    p.product_watch_count,
+    s.seller_avg_rating
 `;
 
 const getAllSubSubCategoryProduct = `
@@ -104,9 +122,16 @@ SELECT
     p.product_title, 
     p.product_price, 
     p.product_avg_rating,
+    p.product_watch_count,
+    p.product_timestamp,
+    s.seller_avg_rating,
     ARRAY_AGG(pi.product_image) AS product_images 
 FROM 
     product AS p 
+JOIN
+    seller AS s
+ON
+    p.product_seller_id = s.seller_user_id
 JOIN 
     product_image AS pi 
 ON 
@@ -119,7 +144,9 @@ GROUP BY
     p.product_id,
     p.product_title,
     p.product_price,
-    p.product_avg_rating
+    p.product_avg_rating,
+    p.product_watch_count,
+    s.seller_avg_rating
 `;
 
 const getAllProducts = `
@@ -129,9 +156,15 @@ SELECT
     p.product_price, 
     p.product_avg_rating,
     p.product_watch_count,
+    p.product_timestamp,
+    s.seller_avg_rating,
     ARRAY_AGG(pi.product_image) AS product_images 
 FROM 
-    product AS p 
+    product AS p
+JOIN
+    seller AS s
+ON
+    p.product_seller_id = s.seller_user_id
 JOIN 
     product_image AS pi 
 ON 
@@ -143,7 +176,8 @@ GROUP BY
     p.product_title,
     p.product_price,
     p.product_avg_rating,
-    p.product_watch_count
+    p.product_watch_count,
+    s.seller_avg_rating
 LIMIT 10;
 `;
 
