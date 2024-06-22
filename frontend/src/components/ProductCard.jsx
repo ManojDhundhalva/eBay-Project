@@ -248,7 +248,7 @@ function ProductCard({ product }) {
           <Grid container margin={0} padding={0} alignItems="center">
             <Rating
               name="product-rating"
-              value={product_avg_rating}
+              value={Number(product_avg_rating)}
               precision={0.1}
               readOnly
               emptyIcon={<StarRoundedIcon />}

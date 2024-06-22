@@ -3,14 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "./auth";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { getAccordionSummaryUtilityClass } from "@mui/material";
 
 const productContext = createContext();
 
 export const ProductProvider = ({ children }) => {
   const [cartList, setCartList] = useState([]);
   const [wishList, setWishList] = useState([]);
-  const [orderList, setOrderList] = useState([]);
-  const [isAddedBankAccount, setIsAddedBankAccount] = useState(false);
+  const [numberOfOrders, setNumberOfOrders] = useState(0);
   const [orderedProductIds, setOrderedProductIds] = useState([]);
 
   const [categories, setCategories] = useState([]);
@@ -41,50 +41,42 @@ export const ProductProvider = ({ children }) => {
     }
   };
 
-  const checkBankAccount = async () => {
+  const getCountOfOrders = async () => {
     const headers = {
       "Content-Type": "application/json",
       authorization: `Bearer ${window.localStorage.getItem("token")}`,
     };
     try {
       const results = await axios.get(
-        `http://localhost:8000/api/v1/bank-details/account-exist?username=${window.localStorage.getItem(
+        `http://localhost:8000/api/v1/order/count-of-orders?username=${window.localStorage.getItem(
           "username"
         )}&role=${window.localStorage.getItem("role")}`,
         {
           headers,
         }
       );
-      setIsAddedBankAccount(results.data.isAccount);
+      setNumberOfOrders(results.data.orders);
     } catch (err) {
       // LogOut();
       console.log("Error -> ", err);
     }
   };
 
-  const getOrderList = async () => {
+  const getOrderedProductIds = async () => {
     const headers = {
       "Content-Type": "application/json",
       authorization: `Bearer ${window.localStorage.getItem("token")}`,
     };
     try {
       const results = await axios.get(
-        `http://localhost:8000/api/v1/order?username=${window.localStorage.getItem(
+        `http://localhost:8000/api/v1/order/ordered-product-ids?username=${window.localStorage.getItem(
           "username"
         )}&role=${window.localStorage.getItem("role")}`,
         {
           headers,
         }
       );
-      setOrderList(results.data);
-
-      const productIdsSet = new Set();
-      results?.data?.forEach((cart) => {
-        cart?.products?.forEach((product) => {
-          productIdsSet.add(product.has_order.has_order_product_id);
-        });
-      });
-      setOrderedProductIds(Array.from(productIdsSet));
+      setOrderedProductIds(results.data.product_ids);
     } catch (err) {
       // LogOut();
       console.log("Error -> ", err);
@@ -254,10 +246,10 @@ export const ProductProvider = ({ children }) => {
   useEffect(() => {
     if (window.localStorage.getItem("role") === "user") {
       getAllCategories();
-      checkBankAccount();
       getCart();
       getWishList();
-      getOrderList();
+      getCountOfOrders();
+      getOrderedProductIds();
     }
   }, [isLoggedIn]);
 
@@ -272,11 +264,8 @@ export const ProductProvider = ({ children }) => {
         setWishList,
         addToWishList,
         deleteFromWishList,
-        isAddedBankAccount,
-        setIsAddedBankAccount,
-        getOrderList,
-        orderList,
-        setOrderList,
+        getCountOfOrders,
+        numberOfOrders,
         orderedProductIds,
         categories,
         selectedCategoryHome,

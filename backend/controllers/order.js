@@ -225,9 +225,33 @@ const getOrdersDetails = async (req, resp) => {
   }
 };
 
+const getOrderedProductIds = async (req, resp) => {
+  try {
+    const results = await pool.query(queries.getOrderedProductIds, [
+      req.user.id,
+    ]);
+    resp.status(200).json(results.rows[0]);
+  } catch (err) {
+    console.log("Error -> ", err);
+    resp.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const getCountOfOrders = async (req, resp) => {
+  try {
+    const results = await pool.query(queries.getCountOfOrders, [req.user.id]);
+    resp.status(200).json(results.rows[0]);
+  } catch (err) {
+    console.log("Error -> ", err);
+    resp.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   makePayment,
   makeOrder,
   getAllOrders,
   getOrdersDetails,
+  getOrderedProductIds,
+  getCountOfOrders,
 };

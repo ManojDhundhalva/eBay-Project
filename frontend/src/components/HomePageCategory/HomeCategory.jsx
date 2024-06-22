@@ -54,8 +54,9 @@ function HomeCategory() {
 
   return (
     <>
-      <Grid container margin={0} padding={0} sx={{ userSelect: "none" }}>
+      <Grid item container margin={0} padding={0} sx={{ userSelect: "none" }}>
         <Grid
+          item
           xs={12}
           container
           margin={0}
@@ -83,6 +84,7 @@ function HomeCategory() {
           </Button>
         </Grid>
         <Grid
+          item
           xs={12}
           container
           margin={0}
@@ -90,6 +92,9 @@ function HomeCategory() {
           sx={{ position: "relative" }}
         >
           <Grid
+            item
+            padding={0}
+            margin={0}
             sx={{
               position: "absolute",
               top: "50%",
@@ -110,6 +115,9 @@ function HomeCategory() {
             </IconButton>
           </Grid>
           <Grid
+            item
+            padding={0}
+            margin={0}
             sx={{
               position: "absolute",
               top: "50%",
@@ -131,6 +139,7 @@ function HomeCategory() {
             </IconButton>
           </Grid>
           <Grid
+            item
             ref={scrollBoxRef}
             xs={12}
             margin={0}
@@ -145,8 +154,8 @@ function HomeCategory() {
               "&::-webkit-scrollbar": {
                 display: "none", // Hide scrollbar in webkit browsers (Chrome, Safari)
               },
-              "-ms-overflow-style": "none", // Hide scrollbar in IE and Edge
-              "scrollbar-width": "none", // Hide scrollbar in Firefox
+              msOverflowStyle: "none", // Hide scrollbar in IE and Edge
+              scrollbarWidth: "none", // Hide scrollbar in Firefox
             }}
           >
             {categories.length === 0

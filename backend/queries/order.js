@@ -187,6 +187,19 @@ GROUP BY
 	py.payment_transaction_id;
 `;
 
+const getOrderedProductIds = `
+SELECT array_agg(DISTINCT h.has_order_product_id) AS product_ids
+FROM has_order AS h
+JOIN order_details AS o ON h.has_order_id = o.order_id
+WHERE o.order_buyer_id = $1;
+`;
+
+const getCountOfOrders = `
+SELECT COUNT(DISTINCT order_id) AS orders
+FROM order_details
+WHERE order_buyer_id = $1;
+`;
+
 module.exports = {
   makeOrderPayment,
   makeOrderAfterPayment,
@@ -201,4 +214,6 @@ module.exports = {
   createShipper,
   getAllOrders,
   getOrderDetailsByOrderId,
+  getOrderedProductIds,
+  getCountOfOrders,
 };

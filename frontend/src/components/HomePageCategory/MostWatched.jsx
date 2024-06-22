@@ -57,8 +57,9 @@ function MostWatched() {
   }, []);
   return (
     <>
-      <Grid container margin={0} padding={0}>
+      <Grid item container margin={0} padding={0}>
         <Grid
+          item
           xs={12}
           container
           margin={0}
@@ -83,6 +84,7 @@ function MostWatched() {
           </Button>
         </Grid>
         <Grid
+          item
           xs={12}
           container
           margin={0}
@@ -131,6 +133,7 @@ function MostWatched() {
             </IconButton>
           </Grid>
           <Grid
+            item
             ref={scrollBoxRef}
             xs={12}
             margin={0}
@@ -145,8 +148,8 @@ function MostWatched() {
               "&::-webkit-scrollbar": {
                 display: "none", // Hide scrollbar in webkit browsers (Chrome, Safari)
               },
-              "-ms-overflow-style": "none", // Hide scrollbar in IE and Edge
-              "scrollbar-width": "none", // Hide scrollbar in Firefox
+              msOverflowStyle: "none", // Hide scrollbar in IE and Edge
+              scrollbarWidth: "none", // Hide scrollbar in Firefox
             }}
           >
             {allProduct.length === 0
@@ -168,37 +171,43 @@ function MostWatched() {
                   </Grid>
                 ))
               : allProduct.map((data, index) => (
-                  <Grid margin={0} padding={2} sx={{ display: "inline-block" }}>
-                    <ProductCard key={index} product={data} />
+                  <Grid
+                    key={index}
+                    margin={0}
+                    padding={2}
+                    sx={{ display: "inline-block" }}
+                  >
+                    <ProductCard product={data} />
                   </Grid>
                 ))}
             {allProduct.map((data, index) => (
               <Grid
+                key={index}
                 margin={0}
-                paddingRight={2}
+                padding={2}
                 sx={{ display: "inline-block" }}
               >
-                <ProductCard key={index} product={data} />
+                <ProductCard product={data} />
               </Grid>
             ))}
             {allProduct.map((data, index) => (
               <Grid
+                key={index}
                 margin={0}
-                padding={1}
-                paddingRight={2}
+                padding={2}
                 sx={{ display: "inline-block" }}
               >
-                <ProductCard key={index} product={data} />
+                <ProductCard product={data} />
               </Grid>
             ))}
             {allProduct.map((data, index) => (
               <Grid
+                key={index}
                 margin={0}
-                padding={1}
-                paddingRight={2}
+                padding={2}
                 sx={{ display: "inline-block" }}
               >
-                <ProductCard key={index} product={data} />
+                <ProductCard product={data} />
               </Grid>
             ))}
           </Grid>

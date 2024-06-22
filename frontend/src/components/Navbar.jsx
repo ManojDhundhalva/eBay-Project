@@ -19,7 +19,7 @@ function Navbar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const { isLoggedIn, setIsLoggedIn, LogOut } = useAuth();
   const navigate = useNavigate();
-  const { cartList, wishList, orderList } = useProduct();
+  const { cartList, wishList, numberOfOrders } = useProduct();
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -161,7 +161,7 @@ function Navbar() {
               >
                 <Badge
                   color="secondary"
-                  badgeContent={orderList.length}
+                  badgeContent={numberOfOrders}
                   max={999}
                 >
                   Order

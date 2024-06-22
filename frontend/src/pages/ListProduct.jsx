@@ -1,21 +1,26 @@
-import React, { useState, useEffect, useRef } from "react";
-import { styled } from "@mui/material/styles";
-import { Grid, Breadcrumbs, IconButton, Tooltip, Zoom } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import {
+  Grid,
+  Breadcrumbs,
+  IconButton,
+  Tooltip,
+  Zoom,
+  Select,
+  FormControl,
+  MenuItem,
+  Button,
+  TextField,
+  InputLabel,
+} from "@mui/material";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useProduct } from "../context/product";
 import { useAuth } from "../context/auth";
-import axios from "axios";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import InputLabel from "@mui/material/InputLabel";
 import LibraryAddRoundedIcon from "@mui/icons-material/LibraryAddRounded";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
+import axios from "axios";
 
 export default function ListProduct() {
   const ImgUrl =
@@ -52,7 +57,6 @@ export default function ListProduct() {
   };
 
   const navigate = useNavigate();
-  const { isAddedBankAccount } = useProduct();
   const { LogOut } = useAuth();
 
   const handleAddInput = () => {
@@ -170,18 +174,36 @@ export default function ListProduct() {
     }
   };
 
-  const isFirstRun = useRef(true);
-  useEffect(() => {
-    if (isFirstRun.current) {
-      isFirstRun.current = false;
-      if (!isAddedBankAccount) {
+  const checkBankAccount = async () => {
+    const headers = {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${window.localStorage.getItem("token")}`,
+    };
+    try {
+      const results = await axios.get(
+        `http://localhost:8000/api/v1/bank-details/account-exist?username=${window.localStorage.getItem(
+          "username"
+        )}&role=${window.localStorage.getItem("role")}`,
+        {
+          headers,
+        }
+      );
+
+      if (!results.data.isAccount) {
         toast("Please Create Account First!", {
           icon: "😊",
         });
         navigate("/dashboard");
       }
+    } catch (err) {
+      // LogOut();
+      console.log("Error -> ", err);
     }
-  }, [isAddedBankAccount]);
+  };
+
+  useEffect(() => {
+    checkBankAccount();
+  }, []);
 
   return (
     <>

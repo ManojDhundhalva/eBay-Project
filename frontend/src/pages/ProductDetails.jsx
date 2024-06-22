@@ -604,7 +604,7 @@ function ProductDetails() {
                       precision={0.1} // Set precision to 0.1 to allow fractional part
                       readOnly
                       emptyIcon={<StarBorderRoundedIcon />}
-                      icon={<StarRateRoundedIcon />}
+                      icon={<StarRoundedIcon />}
                       style={{
                         "& .MuiSvgIcon-root": {
                           borderRadius: "50%", // This will make only the star icons rounded
@@ -685,7 +685,6 @@ function ProductDetails() {
                 />
               </Typography>
             </Grid>
-
             <Grid
               container
               item
