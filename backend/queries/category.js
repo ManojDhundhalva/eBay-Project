@@ -185,6 +185,141 @@ const getCategoriesOnly = `
 SELECT DISTINCT category_name FROM category_has_sub_category;
 `;
 
+const getAllSellerProducts = `
+SELECT 
+    p.product_id,
+    p.product_title, 
+    p.product_price, 
+    p.product_avg_rating,
+    p.product_watch_count,
+    p.product_timestamp,
+    s.seller_avg_rating,
+    ARRAY_AGG(pi.product_image) AS product_images 
+FROM 
+    product AS p
+JOIN
+    seller AS s
+ON
+    p.product_seller_id = s.seller_user_id
+JOIN 
+    product_image AS pi 
+ON 
+    p.product_id = pi.product_id 
+WHERE 
+    p.product_seller_id <> $1 AND
+    p.product_seller_id = $2 AND
+    p.product_available_quantity <> 0 
+GROUP BY
+    p.product_id,
+    p.product_title,
+    p.product_price,
+    p.product_avg_rating,
+    p.product_watch_count,
+    s.seller_avg_rating
+`;
+
+const getAllSellerCategoryProduct = `
+SELECT 
+    p.product_id,
+    p.product_title, 
+    p.product_price, 
+    p.product_avg_rating,
+    p.product_watch_count,
+    p.product_timestamp,
+    s.seller_avg_rating,
+    ARRAY_AGG(pi.product_image) AS product_images 
+FROM 
+    product AS p 
+JOIN
+    seller AS s
+ON
+    p.product_seller_id = s.seller_user_id
+JOIN 
+    product_image AS pi 
+ON 
+    p.product_id = pi.product_id
+WHERE 
+    p.product_seller_id <> $1 AND
+    p.product_seller_id = $3 AND 
+	p.product_available_quantity <> 0 AND
+	p.product_category_name = $2
+GROUP BY
+    p.product_id,
+    p.product_title,
+    p.product_price,
+    p.product_avg_rating,
+    p.product_watch_count,
+    s.seller_avg_rating
+`;
+
+const getAllSellerSubCategoryProduct = `
+SELECT 
+    p.product_id,
+    p.product_title, 
+    p.product_price, 
+    p.product_avg_rating,
+    p.product_watch_count,
+    p.product_timestamp,
+    s.seller_avg_rating,
+    ARRAY_AGG(pi.product_image) AS product_images  
+FROM 
+    product AS p 
+JOIN
+    seller AS s
+ON
+    p.product_seller_id = s.seller_user_id
+JOIN 
+    product_image AS pi 
+ON 
+    p.product_id = pi.product_id
+WHERE 
+    p.product_seller_id <> $1 AND
+    p.product_seller_id = $3 AND 
+	p.product_available_quantity <> 0 AND
+	p.product_sub_category_name = $2
+GROUP BY
+    p.product_id,
+    p.product_title,
+    p.product_price,
+    p.product_avg_rating,
+    p.product_watch_count,
+    s.seller_avg_rating
+`;
+
+const getAllSellerSubSubCategoryProduct = `
+SELECT 
+    p.product_id,
+    p.product_title, 
+    p.product_price, 
+    p.product_avg_rating,
+    p.product_watch_count,
+    p.product_timestamp,
+    s.seller_avg_rating,
+    ARRAY_AGG(pi.product_image) AS product_images 
+FROM 
+    product AS p 
+JOIN
+    seller AS s
+ON
+    p.product_seller_id = s.seller_user_id
+JOIN 
+    product_image AS pi 
+ON 
+    p.product_id = pi.product_id
+WHERE 
+    p.product_seller_id <> $1 AND
+    p.product_seller_id = $3 AND
+	p.product_available_quantity <> 0 AND
+	p.product_sub_sub_category_name = $2
+GROUP BY
+    p.product_id,
+    p.product_title,
+    p.product_price,
+    p.product_avg_rating,
+    p.product_watch_count,
+    s.seller_avg_rating
+`;
+
 module.exports = {
   getAllCategories,
   getFilteredProducts,
@@ -195,4 +330,8 @@ module.exports = {
   getAllSubSubCategoryProduct,
   getAllProducts,
   getCategoriesOnly,
+  getAllSellerProducts,
+  getAllSellerCategoryProduct,
+  getAllSellerSubCategoryProduct,
+  getAllSellerSubSubCategoryProduct,
 };

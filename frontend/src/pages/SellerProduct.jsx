@@ -47,27 +47,31 @@ const sortByMostPopularSeller = (data) => {
   return data.sort((a, b) => b.seller_avg_rating - a.seller_avg_rating);
 };
 
-export default function Category() {
-  const { categories, categoriesSort, setCategoriesSort } = useProduct();
+export default function SellerProduct() {
+  const { categories } = useProduct();
   const [products, setProducts] = useState([]);
   const [firstValue, setFirstValue] = useState("");
   const [secondValue, setSecondValue] = useState("");
   const [thirdValue, setThirdValue] = useState("");
-  const navigate = useNavigate();
+
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
+  const [sellerId, setSellerId] = useState("");
 
-  const handleItemClick = async (value) => {
+  const navigate = useNavigate();
+  const [categoriesSort, setCategoriesSort] = useState("Most Watched");
+
+  const handleItemClick = async (value, seller_id) => {
     const headers = {
       "Content-Type": "application/json",
       authorization: `Bearer ${window.localStorage.getItem("token")}`,
     };
     try {
       const results = await axios.post(
-        `http://localhost:8000/api/v1/category/filter-products?username=${encodeURIComponent(
+        `http://localhost:8000/api/v1/category/filter-seller-products?username=${encodeURIComponent(
           window.localStorage.getItem("username")
         )}&role=${encodeURIComponent(window.localStorage.getItem("role"))}`,
-        { value },
+        { value, seller_id },
         { headers }
       );
       if (categoriesSort === "Newest First") {
@@ -81,46 +85,27 @@ export default function Category() {
       } else {
         setProducts(sortByMostWatched(results.data));
       }
-
     } catch (err) {
       console.log("Error -> ", err);
     }
   };
 
   useEffect(() => {
-    if (!queryParams.has("category")) {
-      handleItemClick("All Products");
-      setFirstValue("All Products");
-      navigate(`/category?category=${encodeURIComponent("All Products")}`);
-    } else {
-      setFirstValue(decodeURIComponent(queryParams.get("category")));
-      if (queryParams.has("sub_sub_category")) {
-        setSecondValue(decodeURIComponent(queryParams.get("sub_category")));
-        setThirdValue(decodeURIComponent(queryParams.get("sub_sub_category")));
-        handleItemClick(
-          decodeURIComponent(queryParams.get("sub_sub_category"))
-        );
-      } else if (queryParams.has("sub_category")) {
-        setSecondValue(decodeURIComponent(queryParams.get("sub_category")));
-        handleItemClick(decodeURIComponent(queryParams.get("sub_category")));
-      } else {
-        handleItemClick(decodeURIComponent(queryParams.get("category")));
-      }
+    if (!queryParams.has("seller-id")) {
+      navigate(-1);
     }
+    const seller_id = queryParams.get("seller-id");
+    setSellerId(seller_id);
+    handleItemClick("All Products", seller_id);
+    setFirstValue("All Products");
   }, []);
 
   const handleBreadcrumbClick = (value) => {
-    handleItemClick(value);
+    handleItemClick(value, sellerId);
     if (value === firstValue) {
-      navigate(`/category?category=${encodeURIComponent(firstValue)}`);
       setSecondValue("");
       setThirdValue("");
     } else if (value === secondValue) {
-      navigate(
-        `/category?category=${encodeURIComponent(
-          firstValue
-        )}&sub_category=${encodeURIComponent(secondValue)}`
-      );
       setThirdValue("");
     }
   };
@@ -169,10 +154,7 @@ export default function Category() {
                 </Box>
               }
               onClick={() => {
-                handleItemClick("All Products");
-                navigate(
-                  `/category?category=${encodeURIComponent("All Products")}`
-                );
+                handleItemClick("All Products", sellerId);
                 setFirstValue("All Products");
                 setSecondValue("");
                 setThirdValue("");
@@ -189,12 +171,7 @@ export default function Category() {
                 itemId={`${category.category}-${index}`}
                 label={category.category}
                 onClick={() => {
-                  handleItemClick(category.category);
-                  navigate(
-                    `/category?category=${encodeURIComponent(
-                      category.category
-                    )}`
-                  );
+                  handleItemClick(category.category, sellerId);
                   setFirstValue(category.category);
                   setSecondValue("");
                   setThirdValue("");
@@ -213,14 +190,7 @@ export default function Category() {
                       itemId={`${sub_category.sub_category}-${index2}`}
                       label={sub_category.sub_category}
                       onClick={() => {
-                        handleItemClick(sub_category.sub_category);
-                        navigate(
-                          `/category?category=${encodeURIComponent(
-                            category.category
-                          )}&sub_category=${encodeURIComponent(
-                            sub_category.sub_category
-                          )}`
-                        );
+                        handleItemClick(sub_category.sub_category, sellerId);
                         setFirstValue(category.category);
                         setSecondValue(sub_category.sub_category);
                         setThirdValue("");
@@ -238,14 +208,7 @@ export default function Category() {
                       itemId={`${sub_category.sub_category}-${index2}`}
                       label={sub_category.sub_category}
                       onClick={() => {
-                        handleItemClick(sub_category.sub_category);
-                        navigate(
-                          `/category?category=${encodeURIComponent(
-                            category.category
-                          )}&sub_category=${encodeURIComponent(
-                            sub_category.sub_category
-                          )}`
-                        );
+                        handleItemClick(sub_category.sub_category, sellerId);
                         setFirstValue(category.category);
                         setSecondValue(sub_category.sub_category);
                         setThirdValue("");
@@ -264,16 +227,7 @@ export default function Category() {
                             itemId={`${sub_sub_category}-${index3}`}
                             label={sub_sub_category}
                             onClick={() => {
-                              handleItemClick(sub_sub_category);
-                              navigate(
-                                `/category?category=${encodeURIComponent(
-                                  category.category
-                                )}&sub_category=${encodeURIComponent(
-                                  sub_category.sub_category
-                                )}&sub_sub_category=${encodeURIComponent(
-                                  sub_sub_category
-                                )}`
-                              );
+                              handleItemClick(sub_sub_category, sellerId);
                               setFirstValue(category.category);
                               setSecondValue(sub_category.sub_category);
                               setThirdValue(sub_sub_category);

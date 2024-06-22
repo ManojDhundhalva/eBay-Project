@@ -120,6 +120,7 @@ function ProductDetails() {
     addToWishList,
     deleteFromWishList,
     orderedProductIds,
+    setSellerId,
   } = useProduct();
   const { LogOut } = useAuth();
 
@@ -845,8 +846,11 @@ function ProductDetails() {
                     {product.username}
                   </Link>
                   &nbsp;&nbsp;&nbsp;&nbsp;
-                  <Link
-                    to="/"
+                  <Button
+                    onClick={() => {
+                      setSellerId(product.id);
+                      navigate(`/seller-product?seller-id=${product.id}`);
+                    }}
                     sx={{
                       textDecorationColor: "black",
                       "&:hover": {
@@ -856,7 +860,7 @@ function ProductDetails() {
                     style={{ fontFamily: "Quicksand", color: "black" }}
                   >
                     see seller's product
-                  </Link>
+                  </Button>
                 </Grid>
               </Grid>
               <Grid

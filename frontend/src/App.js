@@ -8,9 +8,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AboutUS from "./pages/AboutUs";
 import LandingPage from "./LandingPage";
-import { useAuth } from "./context/auth";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import getLPTheme from "./getLPTheme";
 import CssBaseline from "@mui/material/CssBaseline";
 import ListProduct from "./pages/ListProduct";
 import ProductDetails from "./pages/ProductDetails";
@@ -25,12 +23,14 @@ import NotFound from "./pages/NotFound";
 import Database from "./pages/Database";
 import ScrollToTop from "./scrollToTop";
 import DashBoard from "./pages/DashBoard";
+import SellerProduct from "./pages/SellerProduct";
 
 function App() {
-  const { mode, setMode, toggleColorMode } = useAuth();
-  const [showCustomTheme, setShowCustomTheme] = React.useState(true);
-  const LPtheme = createTheme(getLPTheme(mode));
-  const defaultTheme = createTheme({ palette: { mode } });
+  const theme = createTheme({
+    typography: {
+      fontFamily: "Quicksand",
+    },
+  });
 
   const location = useLocation();
   const hiddenPaths = [
@@ -53,7 +53,7 @@ function App() {
           padding={0}
           sx={{ width: "100%", height: "100vh" }}
         >
-          <ThemeProvider theme={LPtheme}>
+          <ThemeProvider theme={theme}>
             <CssBaseline />
             {(window.localStorage.getItem("role") === "user" ||
               window.localStorage.getItem("role") === null) &&
@@ -69,6 +69,11 @@ function App() {
                   <Route exact path="/" element={<LandingPage />} />
                   <Route exact path="/aboutus" element={<AboutUS />} />
                   <Route exact path="/dashboard" element={<DashBoard />} />
+                  <Route
+                    exact
+                    path="/seller-product"
+                    element={<SellerProduct />}
+                  />
                   <Route exact path="/list-product" element={<ListProduct />} />
                   <Route
                     exact
