@@ -90,9 +90,21 @@ const getFilteredSellerProducts = async (req, resp) => {
   }
 };
 
+const verifySeller = async (req, resp) => {
+  const { seller_id } = req.body;
+  try {
+    const results = await pool.query(queries.verifySeller, [seller_id]);
+    resp.status(200).json(results.rows[0]);
+  } catch (err) {
+    console.log("Error -> ", err);
+    resp.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   getAllCategories,
   getFilteredProducts,
   getCategoriesOnly,
   getFilteredSellerProducts,
+  verifySeller,
 };

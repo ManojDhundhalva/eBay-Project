@@ -14,5 +14,6 @@ router.post("/review-product", verifyTokenAndAuthorizationUser, controller.revie
 router.get("/most-watched", verifyTokenAndAuthorizationUser, controller.getMostWatchedProducts);
 router.get("/most-rated", verifyTokenAndAuthorizationUser, controller.getMostRatedProducts);
 router.get("/most-popular-seller", verifyTokenAndAuthorizationUser, controller.getMostPopularSellerProducts);
+router.post("/verify-product-id", verifyTokenAndAuthorizationUser, controller.verifyProductId);
 
 module.exports = router;

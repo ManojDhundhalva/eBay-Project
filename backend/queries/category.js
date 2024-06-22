@@ -320,6 +320,14 @@ GROUP BY
     s.seller_avg_rating
 `;
 
+const verifySeller = `
+SELECT EXISTS (
+    SELECT 1
+    FROM seller
+    WHERE seller_user_id = $1
+) AS isvalid;
+`;
+
 module.exports = {
   getAllCategories,
   getFilteredProducts,
@@ -334,4 +342,5 @@ module.exports = {
   getAllSellerCategoryProduct,
   getAllSellerSubCategoryProduct,
   getAllSellerSubSubCategoryProduct,
+  verifySeller,
 };

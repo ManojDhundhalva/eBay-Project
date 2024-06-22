@@ -273,6 +273,17 @@ const getMostPopularSellerProducts = async (req, resp) => {
   }
 };
 
+const verifyProductId = async (req, resp) => {
+  const { productId } = req.body;
+  try {
+    const results = await pool.query(queries.verifyProductId, [productId]);
+    return resp.status(200).json(results.rows[0]);
+  } catch (err) {
+    console.log("Error listing product: ", err);
+    return resp.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   listProduct,
   getAllProducts,
@@ -282,4 +293,5 @@ module.exports = {
   getMostWatchedProducts,
   getMostRatedProducts,
   getMostPopularSellerProducts,
+  verifyProductId,
 };

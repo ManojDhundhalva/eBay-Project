@@ -90,11 +90,35 @@ export default function SellerProduct() {
     }
   };
 
+  const verifySeller = async (seller_id) => {
+    const headers = {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${window.localStorage.getItem("token")}`,
+    };
+    try {
+      const results = await axios.post(
+        `http://localhost:8000/api/v1/category/verify-seller?username=${window.localStorage.getItem(
+          "username"
+        )}&role=${window.localStorage.getItem("role")}`,
+        { seller_id },
+        { headers }
+      );
+
+      if (!results.data.isvalid) {
+        navigate("/not-found");
+      }
+    } catch (err) {
+      console.log("Error -> ", err);
+    }
+  };
+
   useEffect(() => {
     if (!queryParams.has("seller-id")) {
       navigate(-1);
     }
     const seller_id = queryParams.get("seller-id");
+    verifySeller(seller_id);
+
     setSellerId(seller_id);
     handleItemClick("All Products", seller_id);
     setFirstValue("All Products");

@@ -329,6 +329,14 @@ ORDER BY
 LIMIT 10;
 `;
 
+const verifyProductId = `
+SELECT EXISTS (
+    SELECT 1
+    FROM product
+    WHERE product_id = $1
+) AS isvalid;
+`;
+
 module.exports = {
   listProduct,
   addImage,
@@ -350,4 +358,5 @@ module.exports = {
   getMostWatchedProducts,
   getMostRatedProducts,
   getMostPopularSellerProducts,
+  verifyProductId,
 };

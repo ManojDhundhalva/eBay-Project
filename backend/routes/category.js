@@ -8,5 +8,6 @@ router.get("/", verifyTokenAndAuthorizationUser, controller.getAllCategories);
 router.get("/category-only", verifyTokenAndAuthorizationUser, controller.getCategoriesOnly);
 router.post("/filter-products", verifyTokenAndAuthorizationUser, controller.getFilteredProducts);
 router.post("/filter-seller-products", verifyTokenAndAuthorizationUser, controller.getFilteredSellerProducts);
+router.post("/verify-seller", verifyTokenAndAuthorizationUser, controller.verifySeller);
 
 module.exports = router;

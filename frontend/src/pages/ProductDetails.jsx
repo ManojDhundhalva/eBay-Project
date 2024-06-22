@@ -124,16 +124,36 @@ function ProductDetails() {
   } = useProduct();
   const { LogOut } = useAuth();
 
+  const verifyProductId = async (productId) => {
+    const headers = {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${window.localStorage.getItem("token")}`,
+    };
+    try {
+      const results = await axios.post(
+        `http://localhost:8000/api/v1/product/verify-product-id?username=${window.localStorage.getItem(
+          "username"
+        )}&role=${window.localStorage.getItem("role")}`,
+        { productId },
+        { headers }
+      );
+
+      console.log(results.data);
+      if (!results.data.isvalid) {
+        navigate("/not-found");
+      }
+    } catch (err) {
+      console.log("Error -> ", err);
+    }
+  };
+
   useEffect(() => {
     const productId = productIdParams;
-    if (!validateUUID(productId)) {
-      navigate("/");
-    } else {
-      setIsInOrderedProductIds(orderedProductIds.includes(productId));
-      getProductDetails();
-      checkIsAddedToCart();
-      checkIsAddedToWishList();
-    }
+    verifyProductId(productId);
+    setIsInOrderedProductIds(orderedProductIds.includes(productId));
+    getProductDetails();
+    checkIsAddedToCart();
+    checkIsAddedToWishList();
   }, []);
 
   function formatTimestamp(postgresTimestamp) {
@@ -155,22 +175,21 @@ function ProductDetails() {
         )}&productId=${productIdParams}`,
         { headers }
       );
-      console.log("product", data);
       setValue(
-        data.your_reviews !== null ? data.your_reviews.your_rating : value
+        data?.your_reviews !== null ? data?.your_reviews?.your_rating : value
       );
       setOriginalRating(
-        data.your_reviews !== null ? data.your_reviews.your_rating : value
+        data?.your_reviews !== null ? data?.your_reviews?.your_rating : value
       );
       setProductComment(
-        data.your_reviews !== null ? data.your_reviews.your_comment : ""
+        data?.your_reviews !== null ? data?.your_reviews?.your_comment : ""
       );
       setOriginalComment(
-        data.your_reviews !== null ? data.your_reviews.your_comment : ""
+        data?.your_reviews !== null ? data?.your_reviews?.your_comment : ""
       );
       setReviewTimeStamp(
-        data.your_reviews !== null
-          ? formatTimestamp(data.your_reviews.your_review_timestamp)
+        data?.your_reviews !== null
+          ? formatTimestamp(data?.your_reviews?.your_review_timestamp)
           : ""
       );
       setProduct(data);
