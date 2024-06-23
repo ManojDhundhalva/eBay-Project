@@ -1,6 +1,6 @@
 import * as React from "react";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
+import { Button, IconButton, InputAdornment } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
@@ -16,8 +16,9 @@ import { useAuth } from "../context/auth";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import getLPTheme from "../getLPTheme";
-import FormLabel from "@mui/material/FormLabel";
 import { styled } from "@mui/system";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const FormGrid = styled(Grid)(() => ({
   display: "flex",
@@ -29,6 +30,14 @@ export default function Login() {
   const [justVerify, setJustVerify] = useState(false);
   const [validPassword, setValidPassword] = useState(false);
   const { setIsLoggedIn, validateUser, isLoggedIn } = useAuth();
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
 
   const handlePasswordofLogin = (e) => {
     const input = e.target.value;
@@ -147,27 +156,18 @@ export default function Login() {
               sx={{ mt: 1, width: "100%" }}
             >
               <FormGrid item xs={12} md={6} className="mt-2">
-                <FormLabel htmlFor="username" required>
-                  Username
-                </FormLabel>
                 <TextField
-                  id="standard-basic-1"
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="username"
-                  autoFocus
                   value={emailUsername}
                   onChange={(e) => {
                     setEmailUsername(e.target.value);
                   }}
-                  InputProps={{
-                    style: {
-                      fontFamily: LPtheme.typography.fontFamily,
-                      fontWeight: "bold",
-                      color: LPtheme.palette.text.primary,
-                    },
-                  }}
+                  id="username"
+                  label="Username"
+                  placeholder="e.g. Manoj"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  size="small"
                   error={
                     justVerify &&
                     (emailUsername === "" || emailUsername.length >= 255)
@@ -176,28 +176,27 @@ export default function Login() {
                     justVerify &&
                     (emailUsername == "" ? "This field cannot be empty." : "")
                   }
-                  autoComplete="off"
-                />
-              </FormGrid>
-              <FormGrid item xs={12} md={6} className="mt-2">
-                <FormLabel htmlFor="password" required>
-                  Password
-                </FormLabel>
-                <TextField
-                  id="standard-basic-2"
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="password"
-                  type="password"
-                  onChange={handlePasswordofLogin}
-                  value={password}
-                  InputProps={{
-                    style: {
-                      fontFamily: LPtheme.typography.fontFamily,
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: 25,
                       fontWeight: "bold",
                     },
                   }}
+                />
+              </FormGrid>
+              <FormGrid item xs={12} md={6} className="mt-2">
+                <TextField
+                  value={password}
+                  onChange={handlePasswordofLogin}
+                  id="password"
+                  label="Password"
+                  placeholder="e.g. 12345678"
+                  variant="outlined"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  fullWidth
+                  required
+                  size="small"
                   error={
                     justVerify &&
                     (!validPassword ||
@@ -209,12 +208,32 @@ export default function Login() {
                     (password === ""
                       ? "This field cannot be empty."
                       : !validPassword
-                      ? "The password must contain at least 8 digits."
+                      ? "The password must contain at least 8 characters."
                       : "")
                   }
-                  autoComplete="off"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {!showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: 25,
+                      fontWeight: "bold",
+                    },
+                  }}
                 />
               </FormGrid>
+
               <Button
                 type="submit"
                 fullWidth

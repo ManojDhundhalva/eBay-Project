@@ -1,71 +1,54 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useProduct } from "../context/product";
-import { useNavigate } from "react-router-dom";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import { alpha } from "@mui/material/styles";
-import { Grid } from "@mui/material";
-import Rating from "@mui/material/Rating";
-import axios from "axios";
 import { useAuth } from "../context/auth";
-import { Carousel } from "react-bootstrap";
-import CardContent from "@mui/material/CardContent";
 import ProductRatingGraph from "../components/ProductRatingDetails";
-import StarIcon from "@mui/icons-material/Star";
-import { toast } from "react-hot-toast";
-import Button from "@mui/material/Button";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import RemoveShoppingCartIcon from "@mui/icons-material/RemoveShoppingCart";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import TextField from "@mui/material/TextField";
-// import SimpleImageSlider from "react-simple-image-slider";
-import { styled } from "@mui/system";
 import DisplayImages from "../components/DisplayImages";
-import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
-import Chip from "@mui/material/Chip";
-import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
-import StarRateRoundedIcon from "@mui/icons-material/StarRateRounded";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
-import Link from "@mui/material/Link";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import Stack from "@mui/material/Stack";
-import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
-import CircleIcon from "@mui/icons-material/Circle";
-import Avatar from "@mui/material/Avatar";
-import StarRoundedIcon from "@mui/icons-material/StarRounded";
-import SendIcon from "@mui/icons-material/Send";
+import { toast } from "react-hot-toast";
 import moment from "moment";
+import axios from "axios";
 import EmojiPicker, {
   EmojiClickData,
   Theme,
   EmojiStyle,
   SkinTones,
 } from "emoji-picker-react";
-import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
+import {
+  Grid,
+  Typography,
+  Box,
+  Rating,
+  Button,
+  TextField,
+  Chip,
+  Link,
+  Breadcrumbs,
+  Avatar,
+  IconButton,
+  Zoom,
+  Tooltip,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import RemoveShoppingCartIcon from "@mui/icons-material/RemoveShoppingCart";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
+import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import CircleIcon from "@mui/icons-material/Circle";
+import StarRoundedIcon from "@mui/icons-material/StarRounded";
+import SendIcon from "@mui/icons-material/Send";
 import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 import ClearIcon from "@mui/icons-material/Clear";
-import IconButton from "@mui/material/IconButton";
 import ShareIcon from "@mui/icons-material/Share";
-import Zoom from "@mui/material/Zoom";
-import Tooltip from "@mui/material/Tooltip";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import ShoppingCartRoundedIcon from "@mui/icons-material/ShoppingCartRounded";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
 import LinkIcon from "@mui/icons-material/Link";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import Icon from "@mui/material/Icon";
-import { useLocation } from "react-router-dom";
-import { validate as validateUUID } from "uuid";
-
-const FormGrid = styled(Grid)(() => ({
-  display: "flex",
-  flexDirection: "column",
-}));
 
 const labels = {
   1: "Useless",
