@@ -14,7 +14,7 @@ const getAccount = async (req, resp) => {
     const results = await pool.query(queries.getAccountByUserName, [username]);
 
     if (results.rows.length !== 1) {
-      return resp.status(401).json({ message: "User not found" });
+      return resp.status(201).json({ message: "User not found" });
     }
     const { id, role } = results.rows[0];
     const storedPassword = results.rows[0].password;
@@ -31,7 +31,7 @@ const getAccount = async (req, resp) => {
       );
       resp.status(200).json({ token, username, role });
     } else {
-      resp.status(401).json({ message: "Incorrect Password" });
+      resp.status(201).json({ message: "Incorrect Password" });
     }
   } catch (error) {
     console.error(error);

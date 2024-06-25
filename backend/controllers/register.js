@@ -23,13 +23,13 @@ const createAccount = async (req, resp) => {
   try {
     const usernameResult = await pool.query(queries.getUserName, [username]);
     if (usernameResult.rows.length !== 0) {
-      return resp.status(401).json({ message: "UserName Already Exist" });
+      return resp.status(201).json({ message: "UserName Already Exist" });
     }
 
     const emailResult = await pool.query(queries.getEmailId, [emailid]);
     if (emailResult.rows.length !== 0) {
       return resp
-        .status(401)
+        .status(201)
         .json({ message: "Email-id is Already Registered" });
     }
 
@@ -47,7 +47,7 @@ const createAccount = async (req, resp) => {
       phone_number,
     ]);
 
-    resp.status(201).json({ message: "Created Successfully" });
+    resp.status(200).json({ message: "Created Successfully" });
   } catch (error) {
     console.error(error);
     resp.status(500).json({ message: "Internal Server Error" });

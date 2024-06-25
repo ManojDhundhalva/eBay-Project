@@ -11,21 +11,13 @@ import {
   Button,
   TextField,
   Avatar,
+  CircularProgress,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-
-import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { styled } from "@mui/system";
-import getLPTheme from "../getLPTheme";
-
-const FormGrid = styled(Grid)(() => ({
-  display: "flex",
-  flexDirection: "column",
-}));
+import SaveIcon from "@mui/icons-material/Save";
+import InfoIcon from "@mui/icons-material/Info";
 
 export default function Register() {
   const [loading, setloading] = useState(false);
@@ -51,6 +43,8 @@ export default function Register() {
   const [phoneNumber, setPhoneNumber] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
+  const [errorUserName, setErrorUserName] = useState(false);
+  const [errorEmailId, setErrorEmailId] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -59,8 +53,7 @@ export default function Register() {
   };
 
   const navigate = useNavigate();
-  const { mode, validateUser, isLoggedIn } = useAuth();
-  const LPtheme = createTheme(getLPTheme(mode));
+  const { validateUser, isLoggedIn } = useAuth();
 
   const handlePhoneNumber = (e) => {
     const input = e.target.value;
@@ -76,6 +69,8 @@ export default function Register() {
     setJustVerify(true);
 
     if (
+      errorEmailId ||
+      errorUserName ||
       firstname === "" ||
       lastname === "" ||
       username === "" ||
@@ -89,14 +84,18 @@ export default function Register() {
       password.length >= 255 ||
       phoneNumber.length !== 10
     ) {
+      toast("Please fill out all fields correctly.", {
+        icon: <InfoIcon />,
+      });
       return;
     }
 
     setloading(true);
 
     try {
-      await toast.promise(
-        axios.post("http://localhost:8000/api/v1/register", {
+      const response = await axios.post(
+        "http://localhost:8000/api/v1/register",
+        {
           firstname,
           lastname,
           username,
@@ -104,22 +103,19 @@ export default function Register() {
           password,
           role,
           phone_number: phoneNumber,
-        }),
-        {
-          loading: "Registering...", // Message shown during loading
-          success: () => {
-            navigate("/login");
-            return <b>Registration successful!</b>; // Success message
-          },
-          error: () => {
-            return <b>Registration failed.</b>; // Error message
-          },
         }
       );
+      if (response.status === 200) {
+        toast.success(response.data.message);
+        navigate("/login");
+      } else {
+        toast.error(response.data.message);
+      }
     } catch (err) {
-      console.log("Error -> ", err);
+      toast.error("An error occurred during registration.");
+    } finally {
+      setloading(false);
     }
-    setloading(false);
   };
 
   useEffect(() => {
@@ -132,7 +128,24 @@ export default function Register() {
 
   return (
     <>
-      <Grid item container padding={0} margin={0}>
+      <Grid
+        margin={0}
+        padding={4}
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          height: "auto",
+          maxWidth: "sm",
+          borderRadius: "16px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          backgroundColor: "lavender",
+          boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+        }}
+      >
         <Grid
           item
           container
@@ -141,7 +154,6 @@ export default function Register() {
           flexDirection="column"
           justifyContent="center"
           alignItems="center"
-          sx={{ backgroundColor: "lightblue" }}
         >
           <Avatar sx={{ backgroundColor: "#25396F" }}>
             <LockOutlinedIcon />
@@ -150,8 +162,15 @@ export default function Register() {
             Create A New Account
           </Typography>
         </Grid>
-        <Grid item container sx={{ backgroundColor: "lavender" }}>
-          <Grid item xs={12} padding={0} margin={0}>
+        <Grid
+          item
+          container
+          margin={0}
+          padding={2}
+          component="form"
+          onSubmit={handleSubmit}
+        >
+          <Grid item xs={12} paddingY={1} paddingX={2} margin={0}>
             <TextField
               value={firstname}
               onChange={(e) => {
@@ -179,7 +198,7 @@ export default function Register() {
               }}
             />
           </Grid>
-          <Grid item xs={12} padding={0} margin={0}>
+          <Grid item xs={12} paddingY={1} paddingX={2} margin={0}>
             <TextField
               value={lastname}
               onChange={(e) => {
@@ -205,11 +224,15 @@ export default function Register() {
               }}
             />
           </Grid>
-          <Grid item xs={12} padding={0} margin={0}>
+          <Grid item xs={12} paddingY={1} paddingX={2} margin={0}>
             <TextField
               value={username}
               onChange={(e) => {
-                setUsername(e.target.value);
+                const value = e.target.value;
+                const hasDigit = /\d/.test(value);
+
+                setUsername(value);
+                setErrorUserName(!hasDigit);
               }}
               id="username"
               label="User Name"
@@ -218,10 +241,17 @@ export default function Register() {
               fullWidth
               required
               size="small"
-              error={justVerify && (username === "" || username.length >= 255)}
+              error={
+                justVerify &&
+                (username === "" || username.length >= 255 || errorUserName)
+              }
               helperText={
                 justVerify &&
-                (username === "" ? "This field cannot be empty." : "")
+                (username === ""
+                  ? "This field cannot be empty."
+                  : errorUserName
+                  ? "This field must contain at least one digit"
+                  : "")
               }
               sx={{
                 "& .MuiOutlinedInput-root": {
@@ -231,11 +261,15 @@ export default function Register() {
               }}
             />
           </Grid>
-          <Grid item xs={12} padding={0} margin={0}>
+          <Grid item xs={12} paddingY={1} paddingX={2} margin={0}>
             <TextField
               value={email}
               onChange={(e) => {
-                setEmail(e.target.value);
+                const value = e.target.value;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                setEmail(value);
+                setErrorEmailId(!emailRegex.test(value));
               }}
               id="email"
               label="Email Address"
@@ -244,10 +278,17 @@ export default function Register() {
               fullWidth
               required
               size="small"
-              error={justVerify && (email === "" || email.length >= 255)}
+              error={
+                justVerify &&
+                (email === "" || email.length >= 255 || errorEmailId)
+              }
               helperText={
                 justVerify &&
-                (email === "" ? "This field cannot be empty." : "")
+                (email === ""
+                  ? "This field cannot be empty."
+                  : errorEmailId
+                  ? "Please, enter valid email id"
+                  : "")
               }
               sx={{
                 "& .MuiOutlinedInput-root": {
@@ -257,7 +298,7 @@ export default function Register() {
               }}
             />
           </Grid>
-          <Grid item xs={12} padding={0} margin={0}>
+          <Grid item xs={12} paddingY={1} paddingX={2} margin={0}>
             <TextField
               value={password}
               onChange={handlePasswordofLogin}
@@ -291,7 +332,11 @@ export default function Register() {
                       onMouseDown={handleMouseDownPassword}
                       edge="end"
                     >
-                      {!showPassword ? <VisibilityOff /> : <Visibility />}
+                      {!showPassword ? (
+                        <VisibilityOff sx={{ color: "#02294F" }} />
+                      ) : (
+                        <Visibility sx={{ color: "#02294F" }} />
+                      )}
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -304,7 +349,7 @@ export default function Register() {
               }}
             />
           </Grid>
-          <Grid item xs={12} padding={0} margin={0}>
+          <Grid item xs={12} paddingY={1} paddingX={2} margin={0}>
             <TextField
               value={phoneNumber}
               onChange={handlePhoneNumber}
@@ -334,14 +379,13 @@ export default function Register() {
               }}
             />
           </Grid>
-        </Grid>
-        <Grid item container sx={{ backgroundColor: "lightblue" }}>
-          <Grid item xs={12} padding={0} margin={0}>
+          <Grid item xs={12} paddingTop={2} paddingX={2} margin={0}>
             <Button
               fullWidth
               type="submit"
               variant="contained"
               sx={{
+                position: "relative",
                 fontWeight: "bold",
                 borderRadius: "12px",
                 backgroundColor: "#02294F",
@@ -352,10 +396,20 @@ export default function Register() {
                 },
               }}
             >
-              {!loading ? "Sign Up" : "Signing Up...."}
+              {!loading ? "Sign Up" : "Signing Up"}
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              {loading && (
+                <CircularProgress
+                  size={20}
+                  sx={{
+                    color: "white",
+                    right: 0,
+                  }}
+                />
+              )}
             </Button>
           </Grid>
-          <Grid item xs={12} padding={0} margin={0}>
+          <Grid item xs={12} paddingY={1} paddingX={2} margin={0}>
             <Button
               color="secondary"
               variant="text"

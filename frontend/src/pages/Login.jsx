@@ -1,29 +1,21 @@
-import * as React from "react";
-import Avatar from "@mui/material/Avatar";
-import { Button, IconButton, InputAdornment } from "@mui/material";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Alert from "@mui/material/Alert";
 import { useAuth } from "../context/auth";
-import axios from "axios";
 import { toast } from "react-hot-toast";
-import getLPTheme from "../getLPTheme";
-import { styled } from "@mui/system";
+import {
+  Grid,
+  Avatar,
+  Button,
+  TextField,
+  Typography,
+  IconButton,
+  InputAdornment,
+  CircularProgress,
+} from "@mui/material";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-
-const FormGrid = styled(Grid)(() => ({
-  display: "flex",
-  flexDirection: "column",
-}));
+import axios from "axios";
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
@@ -53,8 +45,6 @@ export default function Login() {
   const [emailUsername, setEmailUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const { mode } = useAuth();
-  const LPtheme = createTheme(getLPTheme(mode));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -72,28 +62,21 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await toast.promise(
-        axios.post("http://localhost:8000/api/v1/login", {
-          username: emailUsername,
-          password,
-        }),
-        {
-          loading: "Logging in...", // Message shown during loading
-          success: (results) => {
-            window.localStorage.setItem("token", results.data.token);
-            window.localStorage.setItem("username", results.data.username);
-            window.localStorage.setItem("role", results.data.role);
+      const results = await axios.post("http://localhost:8000/api/v1/login", {
+        username: emailUsername,
+        password,
+      });
 
-            setIsLoggedIn(true);
-            navigate("/");
-            // navigate("/auth?username=a&role=user");
-            return <b>Login successful!</b>; // Success message
-          },
-          error: () => {
-            return <b>Invalid Credentials</b>; // Error message
-          },
-        }
-      );
+      if (results.status === 200) {
+        window.localStorage.setItem("token", results.data.token);
+        window.localStorage.setItem("username", results.data.username);
+        window.localStorage.setItem("role", results.data.role);
+        setIsLoggedIn(true);
+        toast.success("Login successful!");
+        navigate("/");
+      } else {
+        toast.error("Invalid Credentials");
+      }
     } catch (err) {
       console.log("error -> ", err);
     }
@@ -109,167 +92,175 @@ export default function Login() {
   }, []);
 
   return (
-    <div className="my-glass-effect">
-      <ThemeProvider theme={LPtheme}>
-        <Container
-          component="main"
-          maxWidth="sm"
-          sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
-        >
-          <CssBaseline />
-          <Box
-            style={{
-              backgroundColor: LPtheme.palette.background.paper,
-              boxShadow: LPtheme.shadows[4],
+    <Grid
+      margin={0}
+      paddingX={4}
+      paddingY={6}
+      sx={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        height: "auto",
+        maxWidth: "sm",
+        borderRadius: "16px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        backgroundColor: "lavender",
+        boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+      }}
+    >
+      <Grid
+        item
+        container
+        padding={0}
+        margin={0}
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <Avatar sx={{ backgroundColor: "#25396F" }}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography variant="h5" fontWeight="bold">
+          Sign in
+        </Typography>
+      </Grid>
+      <Grid
+        item
+        container
+        margin={0}
+        padding={2}
+        component="form"
+        onSubmit={handleSubmit}
+      >
+        <Grid item xs={12} padding={2} margin={0}>
+          <TextField
+            value={emailUsername}
+            onChange={(e) => {
+              setEmailUsername(e.target.value);
+            }}
+            id="username"
+            label="Username"
+            placeholder="e.g. Manoj"
+            variant="outlined"
+            fullWidth
+            required
+            size="small"
+            error={
+              justVerify &&
+              (emailUsername === "" || emailUsername.length >= 255)
+            }
+            helperText={
+              justVerify &&
+              (emailUsername == "" ? "This field cannot be empty." : "")
+            }
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 25,
+                fontWeight: "bold",
+              },
+            }}
+          />
+        </Grid>
+        <Grid item xs={12} padding={2} margin={0}>
+          <TextField
+            value={password}
+            onChange={handlePasswordofLogin}
+            id="password"
+            label="Password"
+            placeholder="e.g. 12345678"
+            variant="outlined"
+            name="password"
+            type={showPassword ? "text" : "password"}
+            fullWidth
+            required
+            size="small"
+            error={
+              justVerify &&
+              (!validPassword || password === "" || password.length >= 255)
+            }
+            helperText={
+              justVerify &&
+              (password === ""
+                ? "This field cannot be empty."
+                : !validPassword
+                ? "The password must contain at least 8 characters."
+                : "")
+            }
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {!showPassword ? (
+                      <VisibilityOff sx={{ color: "#02294F" }} />
+                    ) : (
+                      <Visibility sx={{ color: "#02294F" }} />
+                    )}
+                  </IconButton>
+                </InputAdornment>
+              ),
             }}
             sx={{
-              marginTop: 12,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              backgroundColor: LPtheme.palette.background.paper,
-              borderRadius: LPtheme.shape.borderRadius * 2,
-              padding: "3em",
-              height: "auto",
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 25,
+                fontWeight: "bold",
+              },
+            }}
+          />
+        </Grid>
+        <Grid item xs={12} padding={2} margin={0}>
+          <Button
+            fullWidth
+            type="submit"
+            variant="contained"
+            sx={{
+              fontWeight: "bold",
+              borderRadius: "12px",
+              backgroundColor: "#02294F",
+              color: "white",
+              "&: hover": {
+                color: "white",
+                backgroundColor: "#25396F",
+              },
             }}
           >
-            <Avatar
-              sx={{ m: 1 }}
-              style={{ backgroundColor: LPtheme.palette.secondary.main }}
-            >
-              <LockOutlinedIcon />
-            </Avatar>
-            <Typography
-              component="h1"
-              variant="h5"
-              sx={{
-                fontFamily: LPtheme.typography.fontFamily,
-                fontWeight: "bold",
-              }}
-            >
-              Sign in
-            </Typography>
-            <Box
-              component="form"
-              onSubmit={handleSubmit}
-              noValidate
-              sx={{ mt: 1, width: "100%" }}
-            >
-              <FormGrid item xs={12} md={6} className="mt-2">
-                <TextField
-                  value={emailUsername}
-                  onChange={(e) => {
-                    setEmailUsername(e.target.value);
-                  }}
-                  id="username"
-                  label="Username"
-                  placeholder="e.g. Manoj"
-                  variant="outlined"
-                  fullWidth
-                  required
-                  size="small"
-                  error={
-                    justVerify &&
-                    (emailUsername === "" || emailUsername.length >= 255)
-                  }
-                  helperText={
-                    justVerify &&
-                    (emailUsername == "" ? "This field cannot be empty." : "")
-                  }
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: 25,
-                      fontWeight: "bold",
-                    },
-                  }}
-                />
-              </FormGrid>
-              <FormGrid item xs={12} md={6} className="mt-2">
-                <TextField
-                  value={password}
-                  onChange={handlePasswordofLogin}
-                  id="password"
-                  label="Password"
-                  placeholder="e.g. 12345678"
-                  variant="outlined"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  fullWidth
-                  required
-                  size="small"
-                  error={
-                    justVerify &&
-                    (!validPassword ||
-                      password === "" ||
-                      password.length >= 255)
-                  }
-                  helperText={
-                    justVerify &&
-                    (password === ""
-                      ? "This field cannot be empty."
-                      : !validPassword
-                      ? "The password must contain at least 8 characters."
-                      : "")
-                  }
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                          edge="end"
-                        >
-                          {!showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: 25,
-                      fontWeight: "bold",
-                    },
-                  }}
-                />
-              </FormGrid>
-
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-                style={{
-                  fontFamily: LPtheme.typography.fontFamily,
-                  fontWeight: "bold",
-                  backgroundColor: LPtheme.palette.primary.main,
+            {!loading ? "Sign In" : "Signing In"}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            {loading && (
+              <CircularProgress
+                size={20}
+                sx={{
+                  color: "white",
+                  right: 0,
                 }}
-              >
-                {!loading ? "Sign In" : "Signing In...."}
-              </Button>
-              <Grid container>
-                <Grid item xs={12}>
-                  <Button
-                    color="secondary"
-                    onClick={() => {
-                      navigate("/register");
-                    }}
-                    variant="text"
-                    style={{
-                      fontFamily: LPtheme.typography.fontFamily,
-                      fontWeight: "bold",
-                      color: LPtheme.palette.text.secondary,
-                      textDecoration: "underline",
-                    }}
-                  >
-                    Don't have an account? Sign Up
-                  </Button>
-                </Grid>
-              </Grid>
-            </Box>
-          </Box>
-        </Container>
-      </ThemeProvider>
-    </div>
+              />
+            )}
+          </Button>
+        </Grid>
+        <Grid item xs={12} paddingY={0} paddingX={2} margin={0}>
+          <Button
+            color="secondary"
+            variant="text"
+            onClick={() => {
+              navigate("/register");
+            }}
+            sx={{
+              fontWeight: "bold",
+              color: "#03045e",
+              textDecoration: "underline",
+            }}
+          >
+            Don't have an account? Sign Up
+          </Button>
+        </Grid>
+      </Grid>
+    </Grid>
   );
 }
