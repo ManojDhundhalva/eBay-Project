@@ -12,6 +12,7 @@ const inventoryRoutes = require("./routes/inventory");
 const shipperRoutes = require("./routes/shipper");
 const categoryRoutes = require("./routes/category");
 const databaseRoutes = require("./routes/database");
+const verifyEmail = require("./routes/verifyEmail");
 const cors = require("cors");
 const dotenv = require("dotenv");
 
@@ -38,6 +39,7 @@ app.use("/api/v1/inventory", inventoryRoutes);
 app.use("/api/v1/shipper", shipperRoutes);
 app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/database", databaseRoutes);
+app.use("/api/v1/verify-email", verifyEmail);
 // app.use("/api/v1/seller", sellerRoutes);
 
 app.get(
