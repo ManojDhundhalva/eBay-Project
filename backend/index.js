@@ -20,7 +20,6 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 8000;
 
-
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || "http://localhost:3000",
@@ -36,19 +35,19 @@ app.get("/", (req, resp) => {
   resp.send("hello");
 });
 
-app.use("/api/v1/login", loginRoutes);
-app.use("/api/v1/register", registerRoutes);
-app.use("/api/v1/profile", profileRoutes);
-app.use("/api/v1/bank-details", bankDetailsRoutes);
-app.use("/api/v1/product", productRoutes);
-app.use("/api/v1/cart", cartRoutes);
-app.use("/api/v1/wish-list", wishListRoutes);
-app.use("/api/v1/order", orderRoutes);
-app.use("/api/v1/inventory", inventoryRoutes);
-app.use("/api/v1/shipper", shipperRoutes);
-app.use("/api/v1/category", categoryRoutes);
-app.use("/api/v1/database", databaseRoutes);
-app.use("/api/v1/verify-email", verifyEmail);
+app.use("/login", loginRoutes);
+app.use("/register", registerRoutes);
+app.use("/profile", profileRoutes);
+app.use("/bank-details", bankDetailsRoutes);
+app.use("/product", productRoutes);
+app.use("/cart", cartRoutes);
+app.use("/wish-list", wishListRoutes);
+app.use("/order", orderRoutes);
+app.use("/inventory", inventoryRoutes);
+app.use("/shipper", shipperRoutes);
+app.use("/category", categoryRoutes);
+app.use("/database", databaseRoutes);
+app.use("/verify-email", verifyEmail);
 
 app.get(
   "/api/v1/getTomTomApiKey",
