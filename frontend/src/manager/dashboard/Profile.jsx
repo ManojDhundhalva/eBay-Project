@@ -12,6 +12,8 @@ import axios from "axios";
 import { useAuth } from "../../context/auth";
 
 export default function Profile() {
+  axios.defaults.withCredentials = true;
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [userName, setUserName] = useState("");

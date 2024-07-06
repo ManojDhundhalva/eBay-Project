@@ -3,6 +3,8 @@ import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
 
 function AllProducts() {
+  axios.defaults.withCredentials = true;
+
   const [allProducts, setAllProducts] = useState([]);
 
   const getAllProductsOfInventory = async () => {

@@ -26,6 +26,8 @@ import image1 from "../images/image1.jpg";
 import OtpInput from "react-otp-input";
 
 export default function Login() {
+  axios.defaults.withCredentials = true;
+
   const [loading, setLoading] = useState(false);
   const [justVerify, setJustVerify] = useState(false);
   const [validPassword, setValidPassword] = useState(false);

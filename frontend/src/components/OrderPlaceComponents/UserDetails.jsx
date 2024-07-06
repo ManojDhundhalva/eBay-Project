@@ -26,6 +26,8 @@ function UserDetails({
   longitude,
   setLongitude,
 }) {
+  axios.defaults.withCredentials = true;
+
   const [apiKey, setApiKey] = useState("");
 
   const handlePincode = (e) => {

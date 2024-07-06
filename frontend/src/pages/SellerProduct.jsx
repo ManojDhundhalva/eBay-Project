@@ -48,6 +48,7 @@ const sortByMostPopularSeller = (data) => {
 };
 
 export default function SellerProduct() {
+  axios.defaults.withCredentials = true;
   const { categories } = useProduct();
   const [products, setProducts] = useState([]);
   const [firstValue, setFirstValue] = useState("");

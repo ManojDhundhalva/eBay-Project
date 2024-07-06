@@ -11,6 +11,8 @@ import Chip from "@mui/material/Chip";
 import { toast } from "react-hot-toast";
 
 function ReceivedQueue() {
+  axios.defaults.withCredentials = true;
+
   const [allQueues, setAllQueues] = useState([]);
 
   const getAllQueuesOfInventory = async () => {

@@ -21,6 +21,8 @@ const calculateColumnWidth = (rows, field, headerName) => {
 };
 
 function Database() {
+  axios.defaults.withCredentials = true;
+
   const { LogOut } = useAuth();
   const [tables, setTables] = useState([]);
   const [columns, setColumns] = useState([]);

@@ -23,6 +23,9 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import axios from "axios";
 
 export default function ListProduct() {
+
+  axios.defaults.withCredentials = true;
+
   const ImgUrl =
     "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg";
 

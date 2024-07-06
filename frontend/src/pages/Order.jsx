@@ -73,6 +73,8 @@ const filterByPending = (data, orderStepOfOrderId) => {
 };
 
 function Order() {
+  axios.defaults.withCredentials = true;
+
   const [orderList, setOrderList] = useState([]);
   const navigate = useNavigate();
   const [orderStepOfOrderId, setOrderStepOfOrderId] = useState({});

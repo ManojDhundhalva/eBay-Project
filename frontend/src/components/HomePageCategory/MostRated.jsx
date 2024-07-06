@@ -9,6 +9,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function MostRated() {
+  axios.defaults.withCredentials = true;
+
   const [allProduct, setAllProduct] = useState([]);
   const { setCategoriesSort } = useProduct();
   const scrollBoxRef = useRef(null);

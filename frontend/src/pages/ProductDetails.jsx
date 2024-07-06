@@ -63,6 +63,7 @@ function getLabelText(value) {
 }
 
 function ProductDetails() {
+  axios.defaults.withCredentials = true;
   const navigate = useNavigate();
   const [product, setProduct] = useState({});
   const [selectedQuantity, setSelectedQuantity] = useState(1);

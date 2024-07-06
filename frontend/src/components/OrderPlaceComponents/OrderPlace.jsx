@@ -36,6 +36,8 @@ function OrderPlace({
   setIsOrderPlaced,
   totalQuantities,
 }) {
+  axios.defaults.withCredentials = true;
+
   const { cartList, setCartList, getOrderList } = useProduct();
   const { LogOut } = useAuth();
   const navigate = useNavigate();

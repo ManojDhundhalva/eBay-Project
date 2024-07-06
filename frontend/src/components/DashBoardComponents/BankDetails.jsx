@@ -26,6 +26,8 @@ import FormLabel from "@mui/material/FormLabel";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 
 function BankDetails() {
+  axios.defaults.withCredentials = true;
+
   const [accountNumber, setAccountNumber] = useState("");
   const [accountHolderFirstName, setAccountHolderFirstName] = useState("");
   const [accountHolderLastName, setAccountHolderLastName] = useState("");

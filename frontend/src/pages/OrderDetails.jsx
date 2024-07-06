@@ -37,6 +37,7 @@ const CheckedStepIcon = () => {
 const ImgUrl = `https://t3.ftcdn.net/jpg/05/15/95/32/360_F_515953296_4OTDJFNzT9YmriBZwR688gsWzLFSyc1u.webp`;
 
 function OrderDetails() {
+  axios.defaults.withCredentials = true;
   const navigate = useNavigate();
   const [orderDetails, setOrderDetails] = useState({});
   const location = useLocation();

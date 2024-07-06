@@ -8,6 +8,8 @@ import { getAccordionSummaryUtilityClass } from "@mui/material";
 const productContext = createContext();
 
 export const ProductProvider = ({ children }) => {
+  axios.defaults.withCredentials = true;
+
   const [cartList, setCartList] = useState([]);
   const [wishList, setWishList] = useState([]);
   const [numberOfOrders, setNumberOfOrders] = useState(0);

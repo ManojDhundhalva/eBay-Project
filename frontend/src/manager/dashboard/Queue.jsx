@@ -10,6 +10,8 @@ import Typography from "@mui/material/Typography";
 import { toast } from "react-hot-toast";
 
 function Queue() {
+  axios.defaults.withCredentials = true;
+
   const [allQueues, setAllQueues] = useState([]);
 
   const getAllQueuesOfInventory = async () => {

@@ -20,6 +20,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import image1 from "../images/image1.jpg";
 
 export default function Register() {
+  axios.defaults.withCredentials = true;
   const [loading, setloading] = useState(false);
   const [justVerify, setJustVerify] = useState(false);
   const [validPassword, setValidPassword] = useState(false);

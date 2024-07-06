@@ -24,6 +24,8 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import LogoutIcon from "@mui/icons-material/Logout";
 
 function ProfileDetails() {
+  axios.defaults.withCredentials = true;
+
   const ImgUrl =
     "https://img.freepik.com/free-vector/isolated-young-handsome-man-different-poses-white-background-illustration_632498-859.jpg?size=626&ext=jpg&ga=GA1.1.61947746.1703400710&semt=ais_user";
 

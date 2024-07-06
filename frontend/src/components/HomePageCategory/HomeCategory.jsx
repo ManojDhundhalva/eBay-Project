@@ -10,6 +10,8 @@ const image2 =
   "https://cdn.pixabay.com/photo/2021/10/11/23/49/app-6702045_1280.png";
 
 function HomeCategory() {
+  axios.defaults.withCredentials = true;
+
   const scrollBoxRef = useRef(null);
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
