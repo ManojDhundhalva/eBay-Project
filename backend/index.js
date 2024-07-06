@@ -20,13 +20,16 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 8000;
 
+
 app.use(
   cors({
-    origin: ["https://e-bay-project-frontend.vercel.app"],
-    methods: ["POST", "GET", "DELETE", "PUT"],
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
+
 app.use(express.json());
 
 app.get("/", (req, resp) => {
@@ -46,7 +49,6 @@ app.use("/api/v1/shipper", shipperRoutes);
 app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/database", databaseRoutes);
 app.use("/api/v1/verify-email", verifyEmail);
-// app.use("/api/v1/seller", sellerRoutes);
 
 app.get(
   "/api/v1/getTomTomApiKey",
