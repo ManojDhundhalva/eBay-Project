@@ -49,16 +49,12 @@ app.use("/category", categoryRoutes);
 app.use("/database", databaseRoutes);
 app.use("/verify-email", verifyEmail);
 
-app.get(
-  "/api/v1/getTomTomApiKey",
-  verifyTokenAndAuthorizationUser,
-  (req, res) => {
-    return res.status(200).json({
-      message: "Api key sent successfully!",
-      apiKey: process.env.TOMTOM_API_KEY,
-    });
-  }
-);
+app.get("/getTomTomApiKey", verifyTokenAndAuthorizationUser, (_, res) => {
+  return res.status(200).json({
+    message: "Api key sent successfully!",
+    apiKey: process.env.TOMTOM_API_KEY,
+  });
+});
 
 app.listen(port, () => {
   console.log(`app listening on port ${port}`);
