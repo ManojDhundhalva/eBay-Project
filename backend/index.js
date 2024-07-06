@@ -18,9 +18,15 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 const app = express();
-const port = 8000;
+const port = process.env.PORT || 8000;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:8000"],
+    methods: ["POST", "GET", "DELETE", "PUT"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // app.get("/", (req, resp) => {
