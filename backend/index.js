@@ -22,7 +22,7 @@ const port = process.env.PORT || 8000;
 
 app.use(
   cors({
-    origin: ["https://e-bay-project-frontend.vercel.app/"],
+    origin: ["https://e-bay-project-frontend.vercel.app"],
     methods: ["POST", "GET", "DELETE", "PUT"],
     credentials: true,
   })
