@@ -29,9 +29,9 @@ app.use(
 );
 app.use(express.json());
 
-// app.get("/", (req, resp) => {
-//   resp.send("hello");
-// });
+app.get("/", (req, resp) => {
+  resp.send("hello");
+});
 
 app.use("/api/v1/login", loginRoutes);
 app.use("/api/v1/register", registerRoutes);
