@@ -191,7 +191,8 @@ function OrderPlace({
     try {
       const results = await toast.promise(
         axios.post(
-          `http://localhost:8000/api/v1/order/payment?username=${window.localStorage.getItem(
+          (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+          `/order/payment?username=${window.localStorage.getItem(
             "username"
           )}&role=${window.localStorage.getItem("role")}`,
           {
@@ -223,7 +224,8 @@ function OrderPlace({
       try {
         const results1 = await toast.promise(
           axios.post(
-            `http://localhost:8000/api/v1/order?username=${window.localStorage.getItem(
+            (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+            `/order?username=${window.localStorage.getItem(
               "username"
             )}&role=${window.localStorage.getItem("role")}`,
             {

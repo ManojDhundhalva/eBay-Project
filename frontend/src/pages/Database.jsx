@@ -69,11 +69,12 @@ function Database() {
     };
     try {
       const results = await axios.get(
-        `http://localhost:8000/api/v1/database/table-data?username=${window.localStorage.getItem(
-          "username"
-        )}&role=${window.localStorage.getItem(
-          "role"
-        )}&table_name=${table_name}`,
+        (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+          `/database/table-data?username=${window.localStorage.getItem(
+            "username"
+          )}&role=${window.localStorage.getItem(
+            "role"
+          )}&table_name=${table_name}`,
         {
           headers,
         }
@@ -97,9 +98,10 @@ function Database() {
     };
     try {
       const results = await axios.get(
-        `http://localhost:8000/api/v1/database/table?username=${window.localStorage.getItem(
-          "username"
-        )}&role=${window.localStorage.getItem("role")}`,
+        (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+          `/database/table?username=${window.localStorage.getItem(
+            "username"
+          )}&role=${window.localStorage.getItem("role")}`,
         {
           headers,
         }

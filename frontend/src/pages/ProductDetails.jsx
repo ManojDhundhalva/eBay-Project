@@ -114,9 +114,10 @@ function ProductDetails() {
     };
     try {
       const results = await axios.post(
-        `http://localhost:8000/api/v1/product/verify-product-id?username=${window.localStorage.getItem(
-          "username"
-        )}&role=${window.localStorage.getItem("role")}`,
+        (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+          `/product/verify-product-id?username=${window.localStorage.getItem(
+            "username"
+          )}&role=${window.localStorage.getItem("role")}`,
         { productId },
         { headers }
       );
@@ -151,11 +152,12 @@ function ProductDetails() {
     };
     try {
       const { data } = await axios.get(
-        `http://localhost:8000/api/v1/product/product-details?username=${window.localStorage.getItem(
-          "username"
-        )}&role=${window.localStorage.getItem(
-          "role"
-        )}&productId=${productIdParams}`,
+        (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+          `/product/product-details?username=${window.localStorage.getItem(
+            "username"
+          )}&role=${window.localStorage.getItem(
+            "role"
+          )}&productId=${productIdParams}`,
         { headers }
       );
       setValue(
@@ -244,9 +246,10 @@ function ProductDetails() {
     };
     try {
       const { status } = await axios.post(
-        `http://localhost:8000/api/v1/product/review-product?username=${window.localStorage.getItem(
-          "username"
-        )}&role=${window.localStorage.getItem("role")}`,
+        (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+          `/product/review-product?username=${window.localStorage.getItem(
+            "username"
+          )}&role=${window.localStorage.getItem("role")}`,
         {
           product_review_rating: value,
           product_comment: productComment,

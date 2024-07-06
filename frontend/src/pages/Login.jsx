@@ -93,7 +93,8 @@ export default function Login() {
     }
     try {
       const results = await axios.post(
-        "http://localhost:8000/api/v1/verify-email",
+        (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+          "/verify-email",
         { username, emailid }
       );
       setOtp(String(results.data.code));
@@ -118,7 +119,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const results = await axios.post("http://localhost:8000/api/v1/login", {
+      const results = await axios.post((process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +"/login", {
         username: emailUsername,
         password,
       });

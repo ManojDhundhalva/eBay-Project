@@ -68,9 +68,10 @@ export default function SellerProduct() {
     };
     try {
       const results = await axios.post(
-        `http://localhost:8000/api/v1/category/filter-seller-products?username=${encodeURIComponent(
-          window.localStorage.getItem("username")
-        )}&role=${encodeURIComponent(window.localStorage.getItem("role"))}`,
+        (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+          `/category/filter-seller-products?username=${encodeURIComponent(
+            window.localStorage.getItem("username")
+          )}&role=${encodeURIComponent(window.localStorage.getItem("role"))}`,
         { value, seller_id },
         { headers }
       );
@@ -97,9 +98,10 @@ export default function SellerProduct() {
     };
     try {
       const results = await axios.post(
-        `http://localhost:8000/api/v1/category/verify-seller?username=${window.localStorage.getItem(
-          "username"
-        )}&role=${window.localStorage.getItem("role")}`,
+        (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+          `/category/verify-seller?username=${window.localStorage.getItem(
+            "username"
+          )}&role=${window.localStorage.getItem("role")}`,
         { seller_id },
         { headers }
       );

@@ -84,7 +84,8 @@ function BankDetails() {
           Authorization: `Bearer ${window.localStorage.getItem("token")}`,
         };
         const response = await axios.get(
-          `http://localhost:8000/api/v1/getTomTomApiKey?username=${window.localStorage.getItem(
+          (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+          `/getTomTomApiKey?username=${window.localStorage.getItem(
             "username"
           )}&role=${window.localStorage.getItem("role")}`,
           { headers }
@@ -190,7 +191,8 @@ function BankDetails() {
 
     try {
       const response = await axios.post(
-        `http://localhost:8000/api/v1/bank-details?username=${window.localStorage.getItem(
+        (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+        `/bank-details?username=${window.localStorage.getItem(
           "username"
         )}&role=${window.localStorage.getItem("role")}`,
         {
@@ -242,7 +244,8 @@ function BankDetails() {
 
     try {
       const results = await axios.get(
-        `http://localhost:8000/api/v1/bank-details?username=${window.localStorage.getItem(
+        (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+        `/bank-details?username=${window.localStorage.getItem(
           "username"
         )}&role=${window.localStorage.getItem("role")}`,
         {

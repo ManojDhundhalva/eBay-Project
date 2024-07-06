@@ -54,7 +54,8 @@ function UserDetails({
           Authorization: `Bearer ${window.localStorage.getItem("token")}`,
         };
         const response = await axios.get(
-          `http://localhost:8000/api/v1/getTomTomApiKey?username=${window.localStorage.getItem(
+          (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+          `/getTomTomApiKey?username=${window.localStorage.getItem(
             "username"
           )}&role=${window.localStorage.getItem("role")}`,
           { headers }

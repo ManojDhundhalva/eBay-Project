@@ -79,7 +79,8 @@ function ProductCard({ product }) {
     };
     try {
       await axios.post(
-        `http://localhost:8000/api/v1/product/watch-product?username=${window.localStorage.getItem(
+        (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+        `/product/watch-product?username=${window.localStorage.getItem(
           "username"
         )}&role=${window.localStorage.getItem("role")}`,
         { product_id },

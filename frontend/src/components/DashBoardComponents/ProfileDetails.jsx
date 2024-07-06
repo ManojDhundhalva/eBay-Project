@@ -71,7 +71,8 @@ function ProfileDetails() {
     try {
       await toast.promise(
         axios.post(
-          `http://localhost:8000/api/v1/profile?username=${window.localStorage.getItem(
+          (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+          `/profile?username=${window.localStorage.getItem(
             "username"
           )}&role=${window.localStorage.getItem("role")}`,
           {
@@ -105,7 +106,8 @@ function ProfileDetails() {
     };
     try {
       const results = await axios.get(
-        `http://localhost:8000/api/v1/profile?username=${window.localStorage.getItem(
+        (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+        `/profile?username=${window.localStorage.getItem(
           "username"
         )}&role=${window.localStorage.getItem("role")}`,
         {

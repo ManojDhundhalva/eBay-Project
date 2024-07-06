@@ -64,9 +64,10 @@ export default function Category() {
     };
     try {
       const results = await axios.post(
-        `http://localhost:8000/api/v1/category/filter-products?username=${encodeURIComponent(
-          window.localStorage.getItem("username")
-        )}&role=${encodeURIComponent(window.localStorage.getItem("role"))}`,
+        (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+          `/category/filter-products?username=${encodeURIComponent(
+            window.localStorage.getItem("username")
+          )}&role=${encodeURIComponent(window.localStorage.getItem("role"))}`,
         { value },
         { headers }
       );
@@ -81,7 +82,6 @@ export default function Category() {
       } else {
         setProducts(sortByMostWatched(results.data));
       }
-
     } catch (err) {
       console.log("Error -> ", err);
     }

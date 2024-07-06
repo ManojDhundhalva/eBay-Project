@@ -29,9 +29,10 @@ export const ProductProvider = ({ children }) => {
     };
     try {
       const results = await axios.get(
-        `http://localhost:8000/api/v1/category?username=${window.localStorage.getItem(
-          "username"
-        )}&role=${window.localStorage.getItem("role")}`,
+        (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+          `/category?username=${window.localStorage.getItem(
+            "username"
+          )}&role=${window.localStorage.getItem("role")}`,
         {
           headers,
         }
@@ -50,9 +51,10 @@ export const ProductProvider = ({ children }) => {
     };
     try {
       const results = await axios.get(
-        `http://localhost:8000/api/v1/order/count-of-orders?username=${window.localStorage.getItem(
-          "username"
-        )}&role=${window.localStorage.getItem("role")}`,
+        (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+          `/order/count-of-orders?username=${window.localStorage.getItem(
+            "username"
+          )}&role=${window.localStorage.getItem("role")}`,
         {
           headers,
         }
@@ -71,9 +73,10 @@ export const ProductProvider = ({ children }) => {
     };
     try {
       const results = await axios.get(
-        `http://localhost:8000/api/v1/order/ordered-product-ids?username=${window.localStorage.getItem(
-          "username"
-        )}&role=${window.localStorage.getItem("role")}`,
+        (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+          `/order/ordered-product-ids?username=${window.localStorage.getItem(
+            "username"
+          )}&role=${window.localStorage.getItem("role")}`,
         {
           headers,
         }
@@ -92,9 +95,10 @@ export const ProductProvider = ({ children }) => {
     };
     try {
       const results = await axios.get(
-        `http://localhost:8000/api/v1/cart?username=${window.localStorage.getItem(
-          "username"
-        )}&role=${window.localStorage.getItem("role")}`,
+        (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+          `/cart?username=${window.localStorage.getItem(
+            "username"
+          )}&role=${window.localStorage.getItem("role")}`,
         {
           headers,
         }
@@ -114,9 +118,11 @@ export const ProductProvider = ({ children }) => {
     try {
       await toast.promise(
         axios.post(
-          `http://localhost:8000/api/v1/cart?username=${window.localStorage.getItem(
-            "username"
-          )}&role=${window.localStorage.getItem("role")}`,
+          (process.env.REACT_APP_BACKEND_API ||
+            "http://localhost:8000/api/v1") +
+            `/cart?username=${window.localStorage.getItem(
+              "username"
+            )}&role=${window.localStorage.getItem("role")}`,
           { product_id },
           {
             headers,
@@ -143,11 +149,13 @@ export const ProductProvider = ({ children }) => {
     try {
       await toast.promise(
         axios.delete(
-          `http://localhost:8000/api/v1/cart?username=${window.localStorage.getItem(
-            "username"
-          )}&role=${window.localStorage.getItem(
-            "role"
-          )}&product_id=${product_id}`,
+          (process.env.REACT_APP_BACKEND_API ||
+            "http://localhost:8000/api/v1") +
+            `/cart?username=${window.localStorage.getItem(
+              "username"
+            )}&role=${window.localStorage.getItem(
+              "role"
+            )}&product_id=${product_id}`,
           {
             headers,
           }
@@ -173,9 +181,11 @@ export const ProductProvider = ({ children }) => {
     try {
       await toast.promise(
         axios.post(
-          `http://localhost:8000/api/v1/wish-list?username=${window.localStorage.getItem(
-            "username"
-          )}&role=${window.localStorage.getItem("role")}`,
+          (process.env.REACT_APP_BACKEND_API ||
+            "http://localhost:8000/api/v1") +
+            `/wish-list?username=${window.localStorage.getItem(
+              "username"
+            )}&role=${window.localStorage.getItem("role")}`,
           { product_id },
           {
             headers,
@@ -201,9 +211,10 @@ export const ProductProvider = ({ children }) => {
     };
     try {
       const results = await axios.get(
-        `http://localhost:8000/api/v1/wish-list?username=${window.localStorage.getItem(
-          "username"
-        )}&role=${window.localStorage.getItem("role")}`,
+        (process.env.REACT_APP_BACKEND_API || "http://localhost:8000/api/v1") +
+          `/wish-list?username=${window.localStorage.getItem(
+            "username"
+          )}&role=${window.localStorage.getItem("role")}`,
         {
           headers,
         }
@@ -223,11 +234,13 @@ export const ProductProvider = ({ children }) => {
     try {
       await toast.promise(
         axios.delete(
-          `http://localhost:8000/api/v1/wish-list?username=${window.localStorage.getItem(
-            "username"
-          )}&role=${window.localStorage.getItem(
-            "role"
-          )}&product_id=${product_id}`,
+          (process.env.REACT_APP_BACKEND_API ||
+            "http://localhost:8000/api/v1") +
+            `/wish-list?username=${window.localStorage.getItem(
+              "username"
+            )}&role=${window.localStorage.getItem(
+              "role"
+            )}&product_id=${product_id}`,
           {
             headers,
           }
