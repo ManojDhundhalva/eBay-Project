@@ -50,7 +50,7 @@ const createAccount = async (req, resp) => {
     resp.status(200).json({ message: "Created Successfully" });
   } catch (error) {
     console.error(error);
-    resp.status(500).json({ message: "Internal Server Error" });
+    resp.status(500).json({ message: "DATABASE - Internal Server Error" });
   }
 };
 
