@@ -1,0 +1,355 @@
+CREATE TABLE users(
+	id BIGSERIAL PRIMARY KEY,
+	username VARCHAR(255) UNIQUE NOT NULL,
+	emailid VARHCHAR(255) UNIQUE NOT NULL,
+	password VARCHAR(255) NOT NULL,
+	role VARCHAR(255) NOT NULL,
+	user_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE user_profile(
+	user_profile_id BIGINT PRIMARY KEY REFERENCES users(id),
+	firstname VARCHAR(255),
+	lastname VARCHAR(255)
+);
+
+CREATE TABLE manager_profile(
+	manager_profile_id BIGINT PRIMARY KEY REFERENCES users(id),
+	firstname VARCHAR(255),
+	lastname VARCHAR(255)
+);
+
+CREATE TABLE shipper_profile(
+	shipper_profile_id BIGINT PRIMARY KEY REFERENCES users(id),
+	firstname VARCHAR(255),
+	lastname VARCHAR(255)
+);
+
+
+// when user places order then "product_quantity" reduces by ordered "has_order_quantity"
+CREATE TABLE product (
+    product_id BIGSERIAL PRIMARY KEY,
+    product_unique_id VARCHAR(1024) UNIQUE NOT NULL,
+    product_seller_id BIGINT REFERENCES users(id) NOT NULL,
+    product_title VARCHAR(1024) NOT NULL,
+    product_price DECIMAL(10, 2) CHECK (product_price >= 0) DEFAULT 0.0,
+    product_available_quantity INTEGER CHECK (product_available_quantity >= 0),
+    product_watch_count INTEGER CHECK (product_watch_count >= 0) DEFAULT 0,
+    product_description TEXT NOT NULL,
+    product_rating DECIMAL(2, 1) DEFAULT 0.0,
+    product_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+// Trigger for "product_available_quantity" and "has_order_quantity" -> "product_available_quantity - has_order_quantity"
+----------------------------------------------------------
+-- Create a trigger function to update product_available_quantity
+CREATE OR REPLACE FUNCTION update_product_quantity()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE product
+    SET product_available_quantity = product_available_quantity - NEW.has_order_quantity
+    WHERE product_id = NEW.has_order_product_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create a trigger to call the update_product_quantity function after an insertion in has_order table
+CREATE TRIGGER reduce_product_quantity_trigger
+AFTER INSERT ON has_order
+FOR EACH ROW
+EXECUTE FUNCTION update_product_quantity();
+----------------------------------------------------------
+
+CREATE TABLE product_image(
+	product_image_id BIGSERIAL PRIMARY KEY,
+	product_id BIGINT REFERENCES product(product_id),
+	product_image TEXT DEFAULT 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHdWYn_0hOpFYMYZCHnFXtcqSc9hzVv7zALvsc7_qjgg&s'
+);
+
+NOTE : "product_images" while History of Listed product.
+
+INSERT INTO product (product_unique_id, product_title, product_price, product_quantity, product_watch_count, product_description, product_rating, product_seller_id)
+VALUES ('item@100', 'Smartphone X', 15000.00, 8, 3, 'High performance', 4.3, 1),
+('item@101', 'Bluetooth Earphones', 2000.00, 12, 0, 'Wireless connectivity', 3.8, 2),
+('item@102', 'Phone Case', 500.00, 5, 0, 'Shockproof protection', 3.5, 5),
+('item@103', 'Smart TV 40 Inch', 25000.00, 10, 5, 'Ultra HD resolution', 4.5, 1),
+('item@104', 'LED TV 32 Inch', 15000.00, 7, 0, 'Slim design', 4.0, 2),
+('item@105', 'Microwave Oven', 8000.00, 9, 2, 'Quick cooking', 4.2, 5),
+('item@106', 'Air Purifier', 12000.00, 6, 0, 'HEPA filter', 3.9, 5);
+
+INSERT INTO product_image (product_id) values (10), (9), (11), (12), (13), (14), (15);
+
+CREATE TABLE cart (
+    product_id BIGINT REFERENCES product(product_id),
+    user_id BIGINT REFERENCES users(id),
+    PRIMARY KEY (product_id, user_id)
+);
+
+INSERT INTO cart (product_id, user_id) VALUES (11, 1);
+INSERT INTO cart (product_id, user_id) VALUES (10, 2);
+INSERT INTO cart (product_id, user_id) VALUES (10, 5);
+
+DELETE FROM cart WHERE product_id = $1 AND user_id = $2;
+
+CREATE TABLE watches (
+    product_id BIGINT REFERENCES product(product_id),
+    user_id BIGINT REFERENCES users(id),
+    PRIMARY KEY (product_id, user_id),
+    watches_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+--------------------
+CREATE TABLE buyer (
+	buyer_id BIGINT PRIMARY KEY REFERENCES users(id),
+	buyer_city VARCHAR(255) NOT NULL,
+    buyer_state VARCHAR(255) NOT NULL,
+    buyer_country VARCHAR(255) NOT NULL
+);
+--------------------
+
+CREATE TABLE order_details (
+	order_id BIGSERIAL PRIMARY KEY,
+	order_unique_id VARCHAR(1024) UNIQUE NOT NULL,
+	order_buyer_id BIGINT REFERENCES users(id) NOT NULL,
+	order_transaction_id BIGINT REFERENCES payment(payment_transaction_id) NOT NULL,
+	order_total_cost DECIMAL(10, 2) CHECK (order_total_cost >= 0) DEFAULT 0.0,
+	order_shipping_cost DECIMAL(10, 2) CHECK (order_shipping_cost >= 0) DEFAULT 0.0,
+	order_shipping_address_apartment TEXT NOT NULL,
+	order_shipping_address_street TEXT NOT NULL,
+	order_shipping_address_country VARCHAR(255) NOT NULL,
+	order_shipping_address_state VARCHAR(255) NOT NULL,
+	order_shipping_address_city VARCHAR(255) NOT NULL,
+	order_shipping_address_pincode VARCHAR(6) CHECK (order_shipping_address_pincode ~ '^[0-9]{6}$') NOT NULL,
+	order_shipping_address_mobile_number VARCHAR(15) CHECK (order_shipping_address_mobile_number ~ '^[0-9]{10,15}$') NOT NULL,
+	order_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+NOTE : eBay takes 1.2% chareges for seller and buyer 
+
+CREATE TABLE has_order (
+    has_order_id BIGINT REFERENCES order_details(order_id) NOT NULL,
+    has_order_unique_id VARCHAR(1024) NOT NULL,
+    has_order_quantity INTEGER CHECK (has_order_quantity >= 1) DEFAULT 1,
+    has_order_product_id BIGINT REFERENCES product(product_id) NOT NULL,
+    PRIMARY KEY (has_order_id, has_order_product_id)
+);  
+
+CREATE TABLE payment (
+	payment_transaction_id BIGSERIAL PRIMARY KEY,
+	payment_transaction_unique_id VARCHAR(1024) UNIQUE NOT NULL,
+	payment_amount DECIMAL(10, 2) CHECK (payment_amount >= 0) DEFAULT 0.0,
+	payment_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE seller (
+    seller_user_id BIGINT PRIMARY KEY REFERENCES users(id),
+    seller_account_number VARCHAR(255) REFERENCES bank_details(account_number) NOT NULL,
+    seller_city VARCHAR(255) NOT NULL,
+    seller_state VARCHAR(255) NOT NULL,
+    seller_country VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE bank_details (
+	account_number VARCHAR(255) PRIMARY KEY,
+	account_balance DECIMAL(10, 2) CHECK (account_balance >= 0) DEFAULT 0.0
+);
+
+SELECT
+    h.*,
+    p.*,
+    ARRAY_AGG(pi.product_image) AS product_images
+FROM
+    product AS p
+LEFT JOIN
+    product_image AS pi ON p.product_id = pi.product_id
+JOIN
+    has_order AS h ON h.has_order_product_id = p.product_id
+WHERE
+    p.product_seller_id = $1 AND h.has_order_quantity < p.product_quantity
+GROUP BY
+    h.has_order_id,
+    p.product_id,
+    h.has_order_unique_id,
+    h.has_order_product_id
+
+
+CREATE TABLE product_review (
+	product_id BIGINT REFERENCES product(product_id) NOT NULL,
+	user_id BIGINT REFERENCES users(id) NOT NULL,
+	product_review_rating DECIMAL(2, 1),
+	product_review_comment TEXT,
+	product_review_comment_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+	PRIMARY KEY (product_id, user_id)
+);
+
+// Trigger OF product_review -> when comment is added or updated then currect timestamp will be applied.
+-------------------------------
+CREATE OR REPLACE FUNCTION update_comment_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.product_review_comment IS NOT NULL THEN
+        NEW.product_review_comment_timestamp = CURRENT_TIMESTAMP;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_comment_timestamp_trigger
+BEFORE INSERT OR UPDATE OF product_review_comment
+ON product_review
+FOR EACH ROW
+EXECUTE FUNCTION update_comment_timestamp();
+
+---------------------------
+
+
+// Trigger OF Product_review -> automatically update product(product_rating) based on product_id
+-----------------------
+CREATE OR REPLACE FUNCTION update_product_rating()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE product
+    SET product_rating = (
+        SELECT AVG(product_review_rating)
+        FROM product_review
+        WHERE product_review.product_id = NEW.product_id
+            AND product_review_rating IS NOT NULL
+        GROUP BY product_review.product_id
+    )
+    WHERE product_id = NEW.product_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER avg_rating_trigger
+AFTER INSERT OR UPDATE OF product_review_rating ON product_review
+FOR EACH ROW
+EXECUTE FUNCTION update_product_rating();
+----------------------
+
+
+-- Trigger function to update seller's account balance when a new order is inserted
+___________________________________________________________________
+
+CREATE OR REPLACE FUNCTION update_seller_balance_on_order()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Calculate the total price of the ordered products
+    DECLARE total_price DECIMAL(10, 2);
+    SELECT SUM(product_price * NEW.has_order_quantity) INTO total_price
+    FROM product
+    WHERE product_id = NEW.has_order_product_id;
+
+    -- Update the seller's account balance
+    UPDATE bank_details
+    SET account_balance = account_balance + total_price
+    WHERE account_number = (
+        SELECT seller_account_number
+        FROM seller
+        WHERE seller_user_id = (
+            SELECT product_seller_id
+            FROM product
+            WHERE product_id = NEW.has_order_product_id
+        )
+    );
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create trigger to fire after inserting into has_order table
+CREATE TRIGGER update_seller_balance_trigger
+AFTER INSERT ON has_order
+FOR EACH ROW
+EXECUTE FUNCTION update_seller_balance_on_order();
+___________________________________________________________________
+
+
+CREATE TABLE product_has_catagory(
+	product_catagory_name VARCHAR(1024),
+	product_id BIGINT REFERENCES product(product_id),
+	PRIMARY KEY(product_catagory_name, product_id)
+);
+
+CREATE TABLE product_has_sub_catagory(
+	product_sub_catagory_name VARCHAR(1024),
+	product_id BIGINT REFERENCES product(product_id),
+	PRIMARY KEY(product_catagory_name, product_id)
+);
+
+CREATE TABLE catagory_has_sub_catagory(
+	product_sub_catagory_name VARCHAR(1024) REFERENCES product_has_sub_catagory(product_sub_catagory_name),
+	product_catagory_name VARCHAR(1024) REFERENCES product_has_catagory(product_catagory_name),
+	PRIMARY KEY(product_sub_catagory_name, product_catagory_name)
+);
+
+//status
+1. order placed (buyer click order) (inventory queue)
+2. on the way at your inventory (after queue - goto buyer's inventory house)
+
+3. reached at buyer's inventory
+4. Out for Delivery (distribution to shipper)
+5. Delivered (shipper distribute order)
+
+CREATE TABLE shipping_status (
+	tracking_id BIGSERIAL PRIMARY KEY,
+	order_id BIGINT REFERENCES order_details(order_id) NOT NULL,
+	delivered_date DATE,
+	estimated_delivery_date DATE NOT NULL,
+	shipping_status VARCHAR(1024) NOT NULL,
+	shipping_status_one TIMESTAMP,
+	shipping_status_two TIMESTAMP,
+	shipping_status_three TIMESTAMP,
+	shipping_status_four TIMESTAMP,
+	shipping_status_five TIMESTAMP,
+	shipping_status_six TIMESTAMP,
+);
+
+CREATE TABLE inventory_house (
+	manager_id BIGINT REFERENCES users(id) NOT NULL,
+	inventory_house_name VARCHAR(255) PRIMARY KEY,
+	inventory_house_city VARCHAR(255) NOT NULL,
+	inventory_house_state VARCHAR(255) NOT NULL,
+	inventory_house_country VARCHAR(255) NOT NULL,
+	inventory_helpline_number VARCHAR(15) CHECK (inventory_helpline_number ~ '^[0-9]{10,15}$') NOT NULL,
+);
+
+CREATE TABLE shipper (
+	shipper_id BIGSERIAL PRIMARY KEY,
+	shipper_unique_id VARCHAR(255) UNIQUE NOT NULL,
+	shipper_inventory_house_id REFERENCES inventory_house(inventory_house_id) NOT NULL 
+);
+
+CREATE TABLE delivers (
+	delivers_shipper_id BIGINT REFERENCES shipper(shipper_id),
+	delivers_order_id BIGINT REFERENCES order_details(order_id),
+	PRIMARY KEY(delivers_shipper_id, delivers_order_id)
+);
+
+
+queue{
+	inventory
+	product
+	order
+	source
+	destination
+}
+
+SELECT *
+FROM shipping_status AS ss
+JOIN has_order AS h ON ss.order_id = h.has_order_id
+JOIN order_details AS o ON o.order_id = h.has_order_id
+JOIN buyer AS b ON b.buyer_id = o.order_buyer_id
+WHERE ss.shipping_status_two IS NOT NULL
+  AND ss.shipping_status_four IS NULL
+  AND b.buyer_city = 'gandhinager';
+
+
+
+total_products_in_order : value
+order_id : value
+order_unique_id : value
+product : [
+	all attributes of product
+	product_images : [] (from table of product_images)
+]

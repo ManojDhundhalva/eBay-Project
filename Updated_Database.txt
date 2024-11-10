@@ -1,0 +1,422 @@
+CREATE TABLE users(
+    id VARCHAR(255) PRIMARY KEY,
+    firstname VARCHAR(255) NOT NULL,
+    lastname VARCHAR(255) NOT NULL,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    emailid VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(10) CHECK (phone_number ~ '^[0-9]{10}$') NOT NULL,
+    user_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+// INSERT INTO locations (coordinates) VALUES (POINT(40.7128, -74.0060)); -- New York City coordinates
+// SELECT ST_X(coordinates) AS latitude, ST_Y(coordinates) AS longitude FROM locations;
+CREATE TABLE seller (
+    seller_user_id VARCHAR(255) PRIMARY KEY REFERENCES users(id),
+    seller_account_number VARCHAR(255) REFERENCES bank_details(account_number) NOT NULL,
+    seller_city VARCHAR(255) NOT NULL,
+    seller_state VARCHAR(255) NOT NULL,
+    seller_country VARCHAR(255) NOT NULL,
+    seller_location TEXT NOT NULL,
+    seller_coordinates POINT NOT NULL,
+    seller_pincode VARCHAR(6) CHECK (seller_pincode ~ '^[0-9]{6}$') NOT NULL,
+    seller_avg_rating DECIMAL(2, 1) DEFAULT 0.0,
+    account_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE bank_details (
+    account_number VARCHAR(255) PRIMARY KEY CHECK (account_number ~ '^[0-9]+$'),
+    account_holder_first_name VARCHAR(255) NOT NULL,
+    account_holder_last_name VARCHAR(255) NOT NULL,
+    account_IFSC_code VARCHAR(16) NOT NULL,
+    account_branch VARCHAR(255) NOT NULL,
+    account_branch_address VARCHAR(65536) NOT NULL,
+    account_balance DECIMAL(10, 2) CHECK (account_balance >= 0) DEFAULT 0.0,
+    account_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE category_has_sub_category(
+    category_name VARCHAR(1024),
+    sub_category_name VARCHAR(1024),
+    PRIMARY KEY(category_name, sub_category_name)
+);
+
+CREATE TABLE sub_category_has_sub_sub_category(
+    sub_category_name VARCHAR(1024),
+    sub_sub_category_name VARCHAR(1024),
+    PRIMARY KEY(sub_category_name, sub_sub_category_name)
+);
+
+//data
+-- Insert data into category_has_sub_category table
+INSERT INTO category_has_sub_category (category_name, sub_category_name) VALUES 
+('Electronics', 'Computers & Accessories'),
+('Electronics', 'Smartphones & Tablets'),
+('Electronics', 'Audio & Video'),
+('Electronics', 'Appliances'),
+('Clothing & Accessories', 'Men''s Clothing'),
+('Clothing & Accessories', 'Women''s Clothing'),
+('Clothing & Accessories', 'Kids'' Clothing'),
+('Clothing & Accessories', 'Accessories'),
+('Home & Kitchen', 'Furniture'),
+('Home & Kitchen', 'Home Décor'),
+('Home & Kitchen', 'Kitchen & Dining'),
+('Home & Kitchen', 'Bedding & Bath'),
+('Beauty & Personal Care', 'Skincare'),
+('Beauty & Personal Care', 'Makeup'),
+('Beauty & Personal Care', 'Haircare'),
+('Beauty & Personal Care', 'Personal Care'),
+('Sports & Outdoors', 'Exercise & Fitness'),
+('Sports & Outdoors', 'Outdoor Recreation'),
+('Sports & Outdoors', 'Team Sports'),
+('Sports & Outdoors', 'Athletic Apparel'),
+('Books, Movies & Music', 'Books'),
+('Books, Movies & Music', 'Movies & TV Shows'),
+('Books, Movies & Music', 'Music'),
+('Toys & Games', 'Action Figures & Collectibles'),
+('Toys & Games', 'Dolls & Dollhouses'),
+('Toys & Games', 'Building Toys'),
+('Toys & Games', 'Board Games & Puzzles'),
+('Toys & Games', 'Outdoor Play'),
+('Toys & Games', 'Arts & Crafts'),
+('Toys & Games', 'Remote Control Toys'),
+('Toys & Games', 'Educational Toys'),
+('Health & Wellness', 'Vitamins & Supplements'),
+('Health & Wellness', 'Health Monitors & Tests'),
+('Health & Wellness', 'First Aid'),
+('Health & Wellness', 'Alternative Medicine'),
+('Health & Wellness', 'Medical Equipment & Supplies'),
+('Health & Wellness', 'Sexual Wellness'),
+('Health & Wellness', 'Mobility & Daily Living Aids'),
+('Health & Wellness', 'Health & Fitness Trackers'),
+('Pet Supplies', 'Dog Supplies'),
+('Pet Supplies', 'Cat Supplies'),
+('Pet Supplies', 'Small Animal Supplies'),
+('Baby & Kids', 'Baby Gear'),
+('Baby & Kids', 'Baby Care'),
+('Baby & Kids', 'Kids'' Toys & Games');
+
+-- Insert data into sub_category_has_sub_sub_category table
+INSERT INTO sub_category_has_sub_sub_category (sub_category_name, sub_sub_category_name) VALUES 
+('Computers & Accessories', 'Laptops'),
+('Computers & Accessories', 'Desktops'),
+('Computers & Accessories', 'Monitors'),
+('Computers & Accessories', 'Computer Accessories'),
+('Smartphones & Tablets', 'Smartphones'),
+('Smartphones & Tablets', 'Tablets'),
+('Smartphones & Tablets', 'Mobile Accessories'),
+('Audio & Video', 'Headphones & Earphones'),
+('Audio & Video', 'Speakers'),
+('Audio & Video', 'TVs & Home Entertainment'),
+('Audio & Video', 'Cameras & Camcorders'),
+('Appliances', 'Kitchen Appliances'),
+('Appliances', 'Home Appliances'),
+('Appliances', 'Personal Care Appliances'),
+('Men''s Clothing', 'Shirts'),
+('Men''s Clothing', 'T-Shirts'),
+('Men''s Clothing', 'Pants & Jeans'),
+('Men''s Clothing', 'Jackets & Coats'),
+('Women''s Clothing', 'Dresses'),
+('Women''s Clothing', 'Tops & Blouses'),
+('Women''s Clothing', 'Skirts & Shorts'),
+('Women''s Clothing', 'Outerwear'),
+('Kids'' Clothing', 'Boys'' Clothing'),
+('Kids'' Clothing', 'Girls'' Clothing'),
+('Kids'' Clothing', 'Baby Clothing'),
+('Accessories', 'Bags & Backpacks'),
+('Accessories', 'Jewelry'),
+('Accessories', 'Watches'),
+('Accessories', 'Hats & Caps'),
+('Furniture', 'Living Room Furniture'),
+('Furniture', 'Bedroom Furniture'),
+('Furniture', 'Kitchen & Dining Furniture'),
+('Furniture', 'Office Furniture'),
+('Home Décor', 'Wall Art & Paintings'),
+('Home Décor', 'Clocks'),
+('Home Décor', 'Mirrors'),
+('Home Décor', 'Rugs & Carpets'),
+('Kitchen & Dining', 'Cookware'),
+('Kitchen & Dining', 'Cutlery & Knife Accessories'),
+('Kitchen & Dining', 'Bakeware'),
+('Kitchen & Dining', 'Kitchen Appliances'),
+('Bedding & Bath', 'Bedding Sets'),
+('Bedding & Bath', 'Towels & Washcloths'),
+('Bedding & Bath', 'Shower Curtains'),
+('Bedding & Bath', 'Bathroom Accessories'),
+('Skincare', 'Cleansers & Toners'),
+('Skincare', 'Moisturizers & Creams'),
+('Skincare', 'Serums & Treatments'),
+('Skincare', 'Sunscreens & Tanning Products'),
+('Makeup', 'Face Makeup'),
+('Makeup', 'Eye Makeup'),
+('Makeup', 'Lip Makeup'),
+('Makeup', 'Makeup Tools & Accessories'),
+('Haircare', 'Shampoo & Conditioner'),
+('Haircare', 'Styling Products'),
+('Haircare', 'Hair Color'),
+('Haircare', 'Hair Tools & Accessories'),
+('Personal Care', 'Bath & Shower'),
+('Personal Care', 'Deodorants & Antiperspirants'),
+('Personal Care', 'Oral Care'),
+('Personal Care', 'Feminine Hygiene'),
+('Exercise & Fitness', 'Exercise Machines'),
+('Exercise & Fitness', 'Fitness Accessories'),
+('Exercise & Fitness', 'Yoga & Pilates'),
+('Exercise & Fitness', 'Sports Nutrition'),
+('Outdoor Recreation', 'Camping & Hiking'),
+('Outdoor Recreation', 'Cycling'),
+('Outdoor Recreation', 'Fishing'),
+('Outdoor Recreation', 'Water Sports'),
+('Team Sports', 'Soccer'),
+('Team Sports', 'Basketball'),
+('Team Sports', 'Football'),
+('Team Sports', 'Baseball & Softball'),
+('Team Sports', 'Cricket'),
+('Athletic Apparel', 'Activewear'),
+('Athletic Apparel', 'Athletic Shoes'),
+('Athletic Apparel', 'Sports Accessories'),
+('Athletic Apparel', 'Sports Bags & Backpacks'),
+('Books', 'Fiction'),
+('Books', 'Non-Fiction'),
+('Books', 'Children''s Books'),
+('Books', 'Textbooks'),
+('Movies & TV Shows', 'DVDs & Blu-rays'),
+('Movies & TV Shows', 'Digital Downloads'),
+('Movies & TV Shows', 'TV Shows'),
+('Movies & TV Shows', 'Documentaries'),
+('Music', 'CDs & Vinyl'),
+('Music', 'Digital Music Downloads'),
+('Music', 'Musical Instruments'),
+('Music', 'Music Accessories'),
+('Dog Supplies', 'Dog Food'),
+('Dog Supplies', 'Dog Beds & Furniture'),
+('Dog Supplies', 'Dog Toys'),
+('Dog Supplies', 'Dog Grooming'),
+('Cat Supplies', 'Cat Food'),
+('Cat Supplies', 'Cat Litter & Housebreaking'),
+('Cat Supplies', 'Cat Toys'),
+('Cat Supplies', 'Cat Furniture & Scratchers'),
+('Small Animal Supplies', 'Bird Supplies'),
+('Small Animal Supplies', 'Fish Supplies'),
+('Small Animal Supplies', 'Reptile & Amphibian Supplies'),
+('Small Animal Supplies', 'Small Pet Food & Treats'),
+('Baby Gear', 'Strollers & Accessories'),
+('Baby Gear', 'Car Seats & Accessories'),
+('Baby Gear', 'Baby Carriers & Slings'),
+('Baby Gear', 'Baby Monitors'),
+('Baby Care', 'Diapering'),
+('Baby Care', 'Bathing & Skin Care'),
+('Baby Care', 'Feeding'),
+('Baby Care', 'Baby Safety Products'),
+('Kids'' Toys & Games', 'Action Figures & Playsets'),
+('Kids'' Toys & Games', 'Dolls & Accessories'),
+('Kids'' Toys & Games', 'Educational Toys'),
+('Kids'' Toys & Games', 'Outdoor Play');
+
+
+// when user places order then "product_quantity" reduces by ordered "has_order_quantity"
+CREATE TABLE product (
+    product_id VARCHAR(255) PRIMARY KEY,
+    product_seller_id VARCHAR(255) REFERENCES users(id) NOT NULL,
+    product_title VARCHAR(1024) NOT NULL,
+    product_category_name VARCHAR(1024) NOT NULL,
+    product_sub_category_name VARCHAR(1024) NOT NULL,
+    product_sub_sub_category_name VARCHAR(1024) NOT NULL,
+    product_price DECIMAL(10, 2) CHECK (product_price >= 0) DEFAULT 0.0,
+    product_available_quantity INTEGER CHECK (product_available_quantity >= 0),
+    product_watch_count INTEGER CHECK (product_watch_count >= 0) DEFAULT 0,
+    product_avg_rating DECIMAL(2, 1) DEFAULT 0.0,
+    product_seller_mobile_number VARCHAR(10) CHECK (product_seller_mobile_number ~ '^[0-9]{10}$') NOT NULL,
+    product_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_category_name, product_sub_category_name) REFERENCES category_has_sub_category(category_name, sub_category_name),
+    FOREIGN KEY (product_sub_category_name, product_sub_sub_category_name) REFERENCES sub_category_has_sub_sub_category(sub_category_name, sub_sub_category_name)
+);
+
+CREATE TABLE product_image (
+    product_id VARCHAR(255) REFERENCES product(product_id),
+    product_image VARCHAR(10485760) DEFAULT 'https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg',
+    PRIMARY KEY (product_id, product_image)
+);
+
+CREATE TABLE product_description (
+    product_id VARCHAR(255) REFERENCES product(product_id),
+    key VARCHAR(10485760),
+    value VARCHAR(10485760),
+    PRIMARY KEY (product_id, key, value)
+);
+
+
+
+-- Create trigger function to update product_avg_rating
+CREATE OR REPLACE FUNCTION update_product_rating()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE product
+    SET product_avg_rating = (
+        SELECT COALESCE(ROUND(AVG(product_review_rating), 1), 0.0)
+        FROM product_review
+        WHERE product_review.product_id = NEW.product_id
+    )
+    WHERE product_id = NEW.product_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create trigger to update product_avg_rating on product_review insert or update
+CREATE TRIGGER avg_rating_trigger
+AFTER INSERT OR UPDATE OF product_review_rating ON product_review
+FOR EACH ROW
+EXECUTE FUNCTION update_product_rating();
+
+
+old - trigger
+---------------------------
+new - trigger
+
+-- Drop the existing trigger and function
+DROP TRIGGER IF EXISTS avg_rating_trigger ON product_review;
+DROP FUNCTION IF EXISTS update_product_rating;
+
+-- Create the new trigger function
+CREATE OR REPLACE FUNCTION update_product_rating()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE product
+    SET product_avg_rating = (
+        SELECT COALESCE(ROUND(AVG(product_review_rating), 1), 0.0)
+        FROM product_review
+        WHERE product_review.product_id = NEW.product_id
+    )
+    WHERE product_id = NEW.product_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create the new trigger
+CREATE TRIGGER avg_rating_trigger
+AFTER INSERT OR UPDATE OF product_review_rating ON product_review
+FOR EACH ROW
+EXECUTE FUNCTION update_product_rating();
+
+------------------------------------------------------
+
+
+CREATE TABLE product_review (
+    product_id VARCHAR(255) REFERENCES product(product_id) NOT NULL,
+    user_id VARCHAR(255) REFERENCES users(id) NOT NULL,
+    product_review_rating DECIMAL(1, 0) CHECK (product_review_rating IN (1, 2, 3, 4, 5)) NOT NULL,
+    product_comment VARCHAR(10485760),
+    product_review_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (product_id, user_id)
+);
+
+CREATE TABLE watches (
+    product_id VARCHAR(255) REFERENCES product(product_id),
+    user_id VARCHAR(255) REFERENCES users(id),
+    PRIMARY KEY (product_id, user_id),
+    watches_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE cart (
+    product_id VARCHAR(255) REFERENCES product(product_id),
+    user_id VARCHAR(255) REFERENCES users(id),
+    PRIMARY KEY (product_id, user_id),
+    cart_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE wishlist (
+    product_id VARCHAR(255) REFERENCES product(product_id),
+    user_id VARCHAR(255) REFERENCES users(id),
+    PRIMARY KEY (product_id, user_id),
+    wishlist_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+//payment_amount = total cost + ebay charges + shipping cost
+CREATE TABLE payment (
+    payment_transaction_id VARCHAR(255) PRIMARY KEY,
+    payment_amount DECIMAL(10, 2) CHECK (payment_amount >= 0) DEFAULT 0.0, 
+    payment_type VARCHAR(255) CHECK (payment_type IN ('creditCard', 'bankTransfer')) NOT NULL,
+    payment_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+// only product cost = order_total_cost
+// travelling cost = order_shipping_cost
+CREATE TABLE order_details (
+    order_id VARCHAR(255) PRIMARY KEY,
+    order_buyer_id VARCHAR(255) REFERENCES users(id) NOT NULL,
+    order_buyer_first_name VARCHAR(255) NOT NULL,
+    order_buyer_Last_name VARCHAR(255) NOT NULL,
+    order_transaction_id VARCHAR(255) REFERENCES payment(payment_transaction_id) NOT NULL,
+    order_total_cost DECIMAL(10, 2) CHECK (order_total_cost >= 0) DEFAULT 0.0,
+    order_shipping_cost DECIMAL(10, 2) CHECK (order_shipping_cost >= 0) DEFAULT 0.0,
+    order_shipping_location TEXT NOT NULL,
+    order_shipping_coordinates POINT NOT NULL,
+    order_shipping_address_country VARCHAR(255) NOT NULL,
+    order_shipping_address_state VARCHAR(255) NOT NULL,
+    order_shipping_address_city VARCHAR(255) NOT NULL,
+    order_shipping_address_pincode VARCHAR(6) CHECK (order_shipping_address_pincode ~ '^[0-9]{6}$') NOT NULL,
+    order_shipping_address_mobile_number VARCHAR(10) CHECK (order_shipping_address_mobile_number ~ '^[0-9]{10}$') NOT NULL,
+    order_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE has_order (
+    tracking_id VARCHAR(255) PRIMARY KEY,
+    has_order_id VARCHAR(255) REFERENCES order_details(order_id) NOT NULL,
+    has_order_product_quantity INTEGER CHECK (has_order_product_quantity >= 1) DEFAULT 1,
+    has_order_product_id VARCHAR(255) REFERENCES product(product_id) NOT NULL,
+    has_order_distance DECIMAL(10, 2) CHECK (has_order_distance >= 0) NOT NULL,
+    has_order_distance_charge DECIMAL(10, 2) CHECK (has_order_distance >= 0) NOT NULL, -- in %
+    has_order_eBay_charge DECIMAL(10, 2) CHECK (has_order_eBay_charge >= 0) NOT NULL,
+    shipping_status_order_placed TIMESTAMP,
+    shipping_status_order_shipped TIMESTAMP,
+    shipping_status_reached_at_buyers_inventory TIMESTAMP,
+    shipping_status_out_for_delivery TIMESTAMP,
+    shipping_status_delivered TIMESTAMP
+); 
+
+//Manager -> SuratGujaratManager
+//inventory_house_name -> Surat Inventory
+CREATE TABLE inventory_house (
+    inventory_house_id VARCHAR(255) PRIMARY KEY,
+    manager_id VARCHAR(255) REFERENCES users(id) UNIQUE NOT NULL,
+    inventory_house_name VARCHAR(255) NOT NULL,
+    inventory_house_city VARCHAR(255) NOT NULL,
+    inventory_house_state VARCHAR(255) NOT NULL,
+    inventory_house_country VARCHAR(255) NOT NULL
+);
+
+//Shipper -> SuratGujaratShipper
+CREATE TABLE shipper (
+    shipper_id VARCHAR(255) PRIMARY KEY REFERENCES users(id) NOT NULL,
+    shipper_inventory_house_id VARCHAR(255) REFERENCES inventory_house(inventory_house_id) NOT NULL 
+);
+
+// NEW ===>
+// NEW ===>
+// NEW ===>
+// NEW ===>
+-- Step 1: Alter the seller table to add the seller_avg_rating column
+ALTER TABLE seller
+ADD COLUMN seller_avg_rating DECIMAL(2, 1) DEFAULT 0.0;
+
+-- Step 2: Create the trigger function to update the seller_avg_rating
+CREATE OR REPLACE FUNCTION update_seller_avg_rating() RETURNS TRIGGER AS $$
+BEGIN
+  UPDATE seller
+  SET seller_avg_rating = (
+    SELECT COALESCE(AVG(product_avg_rating), 0.0)
+    FROM product
+    WHERE product_seller_id = NEW.product_seller_id
+  )
+  WHERE seller_user_id = NEW.product_seller_id;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Step 3: Create the trigger to call the function on product insert or update
+CREATE TRIGGER update_seller_rating_trigger
+AFTER INSERT OR UPDATE ON product
+FOR EACH ROW
+EXECUTE FUNCTION update_seller_avg_rating();
